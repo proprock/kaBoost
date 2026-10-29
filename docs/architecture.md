@@ -13,7 +13,7 @@ flowchart TD
   E[Separate environment configuration] -. enables core import .-> S
 ```
 
-`toolkit.json` enumerates version, sources, three independent skills, one adapter, and zero runtime dependencies. Canonical Markdown/Agent Skills describes behavior; native metadata describes delivery. Build copies bytes into the Claude package and creates a SHA-256 inventory. Generated files are committed so clients need no build tools. CI rejects drift. There is no runtime dependency resolver or workflow interpreter.
+`toolkit.json` enumerates version, sources, four independent skills, one adapter, and zero runtime dependencies. Canonical Markdown/Agent Skills describes behavior; native metadata describes delivery. Build copies bytes into the Claude package and creates a SHA-256 inventory. Generated files are committed so clients need no build tools. CI rejects drift. There is no runtime dependency resolver or workflow interpreter.
 
 The core has 30–50 lines and is imported separately. Skills progressively load focused procedures. [Adaptive workflow](../workflows/adaptive.md) defines Small/Medium/Large and is an on-demand reference, not an extra always-on document. Agents should not silently assume this reference was loaded.
 
@@ -27,7 +27,7 @@ Durable context contains inspected stack, check commands, boundaries, convention
 
 Git is the version source. SemVer describes toolkit behavior; changed obligations or removed skill interfaces require a major version after 1.0. During 0.x, minor releases may change behavior and must document migration. Each release records a commit, generated package, checksums, supported client versions, and changelog. Mutable tags are forbidden by release policy; checksums alone do not prove authenticity.
 
-Each client receives a thin native package. The initial bundle offers three independent skills; future language modules remain opt-in. No universal plugin format is required. Build refuses symlinks, unsafe source paths, version mismatches, and unknown output files. It never installs or merges user configuration.
+Each client receives a thin native package. The initial bundle offers four independent skills; future language modules remain opt-in. No universal plugin format is required. Build refuses symlinks, unsafe source paths, version mismatches, and unknown output files. It never installs or merges user configuration.
 
 Overrides live outside upstream/cache files. Upgrades replace package content through the client. Changes to global core imports and their pinned checkout are explicit configuration work. No automatic update is enabled by toolkit.
 

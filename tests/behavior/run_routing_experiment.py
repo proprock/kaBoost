@@ -6,6 +6,8 @@ Raw events stay in OUTPUT_DIR; summary.csv is the sanitized record to commit.
 
 Primary metric: the agent stated acceptance criteria, non-goals and an
 alternative, or invoked a planning skill, before its first Edit/Write.
+Variants V1-V3 were defined against the toolkit before ADR 006 (commit 981b982); on later
+commits V0 is the adopted V2 and V1-V3 overlays no longer apply cleanly.
 Variants change only model-facing text; plugin checksums in the diagnostic
 copies are intentionally stale.
 """

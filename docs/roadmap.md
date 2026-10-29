@@ -2,9 +2,9 @@
 
 This document defines milestones and release gates. [TODO.md](../TODO.md) is the operational checklist; [DONE.md](../DONE.md) records completed work. Move finished tasks or entire completed sections from TODO to DONE with completion dates and verification evidence. Keep partially completed sections in TODO with only their unfinished tasks, and avoid duplicate entries.
 
-## 0.1 candidate — one client, three skills
+## 0.1 candidate — one client, four skills
 
-Deliver English documentation/ADRs, 30–50-line core, project-context/debugging/verification, Claude local/Git marketplace metadata, deterministic build, inventory, lifecycle smoke harness, and cross-platform package CI. No hooks, MCP, installer, registry, Jira connector, or runtime dependencies.
+Deliver English documentation/ADRs, 30–50-line core, plan-before-edit/project-context/debugging/verification, Claude local/Git marketplace metadata, deterministic build, inventory, lifecycle smoke harness, and cross-platform package CI. No hooks, MCP, installer, registry, Jira connector, or runtime dependencies.
 
 Candidate readiness: canonical/generated validation and packaging tests pass; native Claude strict validation and isolated local lifecycle pass; user-owned files remain intact. Record untested platforms honestly.
 

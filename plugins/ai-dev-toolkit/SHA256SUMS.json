@@ -1,8 +1,9 @@
 {
   ".claude-plugin/plugin.json": "860c92838ccb6097319de3c43e1095abc85b1b2f57fe7a227b02c0beebef5c2b",
   "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
-  "core/engineering-rules.md": "b199f1e3665f25551c789f5aed4afe0efdcb803535bc645ead1b51d597e9b988",
-  "skills/project-context/SKILL.md": "2c07f6014d143e476e35db5bf66896a78c4cdbb09de3c857e18d11c45441f6dd",
+  "core/engineering-rules.md": "f0bf86400e4647cc3b3421ac8606aa866b8ddc8c6cd7e0fd625a092c28f83fcd",
+  "skills/plan-before-edit/SKILL.md": "ed0308752d321f4fa0fc8fbfea9e979e660aa243afbcefbc0693a78720764f2c",
+  "skills/project-context/SKILL.md": "621a98827ea849485e337917e2e579d8a381dae3547a8c0dc933aaf11bbc17af",
   "skills/systematic-debugging/SKILL.md": "eb0c91d993469f7898f6c86ab8987401a64807b772ad5cfa3c8fe8e67cd53a58",
   "skills/verification/SKILL.md": "16c7526170871723a1c70093b9bfb82413ac19cb23a2f38512b6c915fc09a58a",
   "workflows/adaptive.md": "2f16cb848515ed120e1ec0c1778033774ff2a8d8e87b8dddfcb6b960276b0f8f"

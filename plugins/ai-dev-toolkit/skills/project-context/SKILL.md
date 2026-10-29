@@ -1,6 +1,6 @@
 ---
 name: project-context
-description: Inspect or refresh repository context when onboarding, resuming stale work, or preparing a session handoff. Also use before implementation when a task involves substantial uncertainty, public contract changes, architecture, security, or migrations and needs proportional planning. Skip routine low-risk edits in a known repository.
+description: Inspect or refresh repository context when onboarding, resuming stale work, or preparing a session handoff. Use for context discovery and maintenance, not routine edits in a known repository.
 ---
 # Project context
 
