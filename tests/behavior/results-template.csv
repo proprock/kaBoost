@@ -1,0 +1,1 @@
+scenario,trial,arm,repository_commit,toolkit_commit,client_version,model,os,acceptance_pass,critical_violations,unrelated_changed_lines,test_adequacy,manual_interventions,input_tokens,output_tokens,wall_seconds,evidence,notes
