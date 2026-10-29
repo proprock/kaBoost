@@ -52,3 +52,12 @@ class CodexPackageTests(unittest.TestCase):
         path.write_text(json.dumps(manifest), encoding='utf-8')
         with self.assertRaisesRegex(ValueError, 'name/version mismatch'):
             build(self.root)
+
+    @unittest.skipIf(sys.platform == 'win32', 'Symlink creation may require privileges')
+    def test_symlinks_in_output_are_rejected(self):
+        build(self.root)
+        link = self.output / 'linked'
+        link.symlink_to(self.root / 'core', target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, 'Symlink output'):
+            build(self.root)
+        self.assertTrue(link.is_symlink())

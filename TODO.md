@@ -35,10 +35,6 @@ This file contains unfinished work from MVP completion through the supported too
 
 ## P1 — Prove portability and strengthen lifecycle
 
-### Second client: Codex
-
-- [ ] KB-106: Generalize package generation only where the second adapter demonstrates a shared requirement.
-
 ### Versioning and lifecycle
 
 - [ ] KB-107: Add adapter-specific validation and lifecycle regression checks.
