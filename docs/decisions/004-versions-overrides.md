@@ -12,4 +12,4 @@ Automatic merges into user files risk data loss. Symlink-only deployment limits 
 
 ## Consequences
 
-No installer is needed. Rollback uses native uninstall/reinstall; the separately imported core checkout must also be repinned.
+No installer is needed. Rollback uses native uninstall/reinstall; the separately maintained project-local core copy must also be reviewed and restored to the matching version.

@@ -40,13 +40,13 @@ This remote command works only after the package has been pushed. Local installa
 
 ## Activate core rules separately
 
-Review [core/engineering-rules.md](core/engineering-rules.md). With explicit permission, add one import to your existing user or project CLAUDE.md; retain its other contents:
+Review [core/engineering-rules.md](core/engineering-rules.md). For a project, copy the reviewed file into the project, for example as `.claude/engineering-rules.md`, and add an import to the existing project CLAUDE.md; retain its other contents:
 
 ```text
-@/absolute/path/to/kaBoost/core/engineering-rules.md
+@.claude/engineering-rules.md
 ```
 
-On Windows use the actual absolute checkout path, for example `@C:/Users/Alice/src/kaBoost/core/engineering-rules.md`. Keep that checkout pinned to the same release as the plugin. The local path is a machine configuration concern. Never replace an existing CLAUDE.md with a generated file. [Project example](examples/project/CLAUDE.md).
+The copy is user-managed: review and update it alongside the plugin. In a Claude Code 2.1.312 print-mode test on Linux, an import outside the project did not automatically load the file contents; do not assume that an absolute checkout path activates the rules. Verify loading in your own client and profile. Never replace an existing CLAUDE.md with a generated file. [Project example](examples/project/CLAUDE.md).
 
 ## Updates and removal
 
@@ -57,7 +57,7 @@ claude plugin marketplace update ai-dev-toolkit
 claude plugin update ai-dev-toolkit@ai-dev-toolkit
 ```
 
-A pinned tag intentionally stays pinned. To change releases, uninstall the plugin, remove the marketplace, add the new tag, and reinstall. Rollback uses the same steps with the previous tag. Restart the session and verify `claude plugin list`. Do not edit the plugin cache; keep overrides in user/project rules. Upgrade the separately imported core checkout explicitly too.
+A pinned tag intentionally stays pinned. To change releases, uninstall the plugin, remove the marketplace, add the new tag, and reinstall. Rollback uses the same steps with the previous tag. Restart the session and verify `claude plugin list`. Do not edit the plugin cache; keep overrides in user/project rules. Review and update the separate project-local core copy explicitly too.
 
 ```text
 claude plugin uninstall ai-dev-toolkit@ai-dev-toolkit
