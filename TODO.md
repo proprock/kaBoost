@@ -35,9 +35,6 @@ This file contains unfinished work from MVP completion through the supported too
 
 ## P1 — Prove portability and strengthen lifecycle
 
-### Versioning and lifecycle
-
-- [ ] KB-111: Verify operation in a temporary workspace, CI, and a devcontainer without environment sync.
 
 **Done when:** two clients consume the same canonical engineering content through independently verified native mechanisms, with reproducible lifecycle procedures.
 

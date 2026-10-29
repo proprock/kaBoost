@@ -16,9 +16,12 @@ The toolkit is designed to work independently in a temporary clone, CI, devconta
 On 2026-10-29, an Ubuntu temporary local clone of commit `13787b1` with an empty
 home and cleared environment passed both adapter validations and both disposable
 local lifecycle harnesses (Claude Code 2.1.312 and Codex CLI 0.165.0). No model
-calls or environment sync were used. The [CI workflow](../.github/workflows/check.yml)
-also runs package checks and provides a devcontainer package-check job; see the
-actual workflow run for its result. These checks do not establish authenticated
-behavior in a container or operation in a cloud workspace.
+calls or environment sync were used. Hosted package and lifecycle checks passed
+on [commit 7b85ecd](https://github.com/proprock/kaBoost/actions/runs/40913567264).
+On commit `0d432b7`, the [Ubuntu devcontainer job](https://github.com/proprock/kaBoost/actions/runs/40914733881/job/123591817493)
+passed both validations and packaging tests using the repository's devcontainer
+configuration without environment sync. These checks do not establish client
+installation or authenticated behavior inside a container, or operation in a
+cloud workspace.
 
 Do not start a second repository until machine reconciliation is needed. Then evaluate chezmoi, yadm, GNU Stow, and Ansible against actual OS and secrets constraints. These are candidates, not a selected dependency. Move machine examples/configuration there while retaining package content and install documentation here. Do not build a universal sync engine.
