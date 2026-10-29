@@ -15,7 +15,7 @@ class PackageTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)/'repo'
+        self.root = Path(self.temp.name).resolve()/'repo'
         shutil.copytree(ROOT, self.root, ignore=shutil.ignore_patterns('.git', '__pycache__'))
 
     def test_build_is_repeatable_and_preserves_user_files(self):
