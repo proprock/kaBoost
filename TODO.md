@@ -37,7 +37,6 @@ This file contains unfinished work from MVP completion through the supported too
 
 ### Second client: Codex
 
-- [ ] KB-103: Document and test separate core activation, instruction precedence, installation, update, rollback, and removal.
 - [ ] KB-104: Verify discovery and behavior in clean profiles without duplicate skill loading.
 - [ ] KB-105: Run shared behavior scenarios on Claude Code and Codex; keep client-specific settings in their adapters.
 - [ ] KB-106: Generalize package generation only where the second adapter demonstrates a shared requirement.
