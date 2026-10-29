@@ -23,7 +23,8 @@ Codex's file hierarchy is documented; Claude and Gemini compose multiple instruc
 | Python package checks | Hosted CI passed, Python 3.10/3.13 | Hosted CI passed, Python 3.10/3.13 | Hosted CI passed, Python 3.10/3.13 |
 | Claude 2.1.301 strict metadata validation | See validation record | Pending | Pending |
 | Isolated local marketplace lifecycle | See validation record | Pending | Pending |
-| Authenticated model loading / behavior pilot | Pending | Pending | Pending |
+| Authenticated model skill discovery / explicit invocation | Passed with profile caveat; see validation record | Pending | Pending |
+| Behavior pilot | Pending | Pending | Pending |
 | Remote tagged marketplace install | Pending publication | Pending publication | Pending publication |
 
 [Validation record](validation.md) records actual commands. Minimum supported Claude version remains unestablished; 2.1.301 is a tested point, not a minimum-version promise. Portable files use LF and ordinary copies without Unix symlinks or shell scripts. OS portability still requires native runtime tests.
