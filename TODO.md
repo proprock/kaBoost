@@ -18,7 +18,6 @@ This file contains unfinished work from MVP completion through the supported too
 
 ### Client loading and portability
 
-- [ ] KB-010: Exercise positive and negative skill-routing scenarios, including trivial edits, routine context lookup, stale context, and unavailable checks.
 - [ ] KB-011: Test native installation, repeated installation, update, rollback, and removal on macOS and Windows; retain versioned evidence.
 - [ ] KB-012: Verify paths containing spaces and Windows paths without symlink privileges.
 
