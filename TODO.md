@@ -37,7 +37,6 @@ This file contains unfinished work from MVP completion through the supported too
 
 ### Versioning and lifecycle
 
-- [ ] KB-107: Add adapter-specific validation and lifecycle regression checks.
 - [ ] KB-108: Establish explicit client-version support, compatibility review, and revalidation policies.
 - [ ] KB-109: Automate release consistency checks and artifact generation without automatic publication.
 - [ ] KB-110: Document local-override conflicts and migration between toolkit releases; verify upgrades preserve user configuration.

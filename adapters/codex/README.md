@@ -6,6 +6,8 @@ drift. The package contains both the Agent Plugins manifest and a Codex
 compatibility manifest. Skills and the referenced workflow are copied from
 the canonical sources, and the checksum inventory covers the package files.
 The build does not change client configuration or delete unexpected files.
+Run `python scripts/validate_codex.py` to check the local catalog's identity,
+source and installation policy as well as generated package consistency.
 
 ## Local CLI lifecycle
 
@@ -52,6 +54,8 @@ passed local install, repeated install, re-add after a version change, rollback
 and removal; the test version is a fixture, not a published release. This does
 not verify remote distribution, other operating systems, or the desktop and IDE
 clients.
+The CI workflow also configures this lifecycle check on Ubuntu with the pinned
+CLI version; a workflow definition alone does not establish a hosted pass.
 
 ## Skill discovery and duplicates
 

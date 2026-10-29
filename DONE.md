@@ -38,3 +38,7 @@ This file records completed tasks with dates and verification evidence. [TODO.md
 - [x] KB-104: Verify discovery and behavior in clean profiles without duplicate skill loading. Completed 2026-10-29. Evidence: [discovery and duplicate observations](adapters/codex/README.md); the authenticated temporary profile was reset after earlier testing, and a standalone copy was shown to cause a duplicate listing.
 - [x] KB-105: Run shared behavior scenarios on Claude Code and Codex; keep client-specific settings in their adapters. Completed 2026-10-29. Evidence: [cross-client comparison](tests/behavior/codex-comparison-results-2026-10-29.md); Large failed the compatibility requirement in both clients, and the release gate remains open.
 - [x] KB-106: Generalize package generation only where the second adapter demonstrates a shared requirement. Completed 2026-10-29. Evidence: shared inventory and safe output handling in [builder](scripts/build.py), reused by the [Codex builder](scripts/build_codex.py), with [packaging checks](tests/packaging/test_codex_package.py).
+
+### Versioning and lifecycle
+
+- [x] KB-107: Add adapter-specific validation and lifecycle regression checks. Completed 2026-10-29. Evidence: [Codex validation](scripts/validate_codex.py), [packaging regression tests](tests/packaging/test_codex_package.py), and local Claude and Codex lifecycle harnesses; [CI](.github/workflows/check.yml) configures the Codex lifecycle on Ubuntu, with hosted execution pending.
