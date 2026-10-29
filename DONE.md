@@ -33,3 +33,6 @@ This file records completed tasks with dates and verification evidence. [TODO.md
 ## P1 — Second client: Codex
 
 - [x] KB-101: Recheck current Codex documentation; distinguish CLI, IDE, and desktop capabilities, including local and remote distribution. Completed 2026-10-29. Evidence: [Codex research](docs/codex-research.md); no adapter or runtime support is implied.
+- [x] KB-102: Implement a Codex adapter using the existing canonical skills and native metadata. Completed 2026-10-29. Evidence: [adapter](adapters/codex/README.md), [builder](scripts/build_codex.py), and [packaging tests](tests/packaging/test_codex_package.py). Runtime installation and discovery remain unverified.
+- [x] KB-103: Document and test separate core activation, instruction precedence, installation, update, rollback, and removal. Completed 2026-10-29. Evidence: [Codex adapter guide](adapters/codex/README.md) and [isolated lifecycle harness](scripts/smoke_codex.py); checks cover Ubuntu and the documented single instruction scenario only.
+- [x] KB-104: Verify discovery and behavior in clean profiles without duplicate skill loading. Completed 2026-10-29. Evidence: [discovery and duplicate observations](adapters/codex/README.md); the authenticated temporary profile was reset after earlier testing, and a standalone copy was shown to cause a duplicate listing.
