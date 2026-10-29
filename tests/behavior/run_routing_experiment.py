@@ -123,7 +123,7 @@ def run(output, variant, scenario, n, toolkit_plugin, core_src):
     with (checkout / '.git' / 'info' / 'exclude').open('a', encoding='utf-8') as f:
         f.write('\n/CLAUDE.md\n/.claude/\n')
     build_variant(variant, plugin, rules)
-    allowed = 'Read,Edit,Write,Glob,Grep,Skill,Bash(python3 *),Bash(python *),Bash(git *),Bash(tail *),Bash(echo *)'
+    allowed = 'Read,Edit,Write,Glob,Grep,Skill,Bash(python3 *),Bash(python *),Bash(git *),Bash(tail *),Bash(echo *),Bash(cd *),Bash(ls *),Bash(cat *),Bash(wc *),Bash(grep *),Bash(head *),Bash(sed *)'
     cmd = ['claude', '-p', PROMPTS[scenario], '--model', pilot.MODEL, '--effort', 'medium',
            '--setting-sources', 'project,local', '--strict-mcp-config', '--no-session-persistence',
            '--permission-mode', 'dontAsk', '--tools', 'Read,Edit,Write,Glob,Grep,Bash,Skill',
