@@ -14,8 +14,10 @@ Date: 2026-10-29. Environment: Linux; Python 3.10.12. Claude Code 2.1.301. Sourc
 
 Lifecycle evidence: registered a local fixture, installed twice, found plugin in inventory, bumped fixture metadata to 0.1.1, refreshed catalog and updated plugin, observed 0.1.1, uninstalled, restored original metadata, reinstalled 0.1.0, uninstalled, and removed the catalog. Existing `env` settings sentinel survived every step. Temporary configuration was deleted afterward.
 
-Pending: authenticated skill/core loading, negative/positive model routing, network-failure behavior, Git transport and published tag pinning, macOS/Windows native client lifecycle, hosted CI execution, and paired real-project behavior trials. No efficacy or full cross-platform support claim is made. Follow tests/behavior/README.md and docs/roadmap.md before release.
+Pending: authenticated skill/core loading, negative/positive model routing, network-failure behavior, Git transport and published tag pinning, macOS/Windows native client lifecycle, and paired real-project behavior trials. No efficacy or full cross-platform support claim is made. Follow tests/behavior/README.md and docs/roadmap.md before release.
 
 ## Additional Linux checks — 2026-10-29
 
 Source commit `565742507bc35982b623b460cb27d5139a5e1e85`; Linux x86_64, kernel 5.15.0-198-generic; Claude Code 2.1.312. `python3 scripts/build.py --check`, `python3 scripts/validate.py`, and all nine packaging unit tests passed. `python3 scripts/smoke_claude.py` passed the local lifecycle again with a disposable profile. It also passed with `TMPDIR='/tmp/kaboost path test'`, exercising marketplace and profile paths containing spaces. This is partial evidence for KB-012: Windows paths without symlink privileges remain untested. Neither lifecycle run invokes a model.
+
+Hosted package checks passed on Linux, macOS, and Windows with Python 3.10 and 3.13 in [run 40877640914](https://github.com/proprock/kaBoost/actions/runs/40877640914), source commit `30102b7b7df82bf05e6603fb62d6caf2582656f7`. The earlier [failed run](https://github.com/proprock/kaBoost/actions/runs/40871832108) exposed a macOS temporary-directory symlink in tests and Windows line-ending conversion of LICENSE; the tested commit addresses both. This CI does not exercise native Claude installation or model behavior on those platforms.

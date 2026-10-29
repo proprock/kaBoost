@@ -12,3 +12,7 @@ This file records completed tasks with dates and verification evidence. [TODO.md
 - [x] KB-006: Prepare project integration examples and behavior evaluation scenarios. Evidence: [project instructions example](examples/project/CLAUDE.md), [context template](examples/project/context.md), and [evaluation protocol](tests/behavior/README.md). Running the comparative pilot remains open in TODO.md.
 
 **Baseline outcome:** an unreleased Claude Code MVP candidate exists with local packaging and lifecycle evidence. Publication and the remaining release gates are unfinished.
+
+## P0 — Client loading and portability
+
+- [x] KB-007: Run hosted package CI on Linux, macOS, and Windows; resolve failures and record run links. Completed 2026-10-29. Evidence: [successful six-job run](https://github.com/proprock/kaBoost/actions/runs/40877640914) on commit `30102b7b7df82bf05e6603fb62d6caf2582656f7`; see [validation record](docs/validation.md).

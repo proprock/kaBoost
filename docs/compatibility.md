@@ -20,7 +20,7 @@ Codex's file hierarchy is documented; Claude and Gemini compose multiple instruc
 
 | Check | Linux | macOS | Windows |
 | --- | --- | --- | --- |
-| Python package checks | See validation record | CI configured, pending execution | CI configured, pending execution |
+| Python package checks | Hosted CI passed, Python 3.10/3.13 | Hosted CI passed, Python 3.10/3.13 | Hosted CI passed, Python 3.10/3.13 |
 | Claude 2.1.301 strict metadata validation | See validation record | Pending | Pending |
 | Isolated local marketplace lifecycle | See validation record | Pending | Pending |
 | Authenticated model loading / behavior pilot | Pending | Pending | Pending |
