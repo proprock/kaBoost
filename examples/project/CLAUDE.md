@@ -1,7 +1,7 @@
 # Project instructions example
 
-<!-- Replace this path with your reviewed, pinned toolkit checkout. -->
-@/absolute/path/to/kaBoost/core/engineering-rules.md
+<!-- Copy the reviewed rules into this project and update the copy alongside the plugin. -->
+@.claude/engineering-rules.md
 
 ## Project facts
 - Use this repository's documented build, lint, and test commands.

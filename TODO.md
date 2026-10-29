@@ -18,13 +18,8 @@ This file contains unfinished work from MVP completion through the supported too
 
 ### Client loading and portability
 
-- [ ] KB-007: Run hosted package CI on Linux, macOS, and Windows; resolve failures and record run links.
-- [ ] KB-008: Verify authenticated Claude Code skill discovery and explicit invocation in a clean profile.
-- [ ] KB-009: Verify core-rule imports and interaction with existing user/project instructions without replacing user content.
-- [ ] KB-010: Exercise positive and negative skill-routing scenarios, including trivial edits, routine context lookup, stale context, and unavailable checks.
 - [ ] KB-011: Test native installation, repeated installation, update, rollback, and removal on macOS and Windows; retain versioned evidence.
 - [ ] KB-012: Verify paths containing spaces and Windows paths without symlink privileges.
-- [ ] KB-013: Test failed installation/update and an unavailable network; confirm the previous working installation and user configuration survive.
 
 ### Behavior pilot
 
