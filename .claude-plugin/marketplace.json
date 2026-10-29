@@ -1,0 +1,17 @@
+{
+  "name": "ai-dev-toolkit",
+  "owner": {
+    "name": "kaBoost maintainers"
+  },
+  "plugins": [
+    {
+      "name": "ai-dev-toolkit",
+      "source": "./plugins/ai-dev-toolkit",
+      "description": "Portable engineering rules and focused workflows",
+      "version": "0.1.0"
+    }
+  ],
+  "metadata": {
+    "description": "Portable engineering workflows maintained in kaBoost"
+  }
+}

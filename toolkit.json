@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "name": "ai-dev-toolkit",
+  "version": "0.1.0",
+  "core": "core/engineering-rules.md",
+  "skills": [
+    "project-context",
+    "systematic-debugging",
+    "verification"
+  ],
+  "workflow": "workflows/adaptive.md",
+  "adapters": {
+    "claude-code": {
+      "template": "adapters/claude-code/plugin.json",
+      "output": "plugins/ai-dev-toolkit"
+    }
+  },
+  "runtime_dependencies": []
+}
