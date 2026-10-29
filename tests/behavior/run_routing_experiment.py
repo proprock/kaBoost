@@ -62,6 +62,8 @@ ORIGINAL_DESCRIPTION = ('Inspect or refresh repository context when onboarding, 
 
 def build_variant(variant, plugin, core):
     """Rewrite copies of the plugin and core file for one variant."""
+    if variant == 'V0':
+        return
     skill = plugin / 'skills' / 'project-context' / 'SKILL.md'
     text = skill.read_text(encoding='utf-8')
     lines = text.split('\n')
