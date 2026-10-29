@@ -37,7 +37,6 @@ This file contains unfinished work from MVP completion through the supported too
 
 ### Second client: Codex
 
-- [ ] KB-101: Recheck current Codex documentation; distinguish CLI, IDE, and desktop capabilities, including local and remote distribution.
 - [ ] KB-102: Implement a Codex adapter using the existing canonical skills and native metadata.
 - [ ] KB-103: Document and test separate core activation, instruction precedence, installation, update, rollback, and removal.
 - [ ] KB-104: Verify discovery and behavior in clean profiles without duplicate skill loading.

@@ -12,9 +12,9 @@ Documentation reviewed 2026-10-29. “Documented” is not “runtime tested.”
 | OpenCode | Global/project AGENTS.md | Agent Skills; executable plugins are a separate mechanism | Researched; no marketplace parity claim; v1/v2 docs differ |
 | Pi | Native agent context; exact precedence deferred to adapter | Agent Skills, Git/npm/local Pi packages | Researched; no adapter |
 
-Claude, Gemini, Cursor native plugins support combinations of skills, commands, agents, hooks, and MCP. Their formats and execution semantics differ. Pi extensions are a different interface; MCP/subagents must not be assumed built in. None of these facilities is a runtime requirement of this toolkit. Codex remote custom marketplace parity is not inferred from desktop local catalogs.
+Claude, Gemini, Cursor native plugins support combinations of skills, commands, agents, hooks, and MCP. Their formats and execution semantics differ. Pi extensions are a different interface; MCP/subagents must not be assumed built in. None of these facilities is a runtime requirement of this toolkit. Codex CLI documents remote Git marketplace sources; parity across all IDE and desktop surfaces is not established.
 
-Codex's file hierarchy is documented; Claude and Gemini compose multiple instruction sources. Copilot CLI explicitly does not define a general precedence between applicable instruction files. Therefore avoid conflicting content instead of imposing a cross-client last-wins model.
+Codex's file hierarchy is documented; Claude and Gemini compose multiple instruction sources. Copilot CLI explicitly does not define a general precedence between applicable instruction files. Therefore avoid conflicting content instead of imposing a cross-client last-wins model. The [Codex research record](codex-research.md) distinguishes CLI, IDE, desktop, and remote marketplace documentation from runtime evidence.
 
 ## Runtime evidence
 

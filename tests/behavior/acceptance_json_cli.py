@@ -58,6 +58,16 @@ class JsonCliAcceptance(unittest.TestCase):
                 self.assertIsInstance(data['error'], str)
                 self.assertTrue(data['error'].strip())
 
+    def test_existing_unknown_argument_behavior(self):
+        # The baseline validate CLI ignores extra arguments. The build CLI
+        # rejects them through argparse; the opt-in mode must preserve both.
+        plain_validate = self.run_cli('validate.py')
+        unknown_validate = self.run_cli('validate.py', '--unrecognized')
+        self.assertEqual(unknown_validate.returncode, plain_validate.returncode)
+        self.assertEqual(unknown_validate.stdout, plain_validate.stdout)
+        unknown_build = self.run_cli('build.py', '--unrecognized')
+        self.assertEqual(unknown_build.returncode, 2)
+
 
 if __name__ == '__main__':
     unittest.main()
