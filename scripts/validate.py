@@ -7,7 +7,7 @@ from build import ROOT, build, source_file
 
 def validate(root=ROOT):
     manifest = json.loads(source_file(root, 'toolkit.json'))
-    if not re.fullmatch(r'\d+\.\d+\.\d+', manifest['version']):
+    if not re.fullmatch(r'(?:0|[1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*)){2}', manifest['version']):
         raise ValueError('Version must be a stable SemVer triple')
     names = manifest['skills']
     if len(names) != len(set(names)):

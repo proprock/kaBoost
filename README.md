@@ -23,7 +23,7 @@ Restart Claude Code. Invoke a skill explicitly, for example:
 /ai-dev-toolkit:verification Check this change against the ticket acceptance criteria.
 ```
 
-After a release is published, pin the marketplace to its immutable reviewed tag. Replace VERSION with an existing release tag (no v0.1.0 tag is published by this change):
+After a release is published, pin the marketplace to a reviewed tag and verify that it points to the expected commit. Replace VERSION with an existing release tag (no v0.1.0 tag is published by this change):
 
 ```text
 claude plugin marketplace add https://github.com/proprock/kaBoost.git#VERSION

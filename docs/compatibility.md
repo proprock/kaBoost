@@ -22,7 +22,7 @@ Codex's file hierarchy is documented; Claude and Gemini compose multiple instruc
 | --- | --- | --- | --- |
 | Python package checks | Hosted CI passed, Python 3.10/3.13 | Hosted CI passed, Python 3.10/3.13 | Hosted CI passed, Python 3.10/3.13 |
 | Claude 2.1.301 strict metadata validation | See validation record | Pending | Pending |
-| Isolated local marketplace lifecycle | See validation record | Pending | Pending |
+| Isolated local marketplace lifecycle | See validation record | Claude 2.1.312 passed on macOS 26.6.2 | Claude 2.1.312 passed on Windows Server 2025 |
 | Authenticated model skill discovery / explicit invocation | Passed with profile caveat; see validation record | Pending | Pending |
 | Behavior pilot | Pending | Pending | Pending |
 | Remote tagged marketplace install | Pending publication | Pending publication | Pending publication |
