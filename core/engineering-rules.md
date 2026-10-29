@@ -24,6 +24,7 @@
 
 ## Verify and deliver
 - Run relevant project checks and inspect the final diff against acceptance criteria.
+- If a compound check is denied, try a narrower permitted check and report any remaining gaps.
 - Distinguish passed, failed, skipped, and unavailable checks; never imply an unrun check passed.
 - Follow project branch and commit conventions; default to feature branches and Conventional Commits.
 - Do not switch branches over user work or infer permission to push, publish, or open a PR.
