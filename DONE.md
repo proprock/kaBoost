@@ -42,3 +42,4 @@ This file records completed tasks with dates and verification evidence. [TODO.md
 ### Versioning and lifecycle
 
 - [x] KB-107: Add adapter-specific validation and lifecycle regression checks. Completed 2026-10-29. Evidence: [Codex validation](scripts/validate_codex.py), [packaging regression tests](tests/packaging/test_codex_package.py), and local Claude and Codex lifecycle harnesses; [CI](.github/workflows/check.yml) configures the Codex lifecycle on Ubuntu, with hosted execution pending.
+- [x] KB-108: Establish explicit client-version support, compatibility review, and revalidation policies. Completed 2026-10-29. Evidence: [tested versions and revalidation policy](docs/compatibility.md); no supported range or minimum is claimed for the unreleased toolkit.
