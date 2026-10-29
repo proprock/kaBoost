@@ -36,13 +36,16 @@ def expected_files(root=ROOT):
     files['core/engineering-rules.md'] = source_file(root, manifest['core'])
     files['workflows/adaptive.md'] = source_file(root, manifest['workflow'])
     files['LICENSE'] = source_file(root, 'LICENSE')
-    inventory = {name: hashlib.sha256(data).hexdigest() for name, data in sorted(files.items())}
-    files['SHA256SUMS.json'] = (json.dumps(inventory, indent=2)+'\n').encode()
+    add_inventory(files)
     return root / adapter['output'], files
 
 
-def build(root=ROOT, check=False):
-    output, files = expected_files(root)
+def add_inventory(files):
+    inventory = {name: hashlib.sha256(data).hexdigest() for name, data in sorted(files.items())}
+    files['SHA256SUMS.json'] = (json.dumps(inventory, indent=2)+'\n').encode()
+
+
+def write_package(output, files, check=False, stale_message='Generated files are stale'):
     if output.is_symlink() or any(p.is_symlink() for p in output.parents):
         raise ValueError('Symlink output directory')
     actual = set()
@@ -58,13 +61,18 @@ def build(root=ROOT, check=False):
     stale = [name for name, data in files.items()
              if not (output/name).is_file() or (output/name).read_bytes() != data]
     if check and stale:
-        raise ValueError(f'Generated files are stale: {stale}')
+        raise ValueError(f'{stale_message}: {stale}')
     if not check:
         for name, data in files.items():
             path = output/name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(data)
     return len(files)
+
+
+def build(root=ROOT, check=False):
+    output, files = expected_files(root)
+    return write_package(output, files, check)
 
 
 if __name__ == '__main__':

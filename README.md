@@ -2,7 +2,7 @@
 
 A small, versioned engineering toolkit: understand before changing code, choose a simple complete solution, and verify the result. Three on-demand skills support project context, systematic debugging, and verification. Core rules are language-agnostic; project tooling stays local.
 
-**Status:** 0.1.0 candidate, not published. Claude Code is the first adapter. See [compatibility](docs/compatibility.md) for evidence and untested combinations. No installer, background sync, hooks, runtime scripts, or bundled MCP servers. Installing a plugin does **not** activate global engineering rules.
+**Status:** 0.1.0 candidate, not published. Claude Code and Codex CLI have local adapters. See [compatibility](docs/compatibility.md) for tested versions, evidence and untested combinations. No installer, background sync, hooks, runtime scripts, or bundled MCP servers. Installing a plugin does **not** activate global engineering rules.
 
 ## Quick start
 

@@ -20,8 +20,8 @@ Tag v0.1.0 only after checking the release inventory, changelog, source SHA, lic
 
 ## Next
 
-1. Codex adapter using the same canonical skills; verify actual local and remote distribution surfaces.
-2. Confirm macOS/Windows native lifecycle and core loading; document a supported version range only after tests.
+1. Verify remote distribution for the existing Codex adapter after reviewed publication.
+2. Complete outstanding native lifecycle and core-loading checks by client and OS; document a supported version range only after tests.
 3. Add architecture review, requirements/task references, or TDD skills only when pilot tasks expose a gap.
 4. Add language-specific Python/Rust/C++ modules without imposing their tools globally.
 5. Add Gemini/Cursor/Copilot/OpenCode/Pi adapters by practical demand, not for matrix completeness.

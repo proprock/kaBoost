@@ -1,9 +1,8 @@
 """Build the Codex plugin from the canonical toolkit without changing client settings."""
 import argparse
-import hashlib
 import json
 
-from build import ROOT, source_file
+from build import ROOT, add_inventory, source_file, write_package
 
 
 def expected_files(root=ROOT):
@@ -36,35 +35,13 @@ def expected_files(root=ROOT):
         if not name or any(c not in 'abcdefghijklmnopqrstuvwxyz0123456789-' for c in name):
             raise ValueError(f'Invalid skill name: {name}')
         files[f'skills/{name}/SKILL.md'] = source_file(root, f'skills/{name}/SKILL.md')
-    inventory = {name: hashlib.sha256(data).hexdigest() for name, data in sorted(files.items())}
-    files['SHA256SUMS.json'] = (json.dumps(inventory, indent=2) + '\n').encode()
+    add_inventory(files)
     return root / adapter['output'], files
 
 
 def build(root=ROOT, check=False):
     output, files = expected_files(root)
-    if output.is_symlink() or any(p.is_symlink() for p in output.parents):
-        raise ValueError('Symlink output directory')
-    actual = set()
-    if output.exists():
-        for path in output.rglob('*'):
-            if path.is_symlink():
-                raise ValueError(f'Symlink output: {path}')
-            if path.is_file():
-                actual.add(path.relative_to(output).as_posix())
-    extras = actual - files.keys()
-    if extras:
-        raise ValueError(f'Unexpected output files; inspect before removing: {sorted(extras)}')
-    stale = [name for name, data in files.items()
-             if not (output / name).is_file() or (output / name).read_bytes() != data]
-    if check and stale:
-        raise ValueError(f'Generated Codex files are stale: {stale}')
-    if not check:
-        for name, data in files.items():
-            path = output / name
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_bytes(data)
-    return len(files)
+    return write_package(output, files, check, 'Generated Codex files are stale')
 
 
 if __name__ == '__main__':
