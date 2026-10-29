@@ -13,7 +13,7 @@ during the sessions.
 | --- | --- | --- | --- |
 | Small | 3/3 completed | 3/3 completed | Exact requested one-sentence edits; independent checks passed. |
 | Medium | 3/3 completed | 3/3 completed | All agents reported running focused tests; independent tests passed. Some agent-written positive-version cases remain weaker than the full independent validation check. |
-| Large | 2/3 completed | 0/3 completed | Baseline trial 1 and toolkit trial 2 edited before satisfying readiness. Toolkit trial 1 did not run checks or add tests; toolkit trial 3 did not rerun tests after fixing a failing test. Baseline trial 2 ran its suite but reported some direct compatibility checks unavailable. |
+| Large | 0/3 completed | 0/3 completed | A later compatibility review found that all six changed the unknown-argument behavior. At the original review, baseline trial 1 and toolkit trial 2 also missed readiness; toolkit trials 1 and 3 did not run final checks. |
 
 The Large readiness gate was met in baseline trials 2 and 3 and toolkit trials
 1 and 3: **2/3 in each arm**. A denied compound command remained a significant
@@ -37,3 +37,9 @@ and readiness remain incomplete, and the toolkit arm is not shown to match
 baseline quality. The permission-policy change between runs and remaining
 denials limit causal interpretation. Preserve both runs; correct the observed
 failure and rerun affected scenarios before reassessing.
+
+Post-hoc compatibility review: all six Large solutions also changed the
+previously accepted unknown-argument behavior of `validate.py`. The original
+evaluator missed this case. The CSV now records all Large tasks as incomplete;
+raw session summaries and original check results remain unchanged. See the
+[second retest review](pilot-followup-results-2026-10-29.md).

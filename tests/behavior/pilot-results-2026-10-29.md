@@ -44,3 +44,9 @@ has been made more explicit for Large tasks. Before interpreting an improvement,
 rerun affected scenarios with documented, matched permissions that permit
 the required test commands, and evaluate the revised toolkit separately; do
 not replace or silently rerun these original records.
+
+Post-hoc compatibility review: all six Large solutions also changed the
+previously accepted unknown-argument behavior of `validate.py`, contrary to
+the default-compatibility requirement. The original evaluator did not cover
+that case. The CSV includes this additional failure; raw session summaries and
+original check results remain unchanged. See the [second retest review](pilot-followup-results-2026-10-29.md).

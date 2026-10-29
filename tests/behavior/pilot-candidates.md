@@ -53,6 +53,10 @@ success, JSON success including build `--check`, and expected invalid-manifest
 failure for both entrypoints. It fails on the baseline and passed against a
 temporary reference implementation. Its scope does not replace review of the
 actual diff, generated package consistency, tests, or architectural impact.
+After the recorded trials, review found an additional unknown-argument
+compatibility gap; the evaluator was extended and checked against both the
+failing trial solutions and a corrected temporary reference. See the
+[compatibility retest plan](pilot-compatibility-plan.md).
 
 The Large readiness gate is met only when, before the first source or test
 edit, the agent states acceptance criteria and non-goals, compares an approach

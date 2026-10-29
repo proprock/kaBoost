@@ -50,7 +50,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def run_trial(output, scenario, trial, arm, toolkit_root, toolkit_commit, expanded_permissions):
+def run_trial(output, scenario, trial, arm, toolkit_root, toolkit_commit, expanded_permissions, compatibility=False):
     name = f'{scenario}-{trial}-{arm}'
     record = output / name
     record.mkdir()
@@ -77,7 +77,11 @@ def run_trial(output, scenario, trial, arm, toolkit_root, toolkit_commit, expand
     allowed = 'Read,Edit,Write,Glob,Grep,Skill,Bash(python3 *),Bash(git *)'
     if expanded_permissions:
         allowed += ',Bash(python *),Bash(tail *),Bash(echo *)'
-    cmd = ['claude', '-p', PROMPTS[scenario], '--model', MODEL, '--effort', 'medium',
+    prompt = PROMPTS[scenario]
+    if compatibility:
+        prompt += (' Before the change, validate.py ignores unknown arguments while build.py rejects them; '
+                   'preserve that behavior for invocations without --json.')
+    cmd = ['claude', '-p', prompt, '--model', MODEL, '--effort', 'medium',
            '--setting-sources', 'project,local', '--strict-mcp-config', '--no-session-persistence',
            '--permission-mode', 'dontAsk', '--tools', tools, '--allowedTools', allowed,
            '--output-format', 'stream-json', '--verbose', '--max-budget-usd', '0.40', *args]
@@ -134,9 +138,10 @@ def run_trial(output, scenario, trial, arm, toolkit_root, toolkit_commit, expand
 def main():
     output = Path(sys.argv[1]).resolve()
     mode = sys.argv[2] if len(sys.argv) == 3 else ''
-    if len(sys.argv) not in (2, 3) or mode not in ('', '--revised', '--followup'):
-        raise SystemExit('Usage: run_pilot.py /tmp/NEW-OUTPUT-DIRECTORY [--revised|--followup]')
-    toolkit_commit = {'': COMMIT, '--revised': REVISED_TOOLKIT, '--followup': FOLLOWUP_TOOLKIT}[mode]
+    if len(sys.argv) not in (2, 3) or mode not in ('', '--revised', '--followup', '--compatibility'):
+        raise SystemExit('Usage: run_pilot.py /tmp/NEW-OUTPUT-DIRECTORY [--revised|--followup|--compatibility]')
+    toolkit_commit = {'': COMMIT, '--revised': REVISED_TOOLKIT, '--followup': FOLLOWUP_TOOLKIT,
+                      '--compatibility': FOLLOWUP_TOOLKIT}[mode]
     if output.exists() or not output.is_relative_to(Path('/tmp')):
         raise SystemExit('Output must be a new directory under /tmp')
     output.mkdir(parents=True)
@@ -147,11 +152,12 @@ def main():
     checked(['git', 'clone', '--quiet', '--no-hardlinks', '--local', str(ROOT), str(toolkit_root)])
     checked(['git', 'checkout', '--quiet', '--detach', toolkit_commit], cwd=toolkit_root)
     rows = []
-    for scenario in ('small', 'medium', 'large'):
+    for scenario in (('large',) if mode == '--compatibility' else ('small', 'medium', 'large')):
         for trial in (1, 2, 3):
             order = ('baseline', 'toolkit') if trial != 2 else ('toolkit', 'baseline')
             for arm in order:
-                rows.append(run_trial(output, scenario, trial, arm, toolkit_root, toolkit_commit, bool(mode)))
+                rows.append(run_trial(output, scenario, trial, arm, toolkit_root, toolkit_commit, bool(mode),
+                                      compatibility=mode == '--compatibility'))
                 (output / 'summary.json').write_text(json.dumps(rows, indent=2) + '\n', encoding='utf-8')
     print('Execution complete; manually review every trial and Large readiness evidence.', flush=True)
 
