@@ -25,9 +25,10 @@ def prepare(root, ref, destination):
         raise ValueError('Artifact directory already exists')
     sha = subprocess.check_output(['git', 'rev-parse', '--verify', ref + '^{commit}'], cwd=root, text=True).strip()
     with tempfile.TemporaryDirectory(prefix='kaboost release ') as temp:
-        snapshot = Path(temp) / 'source'
+        temp = Path(temp).resolve()  # macOS temp dirs sit under a symlinked /var; source_file rejects symlinked parents
+        snapshot = temp / 'source'
         snapshot.mkdir()
-        archive = Path(temp) / 'source.tar'
+        archive = temp / 'source.tar'
         with archive.open('wb') as stream:
             subprocess.run(['git', 'archive', '--format=tar', sha], cwd=root, stdout=stream, check=True)
         with tarfile.open(archive) as source:
