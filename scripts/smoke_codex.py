@@ -21,6 +21,15 @@ def smoke():
         settings = profile / 'config.toml'
         sentinel = 'model_reasoning_effort = "medium"'
         settings.write_text(sentinel + '\n', encoding='utf-8')
+        project = temp / 'project'
+        project.mkdir()
+        owned = {
+            profile / 'AGENTS.md': b'User instruction sentinel\n',
+            project / 'AGENTS.md': b'Project instruction sentinel\n',
+            project / 'core-rules.md': b'Project-owned core copy sentinel\n',
+        }
+        for path, content in owned.items():
+            path.write_bytes(content)
         shutil.copytree(ROOT / 'adapters/codex/.agents', market / '.agents')
         package = market / 'package/ai-dev-toolkit'
         shutil.copytree(ROOT / 'adapters/codex/package/ai-dev-toolkit', package)
@@ -37,6 +46,8 @@ def smoke():
                 raise RuntimeError(result.stdout + result.stderr)
             if sentinel not in settings.read_text(encoding='utf-8'):
                 raise RuntimeError('Existing profile setting was modified')
+            if any(not path.is_file() or path.read_bytes() != content for path, content in owned.items()):
+                raise RuntimeError('User-owned instructions or core copy were modified')
             return json.loads(result.stdout)
 
         identity = 'ai-dev-toolkit@kaboost-codex'

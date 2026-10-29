@@ -82,6 +82,14 @@ python3 scripts/smoke_claude.py
 
 The optional smoke test uses a disposable Claude profile and local package; it makes no model calls. Build refuses unknown package files instead of deleting them. SHA256SUMS.json detects corruption against a trusted release; it does not authenticate its own source. Review unfamiliar instructions and metadata before installing them.
 
+Maintainers can prepare local, unpublished client archives from a committed tree
+with `python3 scripts/prepare_release.py --ref HEAD --output /tmp/kaboost-release`.
+The output directory must be new and outside the checkout. The script validates
+both adapters, the version's changelog heading and common credential patterns,
+then records the full source commit and archive SHA-256 hashes in `release.json`.
+It reads the committed tree, excluding uncommitted changes, and never publishes.
+These checks do not establish release readiness or replace a secret audit.
+
 [Architecture](docs/architecture.md) · [Decisions](docs/decisions/README.md) · [Roadmap](docs/roadmap.md) · [TODO](TODO.md) · [DONE](DONE.md) · [Environment boundary](docs/sync-boundary.md) · [Evaluation](tests/behavior/README.md)
 
 Track unfinished work in TODO.md. Move completed tasks or fully completed sections to DONE.md with a completion date and verification evidence; do not duplicate them across files.
