@@ -1,0 +1,6 @@
+# Project instructions
+
+- Prefer `codebase-memory-mcp` tools for code discovery. Index the repository first if needed, then use the graph to search, trace relationships, and read code snippets. Fall back to file searches for configuration, string literals, or when graph results are insufficient.
+- For questions about libraries, frameworks, SDKs, APIs, CLI tools, and cloud services, check current documentation with `ctx7`: run `npx ctx7@latest library <name> "<question>"`, then `npx ctx7@latest docs <libraryId> "<question>"`. Run requests outside the sandbox, omit secrets, and use at most three commands per question. If a quota error occurs, report it and suggest `npx ctx7@latest login` or `CONTEXT7_API_KEY`.
+- Create a separate `feature/<milestone-name>` branch for each milestone. If the current `master` contains all completed preceding milestones, branch from it. If `master` is behind, branch from the latest branch in the preceding milestone chain after checking history and refreshing remote references. Do not choose a base by commit date alone: the new branch must continue the existing chain.
+- Include the relevant task ID in every commit message using the `KB-<NMM>` format, for example `KB-201: ...`. If a commit covers multiple tasks, include all relevant task IDs.

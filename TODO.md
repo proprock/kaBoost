@@ -42,13 +42,10 @@ This file contains unfinished work from MVP completion through the supported too
 
 ### Engineering workflows
 
-- [ ] KB-201: Review pilot evidence before expanding the skill catalog; record the gap addressed by each addition.
-- [ ] KB-202: Add compact requirements and task-workflow references for tickets, acceptance criteria, scope, feature branches, Conventional Commits, PR preparation, and handoff.
-- [ ] KB-203: Add architecture-review for boundary, contract, migration, and high-risk design decisions.
-- [ ] KB-204: Add a focused TDD skill with guidance for unit, integration, and contract testing and appropriate alternative checks.
-- [ ] KB-205: Add independent code-review only where it provides value beyond verification; otherwise record its explicit deferral.
-- [ ] KB-206: Decide whether requirements-spec and task-workflow warrant separate skills; document merges or exclusions.
-- [ ] KB-207: Verify Small/Medium/Large routing and Large-task readiness gates through behavior scenarios.
+- [ ] KB-203: Add architecture-review for boundary, contract, migration, and high-risk design decisions. Deferred: the pilot did not demonstrate an architecture-boundary failure or the need for a separate skill beyond existing core and adaptive guidance. Revisit when a concrete high-risk design task exposes an uncovered gap, or when a matched behavior evaluation demonstrates added value; record the gap and independent evidence before adding it. See [pilot workflow review](docs/pilot-workflow-review.md).
+- [ ] KB-204: Add a focused TDD skill with guidance for unit, integration, and contract testing and appropriate alternative checks. Deferred: the pilot found weak or missing tests, but did not establish that a separate skill improves on existing TDD and verification guidance. Revisit after a matched behavior evaluation measures independent test adequacy and Small-task overhead, or a concrete use case demonstrates an uncovered need. See [pilot workflow review](docs/pilot-workflow-review.md).
+- [ ] KB-205: Add independent code-review only where it provides value beyond verification; otherwise record its explicit deferral. Deferred: manual review found a missed compatibility regression, but the pilot did not compare a dedicated review skill against existing verification. Revisit when a concrete review need exceeds verification or a matched evaluation shows additional defects found without disproportionate overhead. See [pilot workflow review](docs/pilot-workflow-review.md).
+- [ ] KB-207: Verify Small/Medium/Large routing and Large-task readiness gates through behavior scenarios. The [first P2 trial](tests/behavior/kb207-results-2026-10-29.md) found no explicit workflow loading and missed readiness in all toolkit Large arms. A separate [loading diagnostic](tests/behavior/kb207-loading-diagnostic-2026-10-29.md) confirmed explicit loading; a [natural-routing probe](tests/behavior/kb207-natural-routing-2026-10-29.md) observed core markers but no toolkit skill or workflow invocation. A [before/after comparison](tests/behavior/kb207-routing-comparison-2026-10-29.md) did not observe improvement. Investigate activation and rerun matched, uninstrumented scenarios before claiming a pass.
 - [ ] KB-208: Test durable project-context refresh and task/session handoff against changed Git state and existing user instructions.
 
 ### Language modules

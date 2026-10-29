@@ -1,0 +1,28 @@
+# Pilot evidence and workflow expansion
+
+Reviewed 2026-10-29 for KB-201. This review identifies candidate gaps before
+expanding the catalog; it does not claim that a new skill fixes them. The
+existing catalog contains project-context, systematic-debugging, and
+verification. No new skill is added by this review.
+
+| Candidate | Observed gap and evidence | Decision for subsequent work |
+| --- | --- | --- |
+| Requirements and task-workflow references (KB-202) | The [shared Large scenario](../tests/behavior/codex-comparison-results-2026-10-29.md) missed an existing CLI compatibility contract in all six trials for each client, despite a general compatibility requirement. | The [adaptive workflow](../workflows/adaptive.md) now prompts contract discovery and acceptance checks. Its effectiveness remains unassessed; validate it on a scenario where the contract must be discovered, not merely supplied. Branch and handoff guidance address workflow needs, not demonstrated pilot failures. |
+| Architecture review (KB-203) | The [original pilot](../tests/behavior/pilot-results-2026-10-29.md) missed pre-edit readiness in two toolkit Large trials. No critical architecture-boundary violation was identified. | Deferred: existing core requires respect for boundaries and contracts, while the adaptive workflow calls for design alternatives, compatibility, rollback, and an ADR for Large work. Their effectiveness is unassessed, but the pilot does not establish a gap requiring a separate skill. Revisit on a concrete uncovered high-risk design need or matched evaluation demonstrating added value; retain the task in TODO. |
+| TDD (KB-204) | In the [initial pilot](../tests/behavior/pilot-results-2026-10-29.md), some positive-version tests were weak, Large packaging tests failed in three trials across both arms, and one toolkit Large trial added no tests. | Deferred: the adaptive workflow already describes the red/green cycle, test levels, and alternative checks; verification asks for behavioral tests and review of test quality. Those instructions have not been shown to prevent the observed gaps, and a separate skill has not been shown to improve them. Revisit with a matched evaluation of independent test adequacy and Small-task overhead, or a concrete uncovered use case. |
+| Independent code review (KB-205) | Manual review of the [follow-up](../tests/behavior/pilot-followup-results-2026-10-29.md) found the compatibility regression missed by the original evaluator. | Deferred: this demonstrates the value of that manual review, not that a separate skill adds value over verification, which already checks diffs, contracts, compatibility, and test quality. Revisit when a concrete review need exceeds verification or a matched evaluation measures additional defects found and overhead. |
+| Separate requirements and task-workflow skills (KB-206) | The pilot shows a contract-discovery gap, but does not compare skill boundaries or demonstrate a need for two separate skills. | Keep both references together in the adaptive workflow and exclude separate skills for now. They share task context and can be consulted on demand; project-context links to the workflow for requirements and planning. This is a provisional scope decision, not evidence that agents route to it or that it improves outcomes. KB-207 will assess routing and readiness; revisit separation if a concrete use case or matched evaluation shows an independent benefit. |
+
+The [clarified-contract retest](../tests/behavior/pilot-compatibility-results-2026-10-29.md)
+passed the expanded compatibility check in all six trials, but only one of
+three toolkit trials met the complete pre-edit readiness gate. Supplying the
+contract is not evidence of discovering it. Permission denials, small sample
+sizes, changing retest conditions, and temporary raw logs limit causal and
+long-term audit conclusions. The P0 release gate remains not met; KB-018
+retains responsibility for assessment and affected reruns.
+
+Before adding a candidate, document its specific gap, why existing content is
+insufficient, and an independent behavior check with matched conditions.
+Preserve prior results and measure Small-task overhead as well as the intended
+benefit. If the evidence does not support a separate skill, record a merge or
+deferral instead of expanding the catalog for completeness.

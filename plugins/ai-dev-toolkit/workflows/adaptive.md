@@ -10,8 +10,17 @@ Choose depth by risk and uncertainty, not file count. Escalate when new evidence
 
 For Medium, state why, scope, constraints, non-goals, and acceptance criteria in the conversation or existing ticket. For Large, also compare viable designs, identify compatibility/rollback needs, and record the selected tradeoff in an ADR. Readiness means acceptance criteria are testable, dependencies and contracts are understood, and material unknowns have an owner or experiment.
 
-Use the project's ticket and branch conventions. Inspect the working tree before creating a feature branch; preserve user changes. Use Conventional Commits unless local conventions differ. Prepare a focused PR description with behavior and validation when requested. Publishing and external ticket updates require task authorization.
+## Requirements reference
+
+For a ticket or request, identify the outcome, scope, non-goals, constraints, and observable acceptance criteria in the existing task record or conversation. Match detail to risk; do not create a specification for a straightforward edit. Separate missing facts from assumptions, resolve material ambiguity with the available evidence, and ask only when it blocks a consequential choice.
+
+For changes to behavior or public boundaries, inspect relevant callers, documentation, tests, and existing behavior before defining compatibility criteria. Include success, failure, and unchanged behavior where applicable; do not assume a general instruction to preserve compatibility identifies every contract. Map each criterion to an independent check or inspection, and record any contract or check that remains uncertain.
+
+## Task workflow reference
+
+- Use the project's ticket and branch conventions. Inspect the current branch and working tree before creating a feature branch; preserve user changes and choose the base using the project's workflow.
+- Keep commits focused and use Conventional Commits unless local conventions differ; include a task identifier when the project requires it. Commit, push, or change external systems only with the applicable authorization.
+- When preparing a PR, describe the problem, resulting behavior, relevant checks, and remaining limitations. Compare the actual diff with the intended base and acceptance criteria; do not imply that unrun checks passed. Open or publish the PR only when authorized.
+- At handoff, record the task or ticket, acceptance criteria and scope, branch/base, working-tree state, verified evidence, unresolved issues, and next action. Reuse the existing task record and omit secrets and unnecessary artifacts.
 
 TDD is preferred for deterministic behavioral changes and reproducible regressions: observe the expected failure, implement the smallest correction, then refactor with checks passing. For documentation, exploratory work, or configuration, use a relevant alternative check. Choose unit tests for isolated behavior, integration tests for collaborating components, and contract tests for public boundaries.
-
-At a session boundary, hand off the goal, AC, branch/base, working-tree state, evidence, unresolved issues, and next step. Reuse the existing task record. Avoid intermediate artifacts with no downstream consumer.
