@@ -14,13 +14,15 @@ Date: 2026-10-29. Environment: Linux; Python 3.10.12. Claude Code 2.1.301. Sourc
 
 Lifecycle evidence: registered a local fixture, installed twice, found plugin in inventory, bumped fixture metadata to 0.1.1, refreshed catalog and updated plugin, observed 0.1.1, uninstalled, restored original metadata, reinstalled 0.1.0, uninstalled, and removed the catalog. Existing `env` settings sentinel survived every step. Temporary configuration was deleted afterward.
 
-Pending: Git transport and published tag pinning, macOS/Windows native client lifecycle, and paired real-project behavior trials. No efficacy or full cross-platform support claim is made. Follow tests/behavior/README.md and docs/roadmap.md before release.
+Pending: Git transport and published tag pinning, authenticated model behavior on macOS and Windows, and release-gate assessment. No efficacy or full cross-platform support claim is made. Follow tests/behavior/README.md and docs/roadmap.md before release.
 
 ## Additional Linux checks — 2026-10-29
 
 Source commit `565742507bc35982b623b460cb27d5139a5e1e85`; Linux x86_64, kernel 5.15.0-198-generic; Claude Code 2.1.312. `python3 scripts/build.py --check`, `python3 scripts/validate.py`, and all nine packaging unit tests passed. `python3 scripts/smoke_claude.py` passed the local lifecycle again with a disposable profile. It also passed with `TMPDIR='/tmp/kaboost path test'`, exercising marketplace and profile paths containing spaces. Neither lifecycle run invokes a model.
 
 For KB-012, packaging tests now create fixture roots whose names contain spaces. Both Windows Python 3.10 and 3.13 jobs passed those tests in [run 40894748687](https://github.com/proprock/kaBoost/actions/runs/40894748687), source commit `b1d3f01c9884468b8b75ec913eebb5f5ec611f1d`; the job skips the symlink-creation test on Windows. Separately, the [Windows native lifecycle job](https://github.com/proprock/kaBoost/actions/runs/40897691689/job/123531166881) on Windows Server 2025 and Claude Code 2.1.312 passed installation, repeated installation, update, rollback, and removal with a temporary marketplace and profile path containing spaces. Its token listed `SeCreateSymbolicLinkPrivilege` as disabled. This does not establish authenticated behavior or that the account could not enable the privilege.
+
+For KB-011, the [macOS native lifecycle job](https://github.com/proprock/kaBoost/actions/runs/40897691689/job/123531166882) passed the same local smoke harness on macOS 26.6.2 with Claude Code 2.1.312. Both hosted jobs used source commit `5dd8cef42b50d53d5c679d8cc2d9572a54ae2240`, isolated profiles, local fixture version changes, and paths containing spaces; neither made an authenticated model call or tested a remote marketplace.
 
 Hosted package checks passed on Linux, macOS, and Windows with Python 3.10 and 3.13 in [run 40877640914](https://github.com/proprock/kaBoost/actions/runs/40877640914), source commit `30102b7b7df82bf05e6603fb62d6caf2582656f7`. The earlier [failed run](https://github.com/proprock/kaBoost/actions/runs/40871832108) exposed a macOS temporary-directory symlink in tests and Windows line-ending conversion of LICENSE; the tested commit addresses both. This CI does not exercise native Claude installation or model behavior on those platforms.
 
