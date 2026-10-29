@@ -16,7 +16,7 @@
 
 ## Work proportionally
 - Handle clear local changes directly; plan when uncertainty, scope, or risk warrants it.
-- Clarify acceptance criteria before implementation; use the adaptive workflow for larger tasks.
+- Clarify acceptance criteria before implementation. For a Large task, state criteria, non-goals, alternatives, decision, and verification before editing; use the adaptive workflow.
 - Investigate root causes using evidence and falsifiable hypotheses.
 - Use TDD for suitable behavioral changes and reproducible bugs.
 - Choose unit, integration, or contract tests according to the behavior and boundary affected.

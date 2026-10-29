@@ -13,7 +13,7 @@ from validate import validate
 
 class PackageTests(unittest.TestCase):
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory()
+        self.temp = tempfile.TemporaryDirectory(prefix='kaboost path test ')
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name).resolve()/'repo'
         shutil.copytree(ROOT, self.root, ignore=shutil.ignore_patterns('.git', '__pycache__'))
