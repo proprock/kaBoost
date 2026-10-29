@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "core": "core/engineering-rules.md",
   "skills": [
+    "plan-before-edit",
     "project-context",
     "systematic-debugging",
     "verification"
