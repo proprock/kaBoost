@@ -33,3 +33,4 @@ This file records completed tasks with dates and verification evidence. [TODO.md
 ## P1 — Second client: Codex
 
 - [x] KB-101: Recheck current Codex documentation; distinguish CLI, IDE, and desktop capabilities, including local and remote distribution. Completed 2026-10-29. Evidence: [Codex research](docs/codex-research.md); no adapter or runtime support is implied.
+- [x] KB-102: Implement a Codex adapter using the existing canonical skills and native metadata. Completed 2026-10-29. Evidence: [adapter](adapters/codex/README.md), [builder](scripts/build_codex.py), and [packaging tests](tests/packaging/test_codex_package.py). Runtime installation and discovery remain unverified.

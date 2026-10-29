@@ -13,6 +13,10 @@
     "claude-code": {
       "template": "adapters/claude-code/plugin.json",
       "output": "plugins/ai-dev-toolkit"
+    },
+    "codex": {
+      "template": "adapters/codex/plugin.json",
+      "output": "adapters/codex/package/ai-dev-toolkit"
     }
   },
   "runtime_dependencies": []

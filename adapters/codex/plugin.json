@@ -1,0 +1,21 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "ai-dev-toolkit",
+  "version": "0.1.0",
+  "description": "Focused engineering workflows for project context, debugging, and verification.",
+  "author": {"name": "kaBoost maintainers"},
+  "license": "Apache-2.0",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "AI Dev Toolkit",
+        "shortDescription": "Engineering workflows",
+        "longDescription": "Focused skills for project context, systematic debugging, and evidence-based verification.",
+        "developerName": "kaBoost maintainers",
+        "category": "Productivity",
+        "capabilities": ["Interactive"],
+        "defaultPrompt": "Help me verify this engineering change."
+      }
+    }
+  }
+}
