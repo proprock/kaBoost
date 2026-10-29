@@ -1,0 +1,4 @@
+{
+  "name": "kaBoost package verification",
+  "image": "mcr.microsoft.com/devcontainers/python:3.13"
+}

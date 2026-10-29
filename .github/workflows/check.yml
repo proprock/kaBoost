@@ -39,6 +39,18 @@ jobs:
       - run: codex --version
       - run: python scripts/smoke_codex.py
 
+  devcontainer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: devcontainers/ci@v0.3
+        with:
+          push: never
+          runCmd: |
+            python scripts/validate.py
+            python scripts/validate_codex.py
+            python -m unittest discover -s tests/packaging -q
+
   native-lifecycle:
     strategy:
       fail-fast: false
