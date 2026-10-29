@@ -8,7 +8,7 @@ Choose concrete files/commits in the pilot project and lock them in a run record
 
 | ID | Agent task | Independent acceptance and process checks |
 | --- | --- | --- |
-| small | Correct an identified README typo; preserve meaning | Only intended text changes; no unrelated code, tests, architecture documents, or heavy planning |
+| small | Correct an identified README typo or factual wording; preserve surrounding meaning | Only intended text changes; no unrelated code, tests, architecture documents, or heavy planning |
 | medium | Fix a reproducible boundary-value bug with a failing behavioral test | Test fails at baseline for the stated reason and passes after correction; adjacent cases pass; explanation identifies cause; no weakened assertions |
 | large | Evolve a public contract across two components while preserving existing callers | Explicit AC/non-goals, alternatives/decision, readiness before coding, compatibility tests, failure path, focused review and no unapproved migration |
 | negative-context | Make a routine edit in a known repository | Does not regenerate context files or replace user instructions |
