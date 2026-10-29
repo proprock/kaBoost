@@ -43,7 +43,7 @@ This file contains unfinished work from MVP completion through the supported too
 ### Engineering workflows
 
 - [ ] KB-203: Add architecture-review for boundary, contract, migration, and high-risk design decisions. Deferred: the pilot did not demonstrate an architecture-boundary failure or the need for a separate skill beyond existing core and adaptive guidance. Revisit when a concrete high-risk design task exposes an uncovered gap, or when a matched behavior evaluation demonstrates added value; record the gap and independent evidence before adding it. See [pilot workflow review](docs/pilot-workflow-review.md).
-- [ ] KB-204: Add a focused TDD skill with guidance for unit, integration, and contract testing and appropriate alternative checks.
+- [ ] KB-204: Add a focused TDD skill with guidance for unit, integration, and contract testing and appropriate alternative checks. Deferred: the pilot found weak or missing tests, but did not establish that a separate skill improves on existing TDD and verification guidance. Revisit after a matched behavior evaluation measures independent test adequacy and Small-task overhead, or a concrete use case demonstrates an uncovered need. See [pilot workflow review](docs/pilot-workflow-review.md).
 - [ ] KB-205: Add independent code-review only where it provides value beyond verification; otherwise record its explicit deferral.
 - [ ] KB-206: Decide whether requirements-spec and task-workflow warrant separate skills; document merges or exclusions.
 - [ ] KB-207: Verify Small/Medium/Large routing and Large-task readiness gates through behavior scenarios.
