@@ -42,7 +42,6 @@ This file contains unfinished work from MVP completion through the supported too
 
 ### Engineering workflows
 
-- [ ] KB-201: Review pilot evidence before expanding the skill catalog; record the gap addressed by each addition.
 - [ ] KB-202: Add compact requirements and task-workflow references for tickets, acceptance criteria, scope, feature branches, Conventional Commits, PR preparation, and handoff.
 - [ ] KB-203: Add architecture-review for boundary, contract, migration, and high-risk design decisions.
 - [ ] KB-204: Add a focused TDD skill with guidance for unit, integration, and contract testing and appropriate alternative checks.

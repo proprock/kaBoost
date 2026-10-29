@@ -46,3 +46,7 @@ This file records completed tasks with dates and verification evidence. [TODO.md
 - [x] KB-109: Automate release consistency checks and artifact generation without automatic publication. Completed 2026-10-29. Evidence: [local release preparation](scripts/prepare_release.py), [regression checks](tests/packaging/test_release.py), and [CI configuration](.github/workflows/check.yml). Release gates and publication remain open.
 - [x] KB-110: Document local-override conflicts and migration between toolkit releases; verify upgrades preserve user configuration. Completed 2026-10-29. Evidence: [migration procedure](docs/migration.md) and disposable Claude and Codex lifecycle harnesses; checks cover explicit settings and instruction fixtures, not every configuration or published release.
 - [x] KB-111: Verify operation in a temporary workspace, CI, and a devcontainer without environment sync. Completed 2026-10-29. Evidence: [environment boundary and observed checks](docs/sync-boundary.md); devcontainer evidence covers validation and packaging tests, not client installation or authenticated behavior.
+
+## P2 — Engineering workflows
+
+- [x] KB-201: Review pilot evidence before expanding the skill catalog; record the gap addressed by each addition. Completed 2026-10-29. Evidence: [pilot workflow review](docs/pilot-workflow-review.md); no new skills were added and proposed additions remain subject to independent evaluation.
