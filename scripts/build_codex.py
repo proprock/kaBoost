@@ -41,7 +41,7 @@ def expected_files(root=ROOT):
 
 def build(root=ROOT, check=False):
     output, files = expected_files(root)
-    return write_package(output, files, check, 'Generated Codex files are stale')
+    return write_package(output, files, check, 'Generated Codex files are stale', root=root)
 
 
 if __name__ == '__main__':

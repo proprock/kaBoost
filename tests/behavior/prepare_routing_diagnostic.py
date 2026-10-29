@@ -32,7 +32,8 @@ def main():
     parser.add_argument('output', type=Path, help='new directory below /tmp')
     args = parser.parse_args()
     output = args.output.resolve()
-    if not output.is_relative_to(Path('/tmp')) or output == Path('/tmp') or output.exists():
+    tmp = Path('/tmp').resolve()  # /tmp is a symlink on macOS
+    if not output.is_relative_to(tmp) or output == tmp or output.exists():
         parser.error('output must be a new directory below /tmp')
     output.mkdir(parents=True)
     plugin = output / 'plugin'

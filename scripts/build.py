@@ -7,11 +7,21 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def has_symlink(root, path):
+    """True if path or a directory between root and path is a symlink; links above root are ignored."""
+    path = Path(path)
+    while path != root and path != path.parent:
+        if path.is_symlink():
+            return True
+        path = path.parent
+    return False
+
+
 def source_file(root, relative):
     path = root / relative
     if Path(relative).is_absolute() or '..' in Path(relative).parts:
         raise ValueError(f'Unsafe source path: {relative}')
-    if any(p.is_symlink() for p in [path, *path.parents]):
+    if has_symlink(root, path):
         raise ValueError(f'Symlink source: {relative}')
     if not path.is_file():
         raise ValueError(f'Missing source: {relative}')
@@ -45,8 +55,8 @@ def add_inventory(files):
     files['SHA256SUMS.json'] = (json.dumps(inventory, indent=2)+'\n').encode()
 
 
-def write_package(output, files, check=False, stale_message='Generated files are stale'):
-    if output.is_symlink() or any(p.is_symlink() for p in output.parents):
+def write_package(output, files, check=False, stale_message='Generated files are stale', root=None):
+    if has_symlink(root if root is not None else Path(output.anchor), output):
         raise ValueError('Symlink output directory')
     actual = set()
     if output.exists():
@@ -72,7 +82,7 @@ def write_package(output, files, check=False, stale_message='Generated files are
 
 def build(root=ROOT, check=False):
     output, files = expected_files(root)
-    return write_package(output, files, check)
+    return write_package(output, files, check, root=root)
 
 
 if __name__ == '__main__':

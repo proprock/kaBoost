@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import run_pilot as pilot  # noqa: E402  (reuse frozen commit, model and prompts)
 
-LARGE = pilot.PROMPTS['large'].split(' Before any source or test edit,')[0] + ' Implement and run focused checks.'
+LARGE = pilot.NATURAL_LARGE
 PROMPTS = {'small': pilot.PROMPTS['small'], 'large': LARGE}
 EVALUATORS = {'small': 'acceptance_readme.py', 'large': 'acceptance_json_cli.py'}
 VARIANTS = ('V0', 'V1', 'V2', 'V3')

@@ -17,22 +17,12 @@ OLD = 'bd080a4187b1580ee470d090ef3d8ed7d25012f4'
 def main():
     if len(sys.argv) != 2:
         raise SystemExit(__doc__)
-    output = Path(sys.argv[1]).resolve()
-    if output.exists() or output == Path('/tmp') or not output.is_relative_to(Path('/tmp')):
-        raise SystemExit('Output must be a new directory under /tmp')
-    if not pilot.checked(['claude', '--version']).startswith('2.1.312 '):
-        raise SystemExit('Unexpected Claude version')
+    output = pilot.new_output_dir(sys.argv[1])
+    pilot.require_claude_version()
     if pilot.checked(['git', 'status', '--porcelain'], cwd=pilot.ROOT).strip():
         raise SystemExit('Working tree must be clean')
     new = pilot.checked(['git', 'rev-parse', 'HEAD'], cwd=pilot.ROOT).strip()
-    pilot.PROMPTS['large'] = (
-        'Add an opt-in --json flag to both scripts/build.py and scripts/validate.py. '
-        'On success emit one JSON object on stdout with ok: true and files equal to the count; '
-        'on expected failure emit one JSON object on stdout with ok: false and a nonempty error, '
-        'and retain the existing nonzero exit status. Preserve existing default output and exit '
-        'codes, build.py --check, and Python APIs; do not introduce dependencies or alter '
-        'generated package content. Implement and run focused checks.'
-    )
+    pilot.PROMPTS['large'] = pilot.NATURAL_LARGE
     output.mkdir(parents=True)
     snapshots = {}
     for name, sha in (('old', OLD), ('new', new)):
