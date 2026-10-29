@@ -22,6 +22,7 @@ This file contains unfinished work from MVP completion through the supported too
 ### Behavior pilot
 
 - [ ] KB-018: Assess the release gates; label missing measurements as unassessed, fix demonstrated failures, and rerun affected scenarios.
+- [ ] KB-207 (blocks KB-018 and KB-023; moved from P2): Verify Small/Medium/Large routing and Large-task readiness gates through behavior scenarios. The [first P2 trial](tests/behavior/kb207-results-2026-10-29.md) found no explicit workflow loading and missed readiness in all toolkit Large arms. A separate [loading diagnostic](tests/behavior/kb207-loading-diagnostic-2026-10-29.md) confirmed explicit loading; a [natural-routing probe](tests/behavior/kb207-natural-routing-2026-10-29.md) observed core markers but no toolkit skill or workflow invocation. A [before/after comparison](tests/behavior/kb207-routing-comparison-2026-10-29.md) did not observe improvement. Investigate activation and rerun matched, uninstrumented scenarios before claiming a pass.
 
 ### Release and remote distribution
 
@@ -45,10 +46,11 @@ This file contains unfinished work from MVP completion through the supported too
 - [ ] KB-203: Add architecture-review for boundary, contract, migration, and high-risk design decisions. Deferred: the pilot did not demonstrate an architecture-boundary failure or the need for a separate skill beyond existing core and adaptive guidance. Revisit when a concrete high-risk design task exposes an uncovered gap, or when a matched behavior evaluation demonstrates added value; record the gap and independent evidence before adding it. See [pilot workflow review](docs/pilot-workflow-review.md).
 - [ ] KB-204: Add a focused TDD skill with guidance for unit, integration, and contract testing and appropriate alternative checks. Deferred: the pilot found weak or missing tests, but did not establish that a separate skill improves on existing TDD and verification guidance. Revisit after a matched behavior evaluation measures independent test adequacy and Small-task overhead, or a concrete use case demonstrates an uncovered need. See [pilot workflow review](docs/pilot-workflow-review.md).
 - [ ] KB-205: Add independent code-review only where it provides value beyond verification; otherwise record its explicit deferral. Deferred: manual review found a missed compatibility regression, but the pilot did not compare a dedicated review skill against existing verification. Revisit when a concrete review need exceeds verification or a matched evaluation shows additional defects found without disproportionate overhead. See [pilot workflow review](docs/pilot-workflow-review.md).
-- [ ] KB-207: Verify Small/Medium/Large routing and Large-task readiness gates through behavior scenarios. The [first P2 trial](tests/behavior/kb207-results-2026-10-29.md) found no explicit workflow loading and missed readiness in all toolkit Large arms. A separate [loading diagnostic](tests/behavior/kb207-loading-diagnostic-2026-10-29.md) confirmed explicit loading; a [natural-routing probe](tests/behavior/kb207-natural-routing-2026-10-29.md) observed core markers but no toolkit skill or workflow invocation. A [before/after comparison](tests/behavior/kb207-routing-comparison-2026-10-29.md) did not observe improvement. Investigate activation and rerun matched, uninstrumented scenarios before claiming a pass.
 - [ ] KB-208: Test durable project-context refresh and task/session handoff against changed Git state and existing user instructions.
 
 ### Language modules
+
+Frozen until KB-207 is resolved: do not start KB-209 through KB-212 while natural skill routing is unverified.
 
 - [ ] KB-209: Add an opt-in Python module covering project-established uv, pytest, ruff, ty, and prek workflows.
 - [ ] KB-210: Add an opt-in Rust module using the project's selected toolchain and checks.
