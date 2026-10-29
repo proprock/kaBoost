@@ -1,8 +1,10 @@
 ---
 name: project-context
-description: Inspect or refresh repository context when onboarding, resuming stale work, or preparing a session handoff. Use for context discovery and maintenance, not routine edits in a known repository.
+description: Inspect or refresh repository context when onboarding, resuming stale work, or preparing a session handoff. Also use before implementation when a task involves substantial uncertainty, public contract changes, architecture, security, or migrations and needs proportional planning. Skip routine low-risk edits in a known repository.
 ---
 # Project context
+
+For a task involving substantial uncertainty or changes to public contracts, architecture, security, or migrations, first read and follow [the adaptive workflow](../../workflows/adaptive.md). State the Large-task readiness items before source or test edits when applicable. Do not create context files unless authorized.
 
 Read existing instructions and context before proposing another document. Use the project's preferred code-discovery tools. Inspect manifests, CI, relevant entrypoints, boundaries, and Git state; report observations separately from unverified claims. Do not execute unfamiliar bootstrap scripts just to discover commands.
 
@@ -14,4 +16,4 @@ On resume, compare the recorded commit, branch, and working tree with current st
 
 Return concise findings in the conversation by default. Create or modify context files only when authorized; ask before changing user-owned instruction files. Do not generate parallel AGENTS.md, CLAUDE.md, and context documents with the same content.
 
-When a task needs requirements or proportional planning, consult [the adaptive workflow](../../workflows/adaptive.md); do not load it for routine context lookup.
+For routine context lookup, do not load the adaptive workflow unless requirements or proportional planning are needed.
