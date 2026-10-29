@@ -1,9 +1,9 @@
-# Pilot preparation (not frozen)
+# Pilot preparation evidence
 
-Candidate project: this repository, using a clean checkout of commit
+Selected project: this repository, using a clean checkout of commit
 `b1d3f01c9884468b8b75ec913eebb5f5ec611f1d`. No trials have been run and
-this is not a release-gate result. Before choosing this project, ensure baseline
-and toolkit sessions have the same existing project instructions, and that the
+this is not a release-gate result. Ensure baseline and toolkit sessions have the
+same existing project instructions, and that the
 toolkit is activated only for the toolkit arm. Evaluator checks must be outside
 the tested checkout.
 
@@ -60,7 +60,6 @@ for sharing result formatting with keeping each CLI independent, chooses an
 approach, and identifies success, failure, and backward-compatibility checks.
 The evaluator must check the event sequence, not just the final response.
 
-Fixed model/client configuration, permissions, budgets, exact prompts, trial
-order, and a verified isolated execution procedure remain to be established
-before the pilot is frozen. Do not run trials using this draft as a completed
-plan.
+The frozen prompts, model/client configuration, permissions, budgets, trial
+order, and readiness gate are in [the pilot plan](pilot-plan.md). Trials and
+release-gate assessment remain separate work.

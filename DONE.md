@@ -20,3 +20,8 @@ This file records completed tasks with dates and verification evidence. [TODO.md
 - [x] KB-009: Verify core-rule imports and interaction with existing user/project instructions without replacing user content. Completed 2026-10-29. Evidence: [validation record](docs/validation.md); the tested Linux project-local import is documented, while external imports and other environments have limitations.
 - [x] KB-010: Exercise positive and negative skill-routing scenarios, including trivial edits, routine context lookup, stale context, and unavailable checks. Completed 2026-10-29. Evidence: [validation record](docs/validation.md); single scenarios do not establish reliable routing or pilot effectiveness.
 - [x] KB-013: Test failed installation/update and an unavailable network; confirm the previous working installation and user configuration survive. Completed 2026-10-29. Evidence: [Linux failure and cached-skill invocation checks](docs/validation.md); other operating systems and failure modes are not covered.
+
+### Behavior pilot
+
+- [x] KB-014: Select an existing pilot project; freeze Small/Medium/Large tasks, acceptance criteria, source commits, permissions, model/client versions, and budgets. Completed 2026-10-29. Evidence: [frozen pilot plan](tests/behavior/pilot-plan.md). Execution and release assessment remain open.
+- [x] KB-015: Define independent acceptance tests and the Large task's readiness gate before agent trials. Completed 2026-10-29. Evidence: [pilot preparation](tests/behavior/pilot-candidates.md), independent acceptance scripts, and [readiness gate](tests/behavior/pilot-plan.md).
