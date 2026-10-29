@@ -50,8 +50,30 @@ following or evidence for every precedence conflict, client, or environment.
 the installed CLI, without model calls. On Ubuntu with Codex CLI 0.165.0 it
 passed local install, repeated install, re-add after a version change, rollback
 and removal; the test version is a fixture, not a published release. This does
-not verify plugin skill discovery in a clean authenticated profile, remote
-distribution, other operating systems, or the desktop and IDE clients.
+not verify remote distribution, other operating systems, or the desktop and IDE
+clients.
+
+## Skill discovery and duplicates
+
+On Ubuntu with Codex CLI 0.165.0, an authenticated temporary profile was reset
+to remove the prior test plugin and catalog, then this package was installed.
+The app-server `skills/list` response for an otherwise empty project listed each
+of the three `ai-dev-toolkit:` skills exactly once, with no discovery errors;
+the profile also contained the CLI's built-in system skills. In one model
+session (`gpt-6.1-sol`), an explicit `$ai-dev-toolkit:project-context` request
+caused the agent to read the installed skill and report missing project and Git
+context without writing files. This is one invocation, not a routing or
+effectiveness guarantee. The profile was previously used for KB-103 and reset,
+not a newly created profile; account-synchronized state was not exhaustively
+audited.
+
+When a copy of `project-context` was also placed in the project's
+`.agents/skills`, `skills/list` returned both `project-context` and
+`ai-dev-toolkit:project-context`. Codex did not deduplicate them. Install the
+plugin or a standalone copy of a given toolkit skill, rather than both, and
+remove an existing standalone copy only after reviewing ownership. A qualified
+plugin skill name makes the desired selection explicit, but does not remove the
+duplicate from discovery. Other duplicate combinations remain untested.
 
 For the disposable catalog format and instruction ordering, see the official
 [plugin documentation](https://developers.openai.com/plugins/build/plugins) and
