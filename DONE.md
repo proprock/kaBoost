@@ -50,3 +50,4 @@ This file records completed tasks with dates and verification evidence. [TODO.md
 ## P2 — Engineering workflows
 
 - [x] KB-201: Review pilot evidence before expanding the skill catalog; record the gap addressed by each addition. Completed 2026-10-29. Evidence: [pilot workflow review](docs/pilot-workflow-review.md); no new skills were added and proposed additions remain subject to independent evaluation.
+- [x] KB-202: Add compact requirements and task-workflow references for tickets, acceptance criteria, scope, feature branches, Conventional Commits, PR preparation, and handoff. Completed 2026-10-29. Evidence: [adaptive workflow](workflows/adaptive.md), distributed in both generated packages; behavior effectiveness and routing remain unassessed pending KB-207.
