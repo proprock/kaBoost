@@ -12,7 +12,7 @@ def smoke():
     cli = shutil.which('claude')
     if not cli:
         raise SystemExit('Claude Code is required for this optional lifecycle check')
-    with tempfile.TemporaryDirectory(prefix='kaboost-smoke-') as directory:
+    with tempfile.TemporaryDirectory(prefix='kaboost smoke ') as directory:
         temp = Path(directory)
         profile = temp/'profile'
         profile.mkdir()
