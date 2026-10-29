@@ -23,8 +23,6 @@ This file contains unfinished work from MVP completion through the supported too
 
 ### Behavior pilot
 
-- [ ] KB-016: Run three paired baseline/toolkit trials per task, alternating arm order and isolating trial state.
-- [ ] KB-017: Record correctness, unrelated changes, test adequacy, architecture violations, manual interventions, actual tokens where available, and wall time using the [evaluation protocol](tests/behavior/README.md).
 - [ ] KB-018: Assess the release gates; label missing measurements as unassessed, fix demonstrated failures, and rerun affected scenarios.
 
 ### Release and remote distribution
