@@ -59,6 +59,16 @@ class PackageTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             build(self.root)
 
+    def test_noncanonical_stable_versions_are_rejected(self):
+        path = self.root/'toolkit.json'
+        data = json.loads(path.read_text())
+        for version in ('01.2.3', '1.02.3', '1.2.03', '١.2.3', '1.2.3-rc.1', '1.2.3+build'):
+            with self.subTest(version=version):
+                data['version'] = version
+                path.write_text(json.dumps(data), encoding='utf-8')
+                with self.assertRaisesRegex(ValueError, 'stable SemVer'):
+                    validate(self.root)
+
     @unittest.skipIf(sys.platform == 'win32', 'Symlink creation may require privileges')
     def test_symlink_output_is_rejected(self):
         output = self.root/'plugins/ai-dev-toolkit'
