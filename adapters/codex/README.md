@@ -6,6 +6,7 @@ drift. The package contains both the Agent Plugins manifest and a Codex
 compatibility manifest. Skills and the referenced workflow are copied from
 the canonical sources, and the checksum inventory covers the package files.
 The build does not change client configuration or delete unexpected files.
+See the [migration and conflict procedure](../../docs/migration.md) when changing versions or local overrides.
 Run `python scripts/validate_codex.py` to check the local catalog's identity,
 source and installation policy as well as generated package consistency.
 

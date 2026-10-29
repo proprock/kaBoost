@@ -37,7 +37,6 @@ This file contains unfinished work from MVP completion through the supported too
 
 ### Versioning and lifecycle
 
-- [ ] KB-110: Document local-override conflicts and migration between toolkit releases; verify upgrades preserve user configuration.
 - [ ] KB-111: Verify operation in a temporary workspace, CI, and a devcontainer without environment sync.
 
 **Done when:** two clients consume the same canonical engineering content through independently verified native mechanisms, with reproducible lifecycle procedures.

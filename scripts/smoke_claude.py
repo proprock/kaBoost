@@ -20,6 +20,15 @@ def smoke():
         sentinel = {'env': {'KABOOST_SMOKE_SENTINEL': 'preserve'}}
         settings = profile/'settings.json'
         settings.write_text(json.dumps(sentinel), encoding='utf-8')
+        project = temp/'project'
+        project.mkdir()
+        owned = {
+            profile/'CLAUDE.md': b'User instruction sentinel\n',
+            project/'CLAUDE.md': b'Project instruction sentinel\n',
+            project/'core-rules.md': b'Project-owned core copy sentinel\n',
+        }
+        for path, content in owned.items():
+            path.write_bytes(content)
         market = temp/'marketplace'
         market.mkdir()
         shutil.copytree(ROOT/'.claude-plugin', market/'.claude-plugin')
@@ -34,6 +43,8 @@ def smoke():
                 raise RuntimeError(result.stdout + result.stderr)
             if json.loads(settings.read_text())['env'] != sentinel['env']:
                 raise RuntimeError('Existing settings were modified')
+            if any(not path.is_file() or path.read_bytes() != content for path, content in owned.items()):
+                raise RuntimeError('User-owned instructions or core copy were modified')
             return result.stdout
 
         run('plugin', 'marketplace', 'add', str(market))
