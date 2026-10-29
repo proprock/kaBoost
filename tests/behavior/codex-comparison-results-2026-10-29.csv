@@ -1,0 +1,19 @@
+scenario,trial,arm,client_exit,acceptance_exit,packaging_exit,generated_exit,head_unchanged,harness_unchanged,discovery_ok,agent_packaging_suite_passed,large_readiness,core_read,seconds,input_tokens,cached_input_tokens,output_tokens,manual_acceptance
+small,1,baseline,0,0,0,0,True,True,True,False,n/a,False,12.212,44182,41216,239,pass
+small,1,toolkit,0,0,0,0,True,True,True,False,n/a,True,9.746,46101,39168,275,pass
+small,2,toolkit,0,0,0,0,True,True,True,False,n/a,True,11.223,46110,42368,265,pass
+small,2,baseline,0,0,0,0,True,True,True,False,n/a,False,10.831,44170,41216,231,pass
+small,3,baseline,0,0,0,0,True,True,True,False,n/a,False,10.785,44174,41216,238,pass
+small,3,toolkit,0,0,0,0,True,True,True,False,n/a,True,13.475,61504,54400,266,pass
+medium,1,baseline,0,0,0,0,True,True,True,True,n/a,False,35.896,110059,97152,1199,pass
+medium,1,toolkit,0,0,0,0,True,True,True,True,n/a,True,37.822,135922,119680,1561,pass
+medium,2,toolkit,0,0,0,0,True,True,True,True,n/a,True,41.292,120442,98944,1582,pass
+medium,2,baseline,0,0,0,0,True,True,True,True,n/a,False,38.625,128621,116480,1287,pass
+medium,3,baseline,0,0,0,0,True,True,True,True,n/a,False,32.157,112517,93056,1204,pass
+medium,3,toolkit,0,0,0,0,True,True,True,True,n/a,True,37.419,140180,124544,1477,pass
+large,1,baseline,0,1,0,0,True,True,True,True,pass,False,48.814,137405,113920,2535,fail: unknown argument compatibility
+large,1,toolkit,0,1,0,0,True,True,True,True,pass,True,56.232,142736,128128,2398,fail: unknown argument compatibility
+large,2,toolkit,0,1,0,0,True,True,True,True,pass,True,62.204,182678,167808,3694,fail: unknown argument compatibility
+large,2,baseline,0,1,0,0,True,True,True,True,pass,False,60.545,137284,127232,2955,fail: unknown argument compatibility
+large,3,baseline,0,1,0,0,True,True,True,True,pass,False,49.894,110601,102016,2436,fail: unknown argument compatibility
+large,3,toolkit,0,1,0,0,True,True,True,True,pass,True,47.603,158115,133888,3157,fail: unknown argument compatibility
