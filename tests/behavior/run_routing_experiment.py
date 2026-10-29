@@ -28,9 +28,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import run_pilot as pilot  # noqa: E402  (reuse frozen commit, model and prompts)
 
 LARGE = pilot.NATURAL_LARGE
-PROMPTS = {'small': pilot.PROMPTS['small'], 'large': LARGE}
-EVALUATORS = {'small': 'acceptance_readme.py', 'large': 'acceptance_json_cli.py'}
-VARIANTS = ('V0', 'V1', 'V2', 'V3')
+HOLDOUT = ('Add an opt-in --output-dir DIR option to scripts/build.py that builds the package into DIR instead of the committed '
+           'plugins/ai-dev-toolkit directory; with --check it should verify DIR. Preserve existing behavior. Implement and run focused checks.')
+PROMPTS = {'small': pilot.PROMPTS['small'], 'large': LARGE, 'holdout': HOLDOUT}
+EVALUATORS = {'small': 'acceptance_readme.py', 'large': 'acceptance_json_cli.py', 'holdout': 'acceptance_output_dir.py'}
+VARIANTS = ('V0', 'V1', 'V2', 'V3')  # BASE (no toolkit) is also accepted
 
 V1_DESCRIPTION = (
     'Use BEFORE editing code when a task adds or changes a CLI flag, output format, public API, schema, config, '
@@ -62,7 +64,7 @@ ORIGINAL_DESCRIPTION = ('Inspect or refresh repository context when onboarding, 
 
 def build_variant(variant, plugin, core):
     """Rewrite copies of the plugin and core file for one variant."""
-    if variant == 'V0':
+    if variant in ('V0', 'BASE'):
         return
     skill = plugin / 'skills' / 'project-context' / 'SKILL.md'
     text = skill.read_text(encoding='utf-8')
@@ -87,7 +89,7 @@ def build_variant(variant, plugin, core):
 
 def analyse(events):
     """Return routing metrics from stream-json events."""
-    order, text_before, skills, edited = [], [], [], False
+    order, text_before, skills, edited, all_calls = [], [], [], False, []
     for event in events:
         if event.get('type') != 'assistant':
             continue
@@ -97,6 +99,7 @@ def analyse(events):
             elif block.get('type') == 'tool_use':
                 name = block['name']
                 order.append(name)
+                all_calls.append(block)
                 if name == 'Skill':
                     skills.append(block.get('input', {}).get('skill', ''))
                 if name in ('Edit', 'Write') and not edited:
@@ -105,7 +108,10 @@ def analyse(events):
     stated = 'acceptance criteria' in said and 'non-goal' in said and 'alternativ' in said
     first_edit = next((i for i, n in enumerate(order) if n in ('Edit', 'Write')), None)
     skill_before = any(n == 'Skill' for n in (order[:first_edit] if first_edit is not None else order))
-    return {'edited': first_edit is not None, 'skill_called': bool(skills), 'skills': ';'.join(skills),
+    pre = [b for b in all_calls[:first_edit if first_edit is not None else len(all_calls)]]
+    dependents = any(k in str(b.get('input', {})) for b in pre for k in ('validate.py', 'tests/packaging', 'test_package'))
+    ran_tests = any(b['name'] == 'Bash' and ('unittest' in str(b['input']) or 'tests/packaging' in str(b['input'])) for b in all_calls)
+    return {'inspected_dependents_before_edit': dependents, 'ran_packaging_tests': ran_tests, 'edited': first_edit is not None, 'skill_called': bool(skills), 'skills': ';'.join(skills),
             'skill_before_edit': skill_before, 'gate_stated_before_edit': stated,
             'gate_met': stated or skill_before, 'tools': ';'.join(order[:12])}
 
@@ -118,21 +124,24 @@ def run(output, variant, scenario, n, toolkit_plugin, core_src):
     env = dict(os.environ, GIT_CONFIG_GLOBAL='/dev/null')
     pilot.checked(['git', 'clone', '--quiet', '--no-hardlinks', '--local', str(ROOT), str(checkout)], env=env)
     pilot.checked(['git', 'checkout', '--quiet', '--detach', pilot.COMMIT], cwd=checkout, env=env)
-    plugin = record / 'plugin'
-    shutil.copytree(toolkit_plugin, plugin)
-    rules = checkout / '.claude' / 'engineering-rules.md'
-    rules.parent.mkdir()
-    shutil.copyfile(core_src, rules)
-    (checkout / 'CLAUDE.md').write_text('@.claude/engineering-rules.md\n', encoding='utf-8')
-    with (checkout / '.git' / 'info' / 'exclude').open('a', encoding='utf-8') as f:
-        f.write('\n/CLAUDE.md\n/.claude/\n')
-    build_variant(variant, plugin, rules)
+    plugin_args = []
+    if variant != 'BASE':
+        plugin = record / 'plugin'
+        shutil.copytree(toolkit_plugin, plugin)
+        rules = checkout / '.claude' / 'engineering-rules.md'
+        rules.parent.mkdir()
+        shutil.copyfile(core_src, rules)
+        (checkout / 'CLAUDE.md').write_text('@.claude/engineering-rules.md\n', encoding='utf-8')
+        with (checkout / '.git' / 'info' / 'exclude').open('a', encoding='utf-8') as f:
+            f.write('\n/CLAUDE.md\n/.claude/\n')
+        build_variant(variant, plugin, rules)
+        plugin_args = ['--plugin-dir', str(plugin)]
     allowed = 'Read,Edit,Write,Glob,Grep,Skill,Bash(python3 *),Bash(python *),Bash(git *),Bash(tail *),Bash(echo *),Bash(cd *),Bash(ls *),Bash(cat *),Bash(wc *),Bash(grep *),Bash(head *),Bash(sed *)'
     cmd = ['claude', '-p', PROMPTS[scenario], '--model', pilot.MODEL, '--effort', 'medium',
            '--setting-sources', 'project,local', '--strict-mcp-config', '--no-session-persistence',
            '--permission-mode', 'dontAsk', '--tools', 'Read,Edit,Write,Glob,Grep,Bash,Skill',
            '--allowedTools', allowed, '--output-format', 'stream-json', '--verbose',
-           '--max-budget-usd', '0.40', '--plugin-dir', str(plugin)]
+           '--max-budget-usd', '0.40', *plugin_args]
     started = time.monotonic()
     try:
         result = pilot.command(cmd, cwd=checkout, env=env, timeout=900)
@@ -150,10 +159,11 @@ def run(output, variant, scenario, n, toolkit_plugin, core_src):
     final = next((e for e in reversed(events) if e.get('type') == 'result'), {})
     init = next((e for e in events if e.get('subtype') == 'init'), {})
     acceptance = pilot.command([sys.executable, str(ROOT / 'tests/behavior' / EVALUATORS[scenario]), str(checkout)], cwd=checkout, env=env)
+    packaging = pilot.command([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests/packaging'], cwd=checkout, env=env)
     row = {'variant': variant, 'scenario': scenario, 'n': n, 'exit': code, 'model': init.get('model'),
            'plugin_loaded': any(p.get('name') == 'ai-dev-toolkit' for p in init.get('plugins', [])),
            'seconds': round(duration, 1), 'cost_usd': final.get('total_cost_usd'),
-           'denials': len(final.get('permission_denials', [])), 'acceptance_exit': acceptance.returncode,
+           'denials': len(final.get('permission_denials', [])), 'acceptance_exit': acceptance.returncode, 'packaging_exit': packaging.returncode,
            **analyse(events)}
     print(name, {k: row[k] for k in ('exit', 'gate_met', 'skill_called', 'acceptance_exit', 'cost_usd')}, flush=True)
     return row
@@ -164,6 +174,7 @@ def main():
     parser.add_argument('output', type=Path)
     parser.add_argument('--large', type=int, default=10)
     parser.add_argument('--small', type=int, default=5)
+    parser.add_argument('--holdout', type=int, default=0)
     parser.add_argument('--workers', type=int, default=4)
     parser.add_argument('--variants', default=','.join(VARIANTS))
     args = parser.parse_args()
@@ -174,7 +185,7 @@ def main():
         raise SystemExit('Working tree must be clean')
     output.mkdir(parents=True)
     plugin, core = ROOT / 'plugins' / 'ai-dev-toolkit', ROOT / 'core' / 'engineering-rules.md'
-    jobs = [(v, s, n) for v in args.variants.split(',') for s, count in (('large', args.large), ('small', args.small))
+    jobs = [(v, s, n) for v in args.variants.split(',') for s, count in (('large', args.large), ('small', args.small), ('holdout', args.holdout))
             for n in range(1, count + 1)]
     random.Random(20261029).shuffle(jobs)
     rows = []
