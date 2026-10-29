@@ -2,6 +2,14 @@
 
 These are evaluation specifications, not passing test results. Packaging checks cannot establish agent quality. Run against a real existing project in isolated worktrees; never use the evaluator's acceptance tests as hidden instructions to the agent.
 
+## Instruction-loading diagnostics
+
+For a separate loading diagnosis, run `python3 tests/behavior/prepare_routing_diagnostic.py /tmp/NEW-DIAGNOSTIC-DIRECTORY`. It creates a project-local core import and a disposable Claude plugin copy with a unique marker per core, skill, and adaptive workflow file. The marker map is outside the project and plugin; do not include it in the agent prompt. These instrumented files request marker output only if read. The generated inventory is intentionally stale: never install or publish this diagnostic plugin as a release.
+
+Run isolated sessions using the generated project and plugin, with core-only, explicit skill invocation, and natural-routing prompts as separate cases. Record tool events and marker output independently. A missing marker is inconclusive: loading may have failed or the agent may have omitted it. A marker alone does not establish adherence. Follow with uninstrumented behavior trials; marker instructions change the workload and must not be mixed into overhead measurements or release-gate results. Keep raw events and marker maps local, and do not include secrets.
+
+Initial diagnostic proposal for KB-207: five separate Claude sessions, each with a fresh fixture and at most USD 0.40: core-only with tools disabled; explicit `project-context`, `systematic-debugging`, and `verification` invocations; and an explicit `project-context` invocation followed by its linked workflow. Use Claude Code 2.1.312, `claude-sonnet-5-5`, medium effort, project/local settings, and the disposable profile from the pilot. The prompt asks the agent to report markers it received or read, without providing the marker values. The generated fixture contains copies of the public repository's core and plugin instructions and diagnostic markers; those contents and the prompts can be sent to the model provider. Store events and marker maps under `/tmp`, and record exit, cost, tool calls, expected and observed markers, and denied reads. A separate natural-routing experiment and uninstrumented pilot are required afterward; the five explicit-invocation sessions cannot establish automatic routing.
+
 ## Frozen scenarios
 
 Choose concrete files/commits in the pilot project and lock them in a run record before either arm starts:
