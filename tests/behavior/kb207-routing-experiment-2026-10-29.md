@@ -28,10 +28,10 @@ Observations:
 - Invoking the skill did not produce visible planning: no variant's agent emitted text with
   criteria, non-goals and an alternative before its first edit (V0 and V3 agents also stayed
   silent). The skill call is a routing signal, not evidence that the gate was followed.
-- Independent acceptance failed in all 40 Large sessions with a single failed check each, as in
-  every earlier round. Better routing alone did not change the hidden-contract outcome.
-- Every Large session still had permission denials (0.9 per session on average for the compound
-  commands the agents chose), so unrun checks remain a confounder.
+- Independent acceptance failed in all 40 Large sessions with the same single failed check (the existing unknown-argument
+  behavior of `validate.py`), as in every earlier round. Better routing alone did not change the hidden-contract outcome.
+- Every Large session still had permission denials (1.65 per session on average, 66 in total, mostly
+  compound commands the agents chose), so unrun checks remain a confounder.
 
 Limits: one model and effort, one task per size, tuning scenarios (no holdout), stated metric
 is a tool-call signal, and prompts match earlier KB-207 rounds. This supports adopting V1 or V2
