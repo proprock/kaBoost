@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[2]
 COMMIT = 'b1d3f01c9884468b8b75ec913eebb5f5ec611f1d'
 MODEL = 'claude-sonnet-5-5'
 PROFILE = '/tmp/kaboost-validation-profile'
+REVISED_TOOLKIT = '07ed44afe1f37ebbf6aa25116b5aad94cd5e1c10'
 PROMPTS = {
     'small': ('In README.md replace exactly "After a release is published, pin the marketplace to its immutable reviewed tag." '
               'with "After a release is published, pin the marketplace to a reviewed tag and verify that it points to the expected commit." Make no other changes.'),
@@ -48,7 +49,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def run_trial(output, scenario, trial, arm):
+def run_trial(output, scenario, trial, arm, toolkit_root, revised):
     name = f'{scenario}-{trial}-{arm}'
     record = output / name
     record.mkdir()
@@ -63,15 +64,18 @@ def run_trial(output, scenario, trial, arm):
     if arm == 'toolkit':
         local_rules = checkout / '.claude' / 'engineering-rules.md'
         local_rules.parent.mkdir()
-        shutil.copyfile(checkout / 'core' / 'engineering-rules.md', local_rules)
+        shutil.copyfile(toolkit_root / 'core' / 'engineering-rules.md', local_rules)
         instructions = checkout / 'CLAUDE.md'
         instructions.write_text('@.claude/engineering-rules.md\n', encoding='utf-8')
         with (checkout / '.git' / 'info' / 'exclude').open('a', encoding='utf-8') as f:
             f.write('\n/CLAUDE.md\n/.claude/\n')
         harness = [(p, digest(p)) for p in (local_rules, instructions)]
-        args = ['--plugin-dir', str(checkout / 'plugins' / 'ai-dev-toolkit')]
+        harness.extend((p, digest(p)) for p in (toolkit_root / 'plugins' / 'ai-dev-toolkit').rglob('*') if p.is_file())
+        args = ['--plugin-dir', str(toolkit_root / 'plugins' / 'ai-dev-toolkit')]
     tools = 'Read,Edit,Write,Glob,Grep,Bash,Skill'
     allowed = 'Read,Edit,Write,Glob,Grep,Skill,Bash(python3 *),Bash(git *)'
+    if revised:
+        allowed += ',Bash(python *),Bash(tail *),Bash(echo *)'
     cmd = ['claude', '-p', PROMPTS[scenario], '--model', MODEL, '--effort', 'medium',
            '--setting-sources', 'project,local', '--strict-mcp-config', '--no-session-persistence',
            '--permission-mode', 'dontAsk', '--tools', tools, '--allowedTools', allowed,
@@ -111,7 +115,9 @@ def run_trial(output, scenario, trial, arm):
         outcome = command(check, cwd=checkout, env=env)
         (record / f'{label}.txt').write_text(outcome.stdout + outcome.stderr, encoding='utf-8')
         checks[label] = outcome.returncode
-    info = {'scenario': scenario, 'trial': trial, 'arm': arm, 'source': COMMIT, 'client_exit': result.returncode,
+    info = {'scenario': scenario, 'trial': trial, 'arm': arm, 'source': COMMIT,
+            'toolkit_commit': (REVISED_TOOLKIT if revised else COMMIT) if arm == 'toolkit' else None,
+            'client_exit': result.returncode,
             'model': init.get('model'), 'duration_seconds': round(duration, 3), 'discovery_ok': discovery,
             'harness_unchanged': harness_ok, 'head_unchanged': head == COMMIT,
             'result_subtype': final.get('subtype'), 'is_error': final.get('is_error'),
@@ -126,18 +132,24 @@ def run_trial(output, scenario, trial, arm):
 
 def main():
     output = Path(sys.argv[1]).resolve()
+    revised = len(sys.argv) == 3 and sys.argv[2] == '--revised'
+    if len(sys.argv) not in (2, 3) or (len(sys.argv) == 3 and not revised):
+        raise SystemExit('Usage: run_pilot.py /tmp/NEW-OUTPUT-DIRECTORY [--revised]')
     if output.exists() or not output.is_relative_to(Path('/tmp')):
         raise SystemExit('Output must be a new directory under /tmp')
     output.mkdir(parents=True)
     version = checked(['claude', '--version']).strip()
     if not version.startswith('2.1.312 '):
         raise SystemExit(f'Unexpected Claude version: {version}')
+    toolkit_root = output / 'toolkit-snapshot'
+    checked(['git', 'clone', '--quiet', '--no-hardlinks', '--local', str(ROOT), str(toolkit_root)])
+    checked(['git', 'checkout', '--quiet', '--detach', REVISED_TOOLKIT if revised else COMMIT], cwd=toolkit_root)
     rows = []
     for scenario in ('small', 'medium', 'large'):
         for trial in (1, 2, 3):
             order = ('baseline', 'toolkit') if trial != 2 else ('toolkit', 'baseline')
             for arm in order:
-                rows.append(run_trial(output, scenario, trial, arm))
+                rows.append(run_trial(output, scenario, trial, arm, toolkit_root, revised))
                 (output / 'summary.json').write_text(json.dumps(rows, indent=2) + '\n', encoding='utf-8')
     print('Execution complete; manually review every trial and Large readiness evidence.', flush=True)
 
