@@ -19,7 +19,7 @@ For changes to behavior or public boundaries, inspect relevant callers, document
 ## Task workflow reference
 
 - Use the project's ticket and branch conventions. Inspect the current branch and working tree before creating a feature branch; preserve user changes and choose the base using the project's workflow.
-- Keep commits focused and use Conventional Commits unless local conventions differ; include a task identifier when the project requires it. Commit, push, or change external systems only with the applicable authorization.
+- Keep commits focused and use Conventional Commits unless local conventions differ; include a task identifier when the project requires it. Commit, push, or change external systems, including ticket updates, only with the applicable authorization.
 - When preparing a PR, describe the problem, resulting behavior, relevant checks, and remaining limitations. Compare the actual diff with the intended base and acceptance criteria; do not imply that unrun checks passed. Open or publish the PR only when authorized.
 - At handoff, record the task or ticket, acceptance criteria and scope, branch/base, working-tree state, verified evidence, unresolved issues, and next action. Reuse the existing task record and omit secrets and unnecessary artifacts.
 

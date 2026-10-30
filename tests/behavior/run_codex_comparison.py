@@ -8,7 +8,7 @@ import subprocess
 import sys
 import time
 
-from run_pilot import ROOT, COMMIT, PROMPTS, EVALUATORS, checked, command, digest
+from run_pilot import ROOT, COMMIT, PROMPTS, EVALUATORS, checked, command, digest, new_output_dir
 
 PROFILE = Path('/tmp/kaboost-codex-kb103/profile')
 HOME_DIR = Path('/tmp/kaboost-codex-kb103/home')
@@ -120,9 +120,7 @@ def trial(output, scenario, number, arm):
 def main():
     if len(sys.argv) != 2:
         raise SystemExit('Usage: run_codex_comparison.py /tmp/NEW-OUTPUT-DIRECTORY')
-    output = Path(sys.argv[1]).resolve()
-    if output.exists() or not output.is_relative_to(Path('/tmp')):
-        raise SystemExit('Output must be a new directory under /tmp')
+    output = new_output_dir(sys.argv[1])
     if not checked(['codex', '--version']).strip().endswith('0.165.0'):
         raise SystemExit('Unexpected Codex CLI version')
     output.mkdir(parents=True)

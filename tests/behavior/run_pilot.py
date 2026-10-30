@@ -18,6 +18,16 @@ ROOT = Path(__file__).resolve().parents[2]
 COMMIT = 'b1d3f01c9884468b8b75ec913eebb5f5ec611f1d'
 MODEL = 'claude-sonnet-5-5'
 PROFILE = '/tmp/kaboost-validation-profile'
+TMP = Path('/tmp').resolve()  # /tmp is a symlink on macOS
+CLAUDE_VERSION = '2.1.312 '
+NATURAL_LARGE = (
+    'Add an opt-in --json flag to both scripts/build.py and scripts/validate.py. '
+    'On success emit one JSON object on stdout with ok: true and files equal to the count; '
+    'on expected failure emit one JSON object on stdout with ok: false and a nonempty error, '
+    'and retain the existing nonzero exit status. Preserve existing default output and exit '
+    'codes, build.py --check, and Python APIs; do not introduce dependencies or alter '
+    'generated package content. Implement and run focused checks.'
+)
 REVISED_TOOLKIT = '07ed44afe1f37ebbf6aa25116b5aad94cd5e1c10'
 FOLLOWUP_TOOLKIT = '33e721e38575bd9289d565512becfb6daa3d7d2d'
 PROMPTS = {
@@ -33,6 +43,19 @@ PROMPTS = {
               'choose one, and identify success, failure, and compatibility checks. Implement and run focused checks.'),
 }
 EVALUATORS = {'small': 'acceptance_readme.py', 'medium': 'acceptance_semver.py', 'large': 'acceptance_json_cli.py'}
+
+
+def new_output_dir(argument):
+    output = Path(argument).resolve()
+    if output.exists() or output == TMP or not output.is_relative_to(TMP):
+        raise SystemExit('Output must be a new directory under /tmp')
+    return output
+
+
+def require_claude_version():
+    version = checked(['claude', '--version']).strip()
+    if not version.startswith(CLAUDE_VERSION):
+        raise SystemExit(f'Unexpected Claude version: {version}')
 
 
 def command(args, cwd=None, env=None, timeout=120):
@@ -136,18 +159,14 @@ def run_trial(output, scenario, trial, arm, toolkit_root, toolkit_commit, expand
 
 
 def main():
-    output = Path(sys.argv[1]).resolve()
     mode = sys.argv[2] if len(sys.argv) == 3 else ''
     if len(sys.argv) not in (2, 3) or mode not in ('', '--revised', '--followup', '--compatibility'):
         raise SystemExit('Usage: run_pilot.py /tmp/NEW-OUTPUT-DIRECTORY [--revised|--followup|--compatibility]')
     toolkit_commit = {'': COMMIT, '--revised': REVISED_TOOLKIT, '--followup': FOLLOWUP_TOOLKIT,
                       '--compatibility': FOLLOWUP_TOOLKIT}[mode]
-    if output.exists() or not output.is_relative_to(Path('/tmp')):
-        raise SystemExit('Output must be a new directory under /tmp')
+    output = new_output_dir(sys.argv[1])
     output.mkdir(parents=True)
-    version = checked(['claude', '--version']).strip()
-    if not version.startswith('2.1.312 '):
-        raise SystemExit(f'Unexpected Claude version: {version}')
+    require_claude_version()
     toolkit_root = output / 'toolkit-snapshot'
     checked(['git', 'clone', '--quiet', '--no-hardlinks', '--local', str(ROOT), str(toolkit_root)])
     checked(['git', 'checkout', '--quiet', '--detach', toolkit_commit], cwd=toolkit_root)

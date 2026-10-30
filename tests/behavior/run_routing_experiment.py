@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import run_pilot as pilot  # noqa: E402  (reuse frozen commit, model and prompts)
 
-LARGE = pilot.PROMPTS['large'].split(' Before any source or test edit,')[0] + ' Implement and run focused checks.'
+LARGE = pilot.NATURAL_LARGE
 HOLDOUT = ('Add an opt-in --output-dir DIR option to scripts/build.py that builds the package into DIR instead of the committed '
            'plugins/ai-dev-toolkit directory; with --check it should verify DIR. Preserve existing behavior. Implement and run focused checks.')
 HOLDOUT2 = 'Rename the verification skill to verify-completion. Keep everything else unchanged. Run focused checks.'

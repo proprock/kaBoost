@@ -77,6 +77,13 @@ class PackageTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             build(self.root)
 
+    @unittest.skipIf(sys.platform == 'win32', 'Symlink creation may require privileges')
+    def test_symlink_above_the_root_is_accepted(self):
+        link = self.root.parent/'linked-repo'
+        link.symlink_to(self.root, target_is_directory=True)
+        self.assertEqual(build(link, check=True), build(self.root, check=True))
+        validate(link)
+
     def test_duplicate_skills_are_rejected(self):
         path = self.root/'toolkit.json'
         data = json.loads(path.read_text())
