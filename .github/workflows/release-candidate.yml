@@ -1,0 +1,26 @@
+name: Release candidate
+# Unconditional: tag pushes and manual runs always execute the full cycle, whatever files changed,
+# then prepare the release artifacts. Publishing stays a manual, explicitly authorized step (KB-020).
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  full:
+    uses: ./.github/workflows/package-checks.yml
+  artifacts:
+    needs: full
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python scripts/prepare_release.py --output "${{ runner.temp }}/kaboost-release"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kaboost-release-${{ github.sha }}
+          path: ${{ runner.temp }}/kaboost-release
+          if-no-files-found: error
