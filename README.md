@@ -6,37 +6,31 @@ A small, versioned engineering toolkit: understand before changing code, choose 
 
 ## Quick start
 
-Requires Git and an installed Claude Code client. The local procedure works from Bash, zsh, or PowerShell, with no symlinks or Python dependency:
+Requires an installed Claude Code client. The plugin is listed in the [proprock marketplace](https://github.com/proprock/marketplace):
+
+```text
+claude plugin marketplace add proprock/marketplace
+claude plugin install kaboost@proprock
+```
+
+For local development, install from a checkout instead. The procedure works from Bash, zsh, or PowerShell, with no symlinks or Python dependency:
 
 ```text
 git clone https://github.com/proprock/kaBoost.git
 cd kaBoost
 claude plugin marketplace add ./
-claude plugin install ai-dev-toolkit@ai-dev-toolkit
+claude plugin install kaboost@kaboost-local
 ```
 
 Restart Claude Code. Invoke a skill explicitly, for example:
 
 ```text
-/ai-dev-toolkit:project-context Inspect this repository and report context without writing files.
-/ai-dev-toolkit:systematic-debugging Investigate the failing regression test.
-/ai-dev-toolkit:verification Check this change against the ticket acceptance criteria.
+/kaboost:project-context Inspect this repository and report context without writing files.
+/kaboost:systematic-debugging Investigate the failing regression test.
+/kaboost:verification Check this change against the ticket acceptance criteria.
 ```
 
-After a release is published, pin the marketplace to a reviewed tag and verify that it points to the expected commit. Replace VERSION with an existing release tag (no v0.1.0 tag is published by this change):
-
-```text
-claude plugin marketplace add https://github.com/proprock/kaBoost.git#VERSION
-claude plugin install ai-dev-toolkit@ai-dev-toolkit
-```
-
-Unpinned convenience installation in a Claude session:
-
-```text
-/plugin install ai-dev-toolkit --marketplace proprock/kaBoost
-```
-
-This remote command works only after the package has been pushed. Local installation is available immediately.
+Releases are pinned in the marketplace: the `kaboost` entry in `proprock/marketplace` carries the reviewed `ref` or `sha` of this repository. No v0.1.0 tag is published by this change, so the catalog currently follows the default branch. The catalog installs only after the package has been pushed; local installation is available immediately.
 
 ## Activate core rules separately
 
@@ -53,15 +47,25 @@ The copy is user-managed: review and update it alongside the plugin. In a Claude
 For a moving local/development source, rebuild or update its checkout, then:
 
 ```text
-claude plugin marketplace update ai-dev-toolkit
-claude plugin update ai-dev-toolkit@ai-dev-toolkit
+claude plugin marketplace update kaboost-local
+claude plugin update kaboost@kaboost-local
 ```
 
-A pinned tag intentionally stays pinned. To change releases, uninstall the plugin, remove the marketplace, add the new tag, and reinstall. Rollback uses the same steps with the previous tag. Restart the session and verify `claude plugin list`. Do not edit the plugin cache; keep overrides in user/project rules. Review and update the separate project-local core copy explicitly too.
+For the catalog install, use `claude plugin marketplace update proprock` and `claude plugin update kaboost@proprock`.
+
+A pinned `ref` or `sha` intentionally stays pinned. To change releases, uninstall the plugin, update the pin in the catalog, refresh the marketplace, and reinstall. Rollback uses the same steps with the previous reference. Restart the session and verify `claude plugin list`. Do not edit the plugin cache; keep overrides in user/project rules. Review and update the separate project-local core copy explicitly too.
 
 ```text
-claude plugin uninstall ai-dev-toolkit@ai-dev-toolkit
-claude plugin marketplace remove ai-dev-toolkit
+claude plugin uninstall kaboost@proprock
+claude plugin marketplace remove proprock
+```
+
+For a local install, use `kaboost@kaboost-local` and `kaboost-local`.
+
+```text
+# local install:
+claude plugin uninstall kaboost@kaboost-local
+claude plugin marketplace remove kaboost-local
 ```
 
 Remove only the core import you added. No toolkit command edits your global instruction files. See the [Claude adapter](adapters/claude-code/README.md) for lifecycle limits.
@@ -76,7 +80,7 @@ python3 scripts/build.py --check
 python3 scripts/validate.py
 python3 -m unittest discover -s tests/packaging -v
 claude plugin validate --strict .
-claude plugin validate --strict plugins/ai-dev-toolkit
+claude plugin validate --strict plugins/kaboost
 python3 scripts/smoke_claude.py
 ```
 

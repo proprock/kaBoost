@@ -17,7 +17,7 @@ class PluginEvalSetupTests(unittest.TestCase):
         self.assertNotIn('@SOURCE@', fixture)
         self.assertIn(runner.pilot.COMMIT, fixture)
         self.assertIn('@SOURCE@', original)
-        self.assertFalse((runner.ROOT / 'plugins' / 'ai-dev-toolkit' / 'evals').exists())
+        self.assertFalse((runner.ROOT / 'plugins' / 'kaboost' / 'evals').exists())
 
     def test_estimate_counts_both_arms(self):
         self.assertEqual(runner.estimate(runner.ROOT / 'evals', 1), round(runner.PER_RUN_USD * 2 * len(runner.cases(runner.ROOT / 'evals')), 2))

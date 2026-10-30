@@ -29,7 +29,7 @@ import run_pilot as pilot  # noqa: E402  (reuse frozen commit, model and prompts
 
 LARGE = pilot.NATURAL_LARGE
 HOLDOUT = ('Add an opt-in --output-dir DIR option to scripts/build.py that builds the package into DIR instead of the committed '
-           'plugins/ai-dev-toolkit directory; with --check it should verify DIR. Preserve existing behavior. Implement and run focused checks.')
+           'plugins/kaboost directory; with --check it should verify DIR. Preserve existing behavior. Implement and run focused checks.')
 HOLDOUT2 = 'Rename the verification skill to verify-completion. Keep everything else unchanged. Run focused checks.'
 PROMPTS = {'small': pilot.PROMPTS['small'], 'large': LARGE, 'holdout': HOLDOUT, 'holdout2': HOLDOUT2}
 EVALUATORS = {'small': 'acceptance_readme.py', 'large': 'acceptance_json_cli.py', 'holdout': 'acceptance_output_dir.py',
@@ -175,7 +175,7 @@ def run(output, variant, scenario, n, toolkit_plugin, core_src):
     acceptance = pilot.command([sys.executable, str(ROOT / 'tests/behavior' / EVALUATORS[scenario]), str(checkout)], cwd=checkout, env=env)
     packaging = pilot.command([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests/packaging'], cwd=checkout, env=env)
     row = {'variant': variant, 'scenario': scenario, 'n': n, 'exit': code, 'model': init.get('model'),
-           'plugin_loaded': any(p.get('name') == 'ai-dev-toolkit' for p in init.get('plugins', [])),
+           'plugin_loaded': any(p.get('name') == 'kaboost' for p in init.get('plugins', [])),
            'seconds': round(duration, 1), 'cost_usd': final.get('total_cost_usd'),
            'denials': len(final.get('permission_denials', [])), 'acceptance_exit': acceptance.returncode, 'packaging_exit': packaging.returncode,
            **analyse(events, scenario)}
@@ -199,7 +199,7 @@ def main():
     if pilot.checked(['git', 'status', '--porcelain'], cwd=ROOT).strip():
         raise SystemExit('Working tree must be clean')
     output.mkdir(parents=True)
-    plugin, core = ROOT / 'plugins' / 'ai-dev-toolkit', ROOT / 'core' / 'engineering-rules.md'
+    plugin, core = ROOT / 'plugins' / 'kaboost', ROOT / 'core' / 'engineering-rules.md'
     jobs = [(v, s, n) for v in args.variants.split(',') for s, count in (('large', args.large), ('small', args.small), ('holdout', args.holdout), ('holdout2', args.holdout2))
             for n in range(1, count + 1)]
     random.Random(20261029).shuffle(jobs)

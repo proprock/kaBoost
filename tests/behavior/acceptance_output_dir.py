@@ -43,7 +43,7 @@ class OutputDirAcceptance(unittest.TestCase):
         self.assertEqual((validated.returncode, validated.stdout.strip()), (0, 'Validation passed: 8 generated files'))
 
     def test_output_dir_matches_committed_package(self):
-        committed = self.root / 'plugins' / 'ai-dev-toolkit'
+        committed = self.root / 'plugins' / 'kaboost'
         before = {p: p.read_bytes() for p in committed.rglob('*') if p.is_file()}
         result = self.build('--output-dir', str(self.out))
         self.assertEqual(result.returncode, 0, result.stderr)

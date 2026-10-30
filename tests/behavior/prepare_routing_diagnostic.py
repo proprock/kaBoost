@@ -12,7 +12,7 @@ import uuid
 
 
 ROOT = Path(__file__).resolve().parents[2]
-PLUGIN = ROOT / 'plugins' / 'ai-dev-toolkit'
+PLUGIN = ROOT / 'plugins' / 'kaboost'
 FILES = {
     'workflow': 'workflows/adaptive.md',
     'project-context': 'skills/project-context/SKILL.md',

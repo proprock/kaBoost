@@ -12,7 +12,7 @@ from run_pilot import ROOT, COMMIT, PROMPTS, EVALUATORS, checked, command, diges
 
 PROFILE = Path('/tmp/kaboost-codex-kb103/profile')
 HOME_DIR = Path('/tmp/kaboost-codex-kb103/home')
-PLUGIN = 'ai-dev-toolkit@kaboost-codex'
+PLUGIN = 'kaboost@kaboost-codex'
 MODEL = 'gpt-6.1-sol'
 
 
@@ -65,7 +65,7 @@ def trial(output, scenario, number, arm):
             f.write('\n/AGENTS.md\n/.kaboost-engineering-rules.md\n')
         harness = [(p, digest(p)) for p in (rules, instructions)]
     skills = discovery(checkout, env)
-    expected = sorted(f'ai-dev-toolkit:{name}' for name in ('project-context', 'systematic-debugging', 'verification'))
+    expected = sorted(f'kaboost:{name}' for name in ('project-context', 'systematic-debugging', 'verification'))
     if skills != (expected if arm == 'toolkit' else []):
         raise RuntimeError(f'Unexpected {arm} skill discovery: {skills}')
     cmd = ['codex', '-a', 'never', 'exec', '--ephemeral', '--json', '--skip-git-repo-check',

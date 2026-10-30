@@ -1,6 +1,6 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
-  "name": "ai-dev-toolkit",
+  "name": "kaboost",
   "version": "0.1.0",
   "description": "Focused engineering workflows for project context, debugging, and verification.",
   "author": {"name": "kaBoost maintainers"},

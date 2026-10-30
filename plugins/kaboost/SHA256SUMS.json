@@ -1,8 +1,7 @@
 {
-  ".codex-plugin/plugin.json": "c857c9124c770783d6897ec61ff68609d87aab2028bc29649da74c23b0f44957",
+  ".claude-plugin/plugin.json": "bb073771b3c7658b68ffb4e81460a6988741eb2c3c5021db55fb05d427d29d4b",
   "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
   "core/engineering-rules.md": "f0bf86400e4647cc3b3421ac8606aa866b8ddc8c6cd7e0fd625a092c28f83fcd",
-  "plugin.json": "86b3d544c23b2eb97163c3fca71fc38f2feabc15f890433c250a8df63967c7f8",
   "skills/plan-before-edit/SKILL.md": "ed0308752d321f4fa0fc8fbfea9e979e660aa243afbcefbc0693a78720764f2c",
   "skills/project-context/SKILL.md": "621a98827ea849485e337917e2e579d8a381dae3547a8c0dc933aaf11bbc17af",
   "skills/systematic-debugging/SKILL.md": "eb0c91d993469f7898f6c86ab8987401a64807b772ad5cfa3c8fe8e67cd53a58",

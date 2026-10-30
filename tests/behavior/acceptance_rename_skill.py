@@ -19,7 +19,7 @@ OLD, NEW = 'verification', 'verify-completion'
 # Current, non-historical locations. Evidence records and decision history may keep the old name.
 LIVE = ('README.md', 'toolkit.json', 'scripts', 'skills', 'plugins', 'adapters', 'examples', 'tests/packaging',
         '.claude-plugin', '.github', 'core', 'workflows')
-STALE = re.compile(r'ai-dev-toolkit:verification|skills/verification|name: verification|"verification"')
+STALE = re.compile(r'kaboost:verification|skills/verification|name: verification|"verification"')
 
 
 class RenameAcceptance(unittest.TestCase):
@@ -51,8 +51,8 @@ class RenameAcceptance(unittest.TestCase):
     def test_generated_package_is_rebuilt_and_consistent(self):
         result = self.run_py('scripts/build.py', '--check')
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertTrue((self.root / 'plugins/ai-dev-toolkit/skills' / NEW / 'SKILL.md').is_file())
-        self.assertFalse((self.root / 'plugins/ai-dev-toolkit/skills' / OLD).exists())
+        self.assertTrue((self.root / 'plugins/kaboost/skills' / NEW / 'SKILL.md').is_file())
+        self.assertFalse((self.root / 'plugins/kaboost/skills' / OLD).exists())
 
     def test_validation_and_packaging_tests_pass(self):
         self.assertEqual(self.run_py('scripts/validate.py').returncode, 0)

@@ -1,7 +1,7 @@
 """Run claude plugin eval on evals/ through a temporary plugin root.
 
 Usage: python3 tests/behavior/run_plugin_eval.py OUTPUT_DIR [--estimate-only] [--max-cost-usd N] [--runs N] [-- extra eval args]
-The eval directory must live inside a plugin root, but plugins/ai-dev-toolkit is generated,
+The eval directory must live inside a plugin root, but plugins/kaboost is generated,
 so the cases stay in evals/ and are copied next to a copy of the plugin. Fixture placeholders
 are filled in the copy only. Runs spend real money: without --max-cost-usd only the estimate is printed.
 The cost ceiling is checked before each run starts, so concurrency is fixed at 1.
@@ -41,7 +41,7 @@ def estimate(evals, runs=None):
 def assemble(destination, source=ROOT, commit=pilot.COMMIT):
     """Copy the plugin and evals into destination and fill fixture placeholders."""
     plugin = destination / 'plugin'
-    shutil.copytree(source / 'plugins' / 'ai-dev-toolkit', plugin)
+    shutil.copytree(source / 'plugins' / 'kaboost', plugin)
     evals = plugin / 'evals'
     shutil.copytree(source / 'evals', evals)
     for fixture in evals.glob('*/fixture.sh'):
