@@ -170,6 +170,28 @@ class InitTests(unittest.TestCase):
         self.assertTrue((self.home / '.claude/CLAUDE.md').is_file())
         self.assertTrue((self.home / '.codex/AGENTS.md').is_file())
 
+    def test_features_sharing_a_file_are_planned_together(self):
+        (self.repo / 'pyproject.toml').write_text('[project]\n')
+        path = self.repo / 'AGENTS.md'
+        path.write_bytes(b'# Mine\n')
+        self.call('apply', '--ids', 'agents-index,python-toolchain,windows-notes', '--yes')
+        self.assertEqual(path.read_text().count('kaboost:begin'), 3)
+        self.call('disable', '--ids', 'agents-index,python-toolchain,windows-notes', '--yes')
+        self.assertEqual(path.read_bytes(), b'# Mine\n')
+
+    def test_repo_scope_splits_files_by_tool(self):
+        self.call('apply', '--ids', 'core-rules,agents-index', '--yes', '--targets', 'claude')
+        self.assertTrue((self.repo / '.claude/engineering-rules.md').is_file())
+        self.assertNotIn('Engineering rules', (self.repo / 'AGENTS.md').read_text())
+        self.assertEqual(self.features('repo', '--targets', 'claude')['core-rules']['state'], 'enabled')
+        self.assertEqual(self.features('repo', '--targets', 'codex')['core-rules']['state'], 'disabled')
+        self.assertNotIn('claude-pointer', self.features('repo', '--targets', 'codex'))
+        self.call('apply', '--ids', 'core-rules', '--yes', '--targets', 'codex')
+        self.assertIn('Engineering rules', (self.repo / 'AGENTS.md').read_text())
+        self.call('disable', '--ids', 'core-rules', '--yes', '--targets', 'codex')
+        self.assertNotIn('Engineering rules', (self.repo / 'AGENTS.md').read_text())
+        self.assertTrue((self.repo / '.claude/engineering-rules.md').is_file())
+
     def test_global_scope_never_touches_the_repository(self):
         self.call('apply', '--ids', 'delegation', '--yes', scope='global')
         self.assertEqual(list(self.repo.iterdir()), [])

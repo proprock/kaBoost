@@ -126,13 +126,15 @@ def relevant(feature, root):
 
 
 def active_edits(feature, root, home, tools):
-    """Edits that apply now: global edits for a tool apply when its directory exists or the tool is requested."""
+    """Edits that apply now. An edit without `tool` is shared (AGENTS.md, TODO.md, ...) and always applies; an edit
+    for one tool applies when that tool is requested. Without targets, global scope uses the tools whose directory
+    exists in the home folder and repository scope uses every tool."""
     chosen = []
     for edit in feature['edits']:
         tool = edit.get('tool')
         if tool and tools is not None and tool not in tools:
             continue
-        if tool and tools is None and not (home / f'.{tool}').is_dir():
+        if tool and tools is None and feature['scope'] == 'global' and not (home / f'.{tool}').is_dir():
             continue
         chosen.append(edit)
     return chosen
@@ -162,7 +164,7 @@ def feature_state(feature, root, home, tools=None):
     return overall, states
 
 
-def status(catalog, scope, root, home, show_all):
+def status(catalog, scope, root, home, show_all, tools=None):
     rows = []
     for feature in catalog['features']:
         if feature['scope'] != scope:
@@ -170,16 +172,19 @@ def status(catalog, scope, root, home, show_all):
         is_relevant = relevant(feature, root)
         if not is_relevant and not show_all:
             continue
-        overall, edits = feature_state(feature, root, home)
+        overall, edits = feature_state(feature, root, home, tools)
+        if tools is not None and overall == 'unavailable':
+            continue
         rows.append({'id': feature['id'], 'number': feature.get('number'), 'group': feature['group'],
                      'title': feature['title'], 'summary': feature['summary'], 'relevant': is_relevant,
                      'state': overall, 'edits': edits})
     return rows
 
 
-def plan_apply(feature, root, home, tools, force):
-    """Return {path: new_text} for one feature, or raise Refusal; nothing is written here."""
-    changes = {}
+def plan_apply(feature, root, home, tools, force, pending=None):
+    """Return {path: new_text} for one feature on top of the changes already pending, or raise Refusal; nothing is
+    written here. The result includes the pending paths it builds on."""
+    changes = dict(pending or {})
     for edit in active_edits(feature, root, home, tools):
         key = f"{feature['id']}:{edit['name']}"
         path = resolve(edit, root, home)
@@ -203,8 +208,8 @@ def plan_apply(feature, root, home, tools, force):
     return changes
 
 
-def plan_disable(feature, root, home, tools):
-    changes = {}
+def plan_disable(feature, root, home, tools, pending=None):
+    changes = dict(pending or {})
     for edit in active_edits(feature, root, home, tools):
         key = f"{feature['id']}:{edit['name']}"
         path = resolve(edit, root, home)
@@ -253,14 +258,14 @@ def run(catalog, args, root, home):
     for fid in feature_ids:
         feature = by_id[fid]
         try:
-            planned = (plan_apply(feature, root, home, tools, args.force) if args.command == 'apply'
-                       else plan_disable(feature, root, home, tools))
+            planned = (plan_apply(feature, root, home, tools, args.force, pending) if args.command == 'apply'
+                       else plan_disable(feature, root, home, tools, pending))
         except Refusal as error:
             report.append({'feature': fid, 'result': 'skipped', 'reason': str(error)})
             continue
-        for path, text in planned.items():
-            pending[path] = text
-        report.append({'feature': fid, 'result': 'planned' if planned else 'nothing to do', 'files': [str(p) for p in planned]})
+        touched = [p for p, text in planned.items() if pending.get(p) != text]
+        pending.update(planned)
+        report.append({'feature': fid, 'result': 'planned' if touched else 'nothing to do', 'files': [str(p) for p in touched]})
     changes = []
     for path, new_text in pending.items():
         old_text, newline, bom, existed = read(path)
@@ -294,7 +299,7 @@ def main(argv=None):
     parser.add_argument('--root', type=Path, default=Path.cwd())
     parser.add_argument('--home', type=Path, default=Path.home())
     parser.add_argument('--ids', default='', help='comma-separated feature ids (apply, disable)')
-    parser.add_argument('--targets', default='', help='global scope: list of tools (comma-separated, e.g. claude,codex) or all; default: tools whose directory exists')
+    parser.add_argument('--targets', default='', help='list of tools (comma-separated, e.g. claude,codex) or all; default: tools whose directory exists')
     parser.add_argument('--all', action='store_true', help='status: include features not relevant to this repository')
     parser.add_argument('--yes', action='store_true', help='write changes; without it the command only previews')
     parser.add_argument('--force', action='store_true', help='apply: overwrite a block that was edited by hand')
@@ -302,7 +307,7 @@ def main(argv=None):
     catalog = load_catalog()
     root, home = args.root.resolve(), args.home.resolve()
     if args.command == 'status':
-        print(json.dumps({'scope': args.scope, 'features': status(catalog, args.scope, root, home, args.all)}, indent=2))
+        print(json.dumps({'scope': args.scope, 'features': status(catalog, args.scope, root, home, args.all, parse_targets(args.targets, catalog))}, indent=2))
         return 0
     if not args.ids:
         parser.error('--ids is required for apply and disable')

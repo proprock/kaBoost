@@ -14,14 +14,24 @@
           "target": "{repo}/.claude/engineering-rules.md",
           "mode": "own",
           "body": "{core}",
-          "version": 1
+          "version": 1,
+          "tool": "claude"
         },
         {
           "name": "import",
           "target": "{repo}/CLAUDE.md",
           "mode": "append",
           "body": "core-import.md",
-          "version": 1
+          "version": 1,
+          "tool": "claude"
+        },
+        {
+          "name": "rules-codex",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "{core}",
+          "version": 1,
+          "tool": "codex"
         }
       ]
     },
@@ -38,7 +48,8 @@
           "target": "{repo}/CLAUDE.md",
           "mode": "append",
           "body": "claude-pointer.md",
-          "version": 1
+          "version": 1,
+          "tool": "claude"
         }
       ]
     },

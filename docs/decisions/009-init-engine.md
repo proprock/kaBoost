@@ -19,3 +19,4 @@ Each change is a block between `kaboost:begin` and `kaboost:end` markers carryin
 - Requires `python3` on the machine when `init` is used. The commands do nothing else without it.
 - Codex has no plugin commands; its operations are a separate task (KB-224) that reuses this engine.
 - Global edits happen only through `/kaboost:init-global` after explicit confirmation; plugin installation never edits global files.
+- Each tool edits only its own files. Catalog edits carry an optional `tool`; `--targets` is a validated list (`claude,codex`, or `all`). Claude commands always pass `--targets claude`, the Codex skills (KB-224) will pass `--targets codex`. Edits without a `tool` are shared files (`AGENTS.md`, `TODO.md`, `Makefile`, ...) and apply for every target. Core rules reach Codex as a block in `AGENTS.md`, since Codex has no import syntax.
