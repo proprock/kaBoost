@@ -10,3 +10,4 @@ All decisions are accepted for the 0.1 implementation, following architecture ap
 - [006 — Planning entry point](006-planning-entry-point.md)
 
 - [007 — Explicit commands](007-explicit-commands.md)
+- [008 — Evaluation criteria and decision rule](008-evaluation-criteria.md)

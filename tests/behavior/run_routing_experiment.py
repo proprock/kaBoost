@@ -34,7 +34,7 @@ HOLDOUT2 = 'Rename the verification skill to verify-completion. Keep everything 
 PROMPTS = {'small': pilot.PROMPTS['small'], 'large': LARGE, 'holdout': HOLDOUT, 'holdout2': HOLDOUT2}
 EVALUATORS = {'small': 'acceptance_readme.py', 'large': 'acceptance_json_cli.py', 'holdout': 'acceptance_output_dir.py',
               'holdout2': 'acceptance_rename_skill.py'}
-VARIANTS = ('V0', 'V1', 'V2', 'V3')  # BASE (no toolkit) is also accepted
+VARIANTS = ('V0', 'V1', 'V2', 'V3')  # BASE (no toolkit) and CMD (V0 plus the /kaboost:plan command) are also accepted
 
 V1_DESCRIPTION = (
     'Use BEFORE editing code when a task adds or changes a CLI flag, output format, public API, schema, config, '
@@ -69,7 +69,7 @@ ORIGINAL_DESCRIPTION = ('Inspect or refresh repository context when onboarding, 
 
 def build_variant(variant, plugin, core):
     """Rewrite copies of the plugin and core file for one variant."""
-    if variant in ('V0', 'BASE'):
+    if variant in ('V0', 'BASE', 'CMD'):
         return
     if variant == 'V2G':
         plan = plugin / 'skills' / 'plan-before-edit' / 'SKILL.md'
@@ -120,13 +120,15 @@ def analyse(events, scenario=''):
                     edited = True
     said = ' '.join(text_before).lower()
     stated = 'acceptance criteria' in said and 'non-goal' in said and 'alternativ' in said
+    gate_full = ('criteria' in said and 'non-goal' in said and ('unchanged' in said or 'must not change' in said)
+                 and 'alternativ' in said and 'check' in said)
     first_edit = next((i for i, n in enumerate(order) if n in ('Edit', 'Write')), None)
     skill_before = any(n == 'Skill' for n in (order[:first_edit] if first_edit is not None else order))
     pre = [b for b in all_calls[:first_edit if first_edit is not None else len(all_calls)]]
     dependents = any(k in str(b.get('input', {})) for b in pre for k in KEYWORDS.get(scenario, ('validate.py', 'tests/packaging', 'test_package')))
     ran_tests = any(b['name'] == 'Bash' and ('unittest' in str(b['input']) or 'tests/packaging' in str(b['input'])) for b in all_calls)
     return {'inspected_dependents_before_edit': dependents, 'ran_packaging_tests': ran_tests, 'edited': first_edit is not None, 'skill_called': bool(skills), 'skills': ';'.join(skills),
-            'skill_before_edit': skill_before, 'gate_stated_before_edit': stated,
+            'skill_before_edit': skill_before, 'gate_stated_before_edit': stated, 'gate_full_before_edit': gate_full,
             'gate_met': stated or skill_before, 'tools': ';'.join(order[:12])}
 
 
@@ -151,7 +153,8 @@ def run(output, variant, scenario, n, toolkit_plugin, core_src):
         build_variant(variant, plugin, rules)
         plugin_args = ['--plugin-dir', str(plugin)]
     allowed = 'Read,Edit,Write,Glob,Grep,Skill,Bash(python3 *),Bash(python *),Bash(git *),Bash(tail *),Bash(echo *),Bash(cd *),Bash(ls *),Bash(cat *),Bash(wc *),Bash(grep *),Bash(head *),Bash(sed *)'
-    cmd = ['claude', '-p', PROMPTS[scenario], '--model', pilot.MODEL, '--effort', 'medium',
+    prompt = ('/kaboost:plan ' if variant == 'CMD' else '') + PROMPTS[scenario]
+    cmd = ['claude', '-p', prompt, '--model', pilot.MODEL, '--effort', 'medium',
            '--setting-sources', 'project,local', '--strict-mcp-config', '--no-session-persistence',
            '--permission-mode', 'dontAsk', '--tools', 'Read,Edit,Write,Glob,Grep,Bash,Skill',
            '--allowedTools', allowed, '--output-format', 'stream-json', '--verbose',
@@ -179,7 +182,7 @@ def run(output, variant, scenario, n, toolkit_plugin, core_src):
            'seconds': round(duration, 1), 'cost_usd': final.get('total_cost_usd'),
            'denials': len(final.get('permission_denials', [])), 'acceptance_exit': acceptance.returncode, 'packaging_exit': packaging.returncode,
            **analyse(events, scenario)}
-    print(name, {k: row[k] for k in ('exit', 'gate_met', 'skill_called', 'acceptance_exit', 'cost_usd')}, flush=True)
+    print(name, {k: row[k] for k in ('exit', 'gate_met', 'gate_full_before_edit', 'skill_called', 'acceptance_exit', 'cost_usd')}, flush=True)
     return row
 
 
