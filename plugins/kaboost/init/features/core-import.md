@@ -1,1 +1,1 @@
-@.claude/engineering-rules.md
+@.claude/kaboost/core-rules.md
