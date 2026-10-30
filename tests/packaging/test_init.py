@@ -159,6 +159,17 @@ class InitTests(unittest.TestCase):
         for path, before in original.items():
             self.assertEqual(path.read_bytes(), before)
 
+    def test_targets_is_a_list_with_all_and_validation(self):
+        catalog = init.load_catalog()
+        self.assertEqual(init.parse_targets('', catalog), None)
+        self.assertEqual(init.parse_targets('codex, claude codex', catalog), ['codex', 'claude'])
+        self.assertEqual(init.parse_targets('all', catalog), init.known_tools(catalog))
+        with self.assertRaises(SystemExit):
+            init.parse_targets('claude,gemini', catalog)
+        self.call('apply', '--ids', 'delegation', '--yes', '--targets', 'all', scope='global')
+        self.assertTrue((self.home / '.claude/CLAUDE.md').is_file())
+        self.assertTrue((self.home / '.codex/AGENTS.md').is_file())
+
     def test_global_scope_never_touches_the_repository(self):
         self.call('apply', '--ids', 'delegation', '--yes', scope='global')
         self.assertEqual(list(self.repo.iterdir()), [])

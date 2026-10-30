@@ -223,13 +223,31 @@ def plan_disable(feature, root, home, tools):
     return changes
 
 
+def known_tools(catalog):
+    return sorted({e['tool'] for f in catalog['features'] for e in f['edits'] if e.get('tool')})
+
+
+def parse_targets(value, catalog):
+    """A list of tools separated by commas or spaces; 'all' means every tool in the catalog; None means auto-detect."""
+    names = [n for n in re.split(r'[,\s]+', value.lower()) if n]
+    if not names:
+        return None
+    known = known_tools(catalog)
+    if 'all' in names:
+        return known
+    unknown = [n for n in names if n not in known]
+    if unknown:
+        raise SystemExit(f'Unknown targets {unknown}; known: {known} or all')
+    return list(dict.fromkeys(names))
+
+
 def run(catalog, args, root, home):
     feature_ids = [i for i in args.ids.split(',') if i]
     by_id = {f['id']: f for f in catalog['features'] if f['scope'] == args.scope}
     unknown = [i for i in feature_ids if i not in by_id]
     if unknown:
         raise SystemExit(f'Unknown feature ids for scope {args.scope}: {unknown}')
-    tools = args.targets.split(',') if args.targets else None
+    tools = parse_targets(args.targets, catalog)
     stamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     report, pending = [], {}
     for fid in feature_ids:
@@ -276,7 +294,7 @@ def main(argv=None):
     parser.add_argument('--root', type=Path, default=Path.cwd())
     parser.add_argument('--home', type=Path, default=Path.home())
     parser.add_argument('--ids', default='', help='comma-separated feature ids (apply, disable)')
-    parser.add_argument('--targets', default='', help='global scope: comma-separated tools, claude and/or codex')
+    parser.add_argument('--targets', default='', help='global scope: list of tools (comma-separated, e.g. claude,codex) or all; default: tools whose directory exists')
     parser.add_argument('--all', action='store_true', help='status: include features not relevant to this repository')
     parser.add_argument('--yes', action='store_true', help='write changes; without it the command only previews')
     parser.add_argument('--force', action='store_true', help='apply: overwrite a block that was edited by hand')
