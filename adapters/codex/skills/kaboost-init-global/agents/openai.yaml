@@ -1,0 +1,6 @@
+interface:
+  display_name: "kaboost-init-global"
+  short_description: "Explicit-only kaBoost setup"
+
+policy:
+  allow_implicit_invocation: false

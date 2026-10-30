@@ -34,6 +34,10 @@ codex plugin remove kaboost@kaboost-codex
 codex plugin marketplace remove kaboost-codex
 ```
 
+## Setup skills
+
+The package includes two explicit-only skills ([ADR 010](../../docs/decisions/010-codex-init-skills.md)): `$kaboost-init` adds practices from the catalog to the current repository (core rules as a marked block in `AGENTS.md`, plus shared files), and `$kaboost-init-global` adds personal practices to `~/.codex/AGENTS.md`. Both preview, ask for confirmation, and can be disabled again. They need `python3` and do nothing at installation. Not yet verified in a live Codex session.
+
 ## Core activation and precedence
 
 The included core rules are reference material; installing the plugin does not

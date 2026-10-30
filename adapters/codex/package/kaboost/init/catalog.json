@@ -1,0 +1,356 @@
+{
+  "schema_version": 1,
+  "features": [
+    {
+      "id": "core-rules",
+      "number": 0,
+      "scope": "repo",
+      "group": "Core",
+      "title": "Attach the core engineering rules",
+      "summary": "Copies the core rules to .claude/kaboost/core-rules.md and imports them from CLAUDE.md, because installing the plugin does not activate them.",
+      "edits": [
+        {
+          "name": "rules",
+          "target": "{repo}/.claude/kaboost/core-rules.md",
+          "mode": "own",
+          "body": "{core}",
+          "version": 1,
+          "tool": "claude"
+        },
+        {
+          "name": "import",
+          "target": "{repo}/CLAUDE.md",
+          "mode": "append",
+          "body": "core-import.md",
+          "version": 1,
+          "tool": "claude"
+        },
+        {
+          "name": "rules-codex",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "{core}",
+          "version": 1,
+          "tool": "codex"
+        }
+      ]
+    },
+    {
+      "id": "agents-import",
+      "number": 26,
+      "scope": "repo",
+      "group": "Instruction files",
+      "title": "CLAUDE.md points to AGENTS.md",
+      "summary": "Adds the line @AGENTS.md to CLAUDE.md so one instruction file serves several agents.",
+      "edits": [
+        {
+          "name": "import",
+          "target": "{repo}/CLAUDE.md",
+          "mode": "append",
+          "body": "agents-import.md",
+          "version": 1,
+          "tool": "claude"
+        }
+      ]
+    },
+    {
+      "id": "agents-index",
+      "number": 27,
+      "scope": "repo",
+      "group": "Instruction files",
+      "title": "AGENTS.md as a compact index",
+      "summary": "Adds a short documentation-index section to AGENTS.md.",
+      "edits": [
+        {
+          "name": "index",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "agents-index.md",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "todo-done",
+      "number": 22,
+      "scope": "repo",
+      "group": "Process",
+      "title": "TODO.md and DONE.md with acceptance criteria",
+      "summary": "Creates TODO.md and DONE.md with tracking rules; refuses if either file already exists unmanaged.",
+      "edits": [
+        {
+          "name": "todo",
+          "target": "{repo}/TODO.md",
+          "mode": "own",
+          "body": "todo.md",
+          "version": 1
+        },
+        {
+          "name": "done",
+          "target": "{repo}/DONE.md",
+          "mode": "own",
+          "body": "done.md",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "changelog",
+      "number": 35,
+      "scope": "repo",
+      "group": "Release",
+      "title": "Keep a Changelog",
+      "summary": "Creates CHANGELOG.md with the Keep a Changelog layout; refuses if the file already exists unmanaged.",
+      "edits": [
+        {
+          "name": "changelog",
+          "target": "{repo}/CHANGELOG.md",
+          "mode": "own",
+          "body": "changelog.md",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "pr-template",
+      "number": 46,
+      "scope": "repo",
+      "group": "Process",
+      "title": "Pull request template",
+      "summary": "Creates .github/PULL_REQUEST_TEMPLATE.md; refuses if it already exists unmanaged.",
+      "edits": [
+        {
+          "name": "template",
+          "target": "{repo}/.github/PULL_REQUEST_TEMPLATE.md",
+          "mode": "own",
+          "body": "pr-template.md",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "python-toolchain",
+      "number": 2,
+      "scope": "repo",
+      "group": "Python",
+      "title": "Python toolchain rules",
+      "summary": "Adds uv, ruff, ty and pytest rules (and the sandbox cache note) to AGENTS.md.",
+      "when": {
+        "any_glob": [
+          "pyproject.toml"
+        ]
+      },
+      "edits": [
+        {
+          "name": "rules",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "python-toolchain.md",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "make-checks",
+      "number": 9,
+      "scope": "repo",
+      "group": "Python",
+      "title": "Makefile check targets",
+      "summary": "Adds sync, format, lint, type, tests and check targets to the Makefile.",
+      "when": {
+        "any_glob": [
+          "pyproject.toml"
+        ]
+      },
+      "edits": [
+        {
+          "name": "targets",
+          "target": "{repo}/Makefile",
+          "mode": "append",
+          "body": "make-checks.mk",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "windows-notes",
+      "number": 33,
+      "scope": "repo",
+      "group": "Windows",
+      "title": "Windows and PowerShell notes",
+      "summary": "Adds PowerShell and file-system notes to AGENTS.md.",
+      "when": {
+        "any_glob": [
+          "*.ps1",
+          "*.sln",
+          "*.vcxproj"
+        ]
+      },
+      "edits": [
+        {
+          "name": "notes",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "windows-notes.md",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "core-rules-global",
+      "number": 0,
+      "scope": "global",
+      "group": "Core",
+      "title": "Core engineering rules in your global files",
+      "summary": "Writes the core rules into ~/.claude/CLAUDE.md and ~/.codex/AGENTS.md so they apply in every project.",
+      "edits": [
+        {
+          "name": "claude",
+          "target": "{home}/.claude/CLAUDE.md",
+          "mode": "append",
+          "body": "{core}",
+          "version": 1,
+          "tool": "claude"
+        },
+        {
+          "name": "codex",
+          "target": "{home}/.codex/AGENTS.md",
+          "mode": "append",
+          "body": "{core}",
+          "version": 1,
+          "tool": "codex"
+        }
+      ]
+    },
+    {
+      "id": "code-discovery",
+      "number": 28,
+      "scope": "global",
+      "group": "Personal",
+      "title": "Code discovery order",
+      "summary": "Graph tools first, then symbol tools, then text search.",
+      "edits": [
+        {
+          "name": "claude",
+          "target": "{home}/.claude/CLAUDE.md",
+          "mode": "append",
+          "body": "code-discovery.md",
+          "version": 1,
+          "tool": "claude"
+        },
+        {
+          "name": "codex",
+          "target": "{home}/.codex/AGENTS.md",
+          "mode": "append",
+          "body": "code-discovery.md",
+          "version": 1,
+          "tool": "codex"
+        }
+      ]
+    },
+    {
+      "id": "context7",
+      "number": 39,
+      "scope": "global",
+      "group": "Personal",
+      "title": "Current library documentation",
+      "summary": "Check current docs through Context7 instead of answering from memory.",
+      "edits": [
+        {
+          "name": "claude",
+          "target": "{home}/.claude/CLAUDE.md",
+          "mode": "append",
+          "body": "context7.md",
+          "version": 1,
+          "tool": "claude"
+        },
+        {
+          "name": "codex",
+          "target": "{home}/.codex/AGENTS.md",
+          "mode": "append",
+          "body": "context7.md",
+          "version": 1,
+          "tool": "codex"
+        }
+      ]
+    },
+    {
+      "id": "reasoning-effort",
+      "number": 41,
+      "scope": "global",
+      "group": "Personal",
+      "title": "Reasoning effort",
+      "summary": "Escalate effort only for architecture and hard debugging, and say so.",
+      "edits": [
+        {
+          "name": "claude",
+          "target": "{home}/.claude/CLAUDE.md",
+          "mode": "append",
+          "body": "reasoning-effort.md",
+          "version": 1,
+          "tool": "claude"
+        },
+        {
+          "name": "codex",
+          "target": "{home}/.codex/AGENTS.md",
+          "mode": "append",
+          "body": "reasoning-effort.md",
+          "version": 1,
+          "tool": "codex"
+        }
+      ]
+    },
+    {
+      "id": "compaction",
+      "number": 42,
+      "scope": "global",
+      "group": "Personal",
+      "title": "Compaction and handoff",
+      "summary": "What to keep and drop when compacting context.",
+      "edits": [
+        {
+          "name": "claude",
+          "target": "{home}/.claude/CLAUDE.md",
+          "mode": "append",
+          "body": "compaction.md",
+          "version": 1,
+          "tool": "claude"
+        },
+        {
+          "name": "codex",
+          "target": "{home}/.codex/AGENTS.md",
+          "mode": "append",
+          "body": "compaction.md",
+          "version": 1,
+          "tool": "codex"
+        }
+      ]
+    },
+    {
+      "id": "delegation",
+      "number": 43,
+      "scope": "global",
+      "group": "Personal",
+      "title": "Delegation",
+      "summary": "Delegate bounded subtasks; the main agent keeps architecture and review.",
+      "edits": [
+        {
+          "name": "claude",
+          "target": "{home}/.claude/CLAUDE.md",
+          "mode": "append",
+          "body": "delegation.md",
+          "version": 1,
+          "tool": "claude"
+        },
+        {
+          "name": "codex",
+          "target": "{home}/.codex/AGENTS.md",
+          "mode": "append",
+          "body": "delegation.md",
+          "version": 1,
+          "tool": "codex"
+        }
+      ]
+    }
+  ]
+}

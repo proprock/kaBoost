@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -32,6 +33,33 @@ class CodexPackageTests(unittest.TestCase):
                              (self.root / 'skills' / name / 'SKILL.md').read_bytes())
         self.assertTrue((self.output / 'skills/project-context/../../workflows/adaptive.md').is_file())
         build(self.root, check=True)
+
+    def test_init_skills_are_explicit_only_and_script_runs_from_the_package(self):
+        build(self.root)
+        manifest = json.loads((self.root / 'toolkit.json').read_text())
+        self.assertEqual(manifest['codex_skills'], ['kaboost-init', 'kaboost-init-global'])
+        for name in manifest['codex_skills']:
+            skill = self.output / 'skills' / name
+            self.assertIn('allow_implicit_invocation: false', (skill / 'agents/openai.yaml').read_text())
+            self.assertIn('--targets codex', (skill / 'SKILL.md').read_text())
+            self.assertTrue((skill / '../../init/kaboost_init.py').is_file())
+        repo, home = self.root.parent / 'work', self.root.parent / 'home'
+        repo.mkdir()
+        (home / '.codex').mkdir(parents=True)
+        script = str(self.output / 'init/kaboost_init.py')
+        base = [sys.executable, '-I', script]
+        for scope, ids in (('repo', 'core-rules'), ('global', 'core-rules-global')):
+            args = ['--scope', scope, '--targets', 'codex', '--root', str(repo), '--home', str(home)]
+            subprocess.run(base + ['apply', '--ids', ids, '--yes'] + args, check=True, capture_output=True)
+        self.assertIn('Engineering rules', (repo / 'AGENTS.md').read_text())
+        self.assertIn('Engineering rules', (home / '.codex/AGENTS.md').read_text())
+        self.assertFalse((repo / 'CLAUDE.md').exists() or (repo / '.claude').exists())
+
+    def test_implicit_invocation_policy_is_required(self):
+        path = self.root / 'adapters/codex/skills/kaboost-init/agents/openai.yaml'
+        path.write_text('policy:\n  allow_implicit_invocation: true\n', encoding='utf-8')
+        with self.assertRaisesRegex(ValueError, 'disable implicit invocation'):
+            build(self.root)
 
     def test_tampering_and_unexpected_files_are_detected(self):
         build(self.root)
