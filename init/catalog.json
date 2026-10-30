@@ -7,11 +7,11 @@
       "scope": "repo",
       "group": "Core",
       "title": "Attach the core engineering rules",
-      "summary": "Copies the core rules to .claude/engineering-rules.md and imports them from CLAUDE.md, because installing the plugin does not activate them.",
+      "summary": "Copies the core rules to .claude/kaboost/core-rules.md and imports them from CLAUDE.md, because installing the plugin does not activate them.",
       "edits": [
         {
           "name": "rules",
-          "target": "{repo}/.claude/engineering-rules.md",
+          "target": "{repo}/.claude/kaboost/core-rules.md",
           "mode": "own",
           "body": "{core}",
           "version": 1,
@@ -36,7 +36,7 @@
       ]
     },
     {
-      "id": "claude-pointer",
+      "id": "agents-import",
       "number": 26,
       "scope": "repo",
       "group": "Instruction files",
@@ -44,10 +44,10 @@
       "summary": "Adds the line @AGENTS.md to CLAUDE.md so one instruction file serves several agents.",
       "edits": [
         {
-          "name": "pointer",
+          "name": "import",
           "target": "{repo}/CLAUDE.md",
           "mode": "append",
-          "body": "claude-pointer.md",
+          "body": "agents-import.md",
           "version": 1,
           "tool": "claude"
         }

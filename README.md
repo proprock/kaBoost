@@ -48,10 +48,10 @@ The `kaboost` entry in `proprock/marketplace` is pinned to the reviewed tag and 
 
 The quick way is `/kaboost:init`: it previews and, after your confirmation, copies the core rules into the repository and adds the import to `CLAUDE.md`; run it again to see the state, update, or disable (it removes only its own marked block). The same command offers other repository practices from the [practices catalog](docs/practices-catalog.md). The manual procedure follows.
 
-Review [core/engineering-rules.md](core/engineering-rules.md). For a project, copy the reviewed file into the project, for example as `.claude/engineering-rules.md`, and add an import to the existing project CLAUDE.md; retain its other contents:
+Review [core/engineering-rules.md](core/engineering-rules.md). For a project, copy the reviewed file into the project, for example as `.claude/kaboost/core-rules.md`, and add an import to the existing project CLAUDE.md; retain its other contents:
 
 ```text
-@.claude/engineering-rules.md
+@.claude/kaboost/core-rules.md
 ```
 
 The copy is user-managed: review and update it alongside the plugin. In a Claude Code 2.1.312 print-mode test on Linux, an import outside the project did not automatically load the file contents; do not assume that an absolute checkout path activates the rules. Verify loading in your own client and profile. Never replace an existing CLAUDE.md with a generated file. [Project example](examples/project/CLAUDE.md).

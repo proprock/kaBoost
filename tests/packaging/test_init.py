@@ -48,8 +48,8 @@ class InitTests(unittest.TestCase):
 
     def test_apply_is_idempotent_and_marks_state(self):
         self.call('apply', '--ids', 'core-rules,agents-index', '--yes')
-        self.assertTrue((self.repo / '.claude/engineering-rules.md').is_file())
-        self.assertIn('@.claude/engineering-rules.md', (self.repo / 'CLAUDE.md').read_text())
+        self.assertTrue((self.repo / '.claude/kaboost/core-rules.md').is_file())
+        self.assertIn('@.claude/kaboost/core-rules.md', (self.repo / 'CLAUDE.md').read_text())
         self.assertEqual(self.features()['core-rules']['state'], 'enabled')
         again = self.call('apply', '--ids', 'core-rules,agents-index', '--yes')
         self.assertEqual(again['changes'], [])
@@ -58,12 +58,12 @@ class InitTests(unittest.TestCase):
         path = self.repo / name
         if original is not None:
             path.write_bytes(original)
-        self.call('apply', '--ids', 'claude-pointer,core-rules', '--yes')
+        self.call('apply', '--ids', 'agents-import,core-rules', '--yes')
         self.assertNotEqual(path.read_bytes(), original)
-        self.call('disable', '--ids', 'claude-pointer,core-rules', '--yes')
+        self.call('disable', '--ids', 'agents-import,core-rules', '--yes')
         if original is None:
             self.assertFalse(path.exists())
-            self.assertFalse((self.repo / '.claude/engineering-rules.md').exists())
+            self.assertFalse((self.repo / '.claude/kaboost/core-rules.md').exists())
         else:
             self.assertEqual(path.read_bytes(), original)
 
@@ -112,7 +112,7 @@ class InitTests(unittest.TestCase):
 
     def test_backup_is_written_next_to_a_modified_file(self):
         (self.repo / 'CLAUDE.md').write_text('mine\n')
-        self.call('apply', '--ids', 'claude-pointer', '--yes')
+        self.call('apply', '--ids', 'agents-import', '--yes')
         backups = list(self.repo.glob('CLAUDE.md.kaboost-bak-*'))
         self.assertEqual(len(backups), 1)
         self.assertEqual(backups[0].read_text(), 'mine\n')
@@ -181,16 +181,16 @@ class InitTests(unittest.TestCase):
 
     def test_repo_scope_splits_files_by_tool(self):
         self.call('apply', '--ids', 'core-rules,agents-index', '--yes', '--targets', 'claude')
-        self.assertTrue((self.repo / '.claude/engineering-rules.md').is_file())
+        self.assertTrue((self.repo / '.claude/kaboost/core-rules.md').is_file())
         self.assertNotIn('Engineering rules', (self.repo / 'AGENTS.md').read_text())
         self.assertEqual(self.features('repo', '--targets', 'claude')['core-rules']['state'], 'enabled')
         self.assertEqual(self.features('repo', '--targets', 'codex')['core-rules']['state'], 'disabled')
-        self.assertNotIn('claude-pointer', self.features('repo', '--targets', 'codex'))
+        self.assertNotIn('agents-import', self.features('repo', '--targets', 'codex'))
         self.call('apply', '--ids', 'core-rules', '--yes', '--targets', 'codex')
         self.assertIn('Engineering rules', (self.repo / 'AGENTS.md').read_text())
         self.call('disable', '--ids', 'core-rules', '--yes', '--targets', 'codex')
         self.assertNotIn('Engineering rules', (self.repo / 'AGENTS.md').read_text())
-        self.assertTrue((self.repo / '.claude/engineering-rules.md').is_file())
+        self.assertTrue((self.repo / '.claude/kaboost/core-rules.md').is_file())
 
     def test_global_scope_never_touches_the_repository(self):
         self.call('apply', '--ids', 'delegation', '--yes', scope='global')
