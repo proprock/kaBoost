@@ -75,12 +75,17 @@ def judge(task, reference, candidate, env):
         return {}, 0
 
 
-def run(output, shared_target, task, arm, n, plugin, core):
+def run(output, template, task, arm, n, plugin, core):
     name = f"{task['id']}-{arm}-{n}"
     record = output / name
     record.mkdir()
     checkout = record / 'checkout'
-    env = dict(os.environ, GIT_CONFIG_GLOBAL='/dev/null', CARGO_TARGET_DIR=str(shared_target))
+    # A private copy of the warmed target directory per session: a directory shared by different source trees
+    # reuses test binaries built from another checkout (same package id), so the oracle ran stale code.
+    target = record / 'target'
+    if template is not None and task['prep'] == 'rust_shim':
+        subprocess.run(['cp', '-cR', str(template), str(target)], check=True)
+    env = dict(os.environ, GIT_CONFIG_GLOBAL='/dev/null', CARGO_TARGET_DIR=str(target))
     prepare(task, checkout, env)
     args = []
     if arm != 'BASE':
@@ -153,12 +158,19 @@ def main():
     if args.only:
         tasks = [t for t in tasks if t['id'] in args.only.split(',')]
     output.mkdir(parents=True)
-    shared_target = output / 'cargo-target'
+    template = None
+    first = next((t for t in tasks if t['prep'] == 'rust_shim'), None)
+    if first:
+        template = output / 'target-template'
+        warm = output / 'warm-checkout'
+        env = dict(os.environ, GIT_CONFIG_GLOBAL='/dev/null', CARGO_TARGET_DIR=str(template))
+        prepare(first, warm, env)
+        pilot.checked(['cargo', 'test', '--no-run'], cwd=warm, env=env)
     jobs = [(t, a, n) for t in tasks for a in args.arms.split(',') for n in range(1, args.n + 1)]
     random.Random(20261030).shuffle(jobs)
     plugin, core = ROOT / 'plugins' / 'kaboost', ROOT / 'core' / 'engineering-rules.md'
     with ThreadPoolExecutor(args.workers) as pool:
-        rows = list(pool.map(lambda j: run(output, shared_target, *j, plugin, core), jobs))
+        rows = list(pool.map(lambda j: run(output, template, *j, plugin, core), jobs))
     with (output / 'summary.csv').open('w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=list(rows[0]))
         writer.writeheader()
