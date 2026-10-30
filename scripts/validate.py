@@ -21,6 +21,17 @@ def validate(root=ROOT):
             raise ValueError(f'Invalid canonical skill: {name}')
         if len(text.splitlines()) > 100:
             raise ValueError(f'Skill exceeds context budget: {name}')
+    commands = manifest.get('commands', [])
+    if len(commands) != len(set(commands)):
+        raise ValueError('Duplicate command names')
+    command_dir = root/'commands'
+    found = {p.stem for p in command_dir.glob('*.md')} if command_dir.is_dir() else set()
+    if set(commands) != found:
+        raise ValueError('Manifest does not enumerate canonical commands')
+    for name in commands:
+        text = source_file(root, f'commands/{name}.md').decode('utf-8')
+        if not re.fullmatch(r'---\n(?:[a-z-]+: [^\n]+\n)*description: [^\n]+\n(?:[a-z-]+: [^\n]+\n)*---\n(.+)', text, re.S):
+            raise ValueError(f'Invalid canonical command: {name}')
     core = source_file(root, manifest['core']).decode('utf-8')
     if not 30 <= len(core.splitlines()) <= 50:
         raise ValueError('Core must fit 30–50 lines')
@@ -31,7 +42,7 @@ def validate(root=ROOT):
         raise ValueError('Marketplace identity/source/version mismatch')
     # Check local Markdown links without requiring network access.
     documents = [root/'README.md', root/'CHANGELOG.md']
-    for folder in ('core', 'skills', 'workflows', 'docs', 'adapters', 'examples'):
+    for folder in ('core', 'skills', 'commands', 'workflows', 'docs', 'adapters', 'examples'):
         documents.extend((root/folder).rglob('*.md'))
     for path in documents:
         for target in re.findall(r'\]\(([^)]+)\)', path.read_text(encoding='utf-8')):

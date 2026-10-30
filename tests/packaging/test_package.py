@@ -92,6 +92,23 @@ class PackageTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate(self.root)
 
+    def test_package_contains_commands(self):
+        data = json.loads((self.root/'toolkit.json').read_text())
+        self.assertIn('help', data['commands'])
+        for name in data['commands']:
+            self.assertTrue((self.root/f'plugins/kaboost/commands/{name}.md').is_file())
+
+    def test_unlisted_command_is_rejected(self):
+        (self.root/'commands/extra.md').write_text('---\ndescription: Extra\n---\nBody', encoding='utf-8')
+        with self.assertRaises(ValueError):
+            validate(self.root)
+
+    def test_command_without_description_is_rejected(self):
+        path = self.root/'commands/help.md'
+        path.write_text('---\nargument-hint: x\n---\nBody', encoding='utf-8')
+        with self.assertRaises(ValueError):
+            validate(self.root)
+
     def test_invalid_frontmatter_is_rejected(self):
         path = self.root/'skills/verification/SKILL.md'
         path.write_text('---\nname: wrong\n---\nBody', encoding='utf-8')

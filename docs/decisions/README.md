@@ -8,3 +8,5 @@ All decisions are accepted for the 0.1 implementation, following architecture ap
 - [004 — Versions and local configuration](004-versions-overrides.md)
 - [005 — Environment boundary](005-environment-boundary.md)
 - [006 — Planning entry point](006-planning-entry-point.md)
+
+- [007 — Explicit commands](007-explicit-commands.md)

@@ -9,6 +9,13 @@
     "systematic-debugging",
     "verification"
   ],
+  "commands": [
+    "context",
+    "debug",
+    "help",
+    "plan",
+    "verify"
+  ],
   "workflow": "workflows/adaptive.md",
   "adapters": {
     "claude-code": {

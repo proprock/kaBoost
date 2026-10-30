@@ -43,6 +43,10 @@ def expected_files(root=ROOT):
         if not name or any(c not in 'abcdefghijklmnopqrstuvwxyz0123456789-' for c in name):
             raise ValueError(f'Invalid skill name: {name}')
         files[f'skills/{name}/SKILL.md'] = source_file(root, f'skills/{name}/SKILL.md')
+    for name in manifest.get('commands', []):
+        if not name or any(c not in 'abcdefghijklmnopqrstuvwxyz0123456789-' for c in name):
+            raise ValueError(f'Invalid command name: {name}')
+        files[f'commands/{name}.md'] = source_file(root, f'commands/{name}.md')
     files['core/engineering-rules.md'] = source_file(root, manifest['core'])
     files['workflows/adaptive.md'] = source_file(root, manifest['workflow'])
     files['LICENSE'] = source_file(root, 'LICENSE')
