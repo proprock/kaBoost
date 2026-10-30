@@ -9,7 +9,7 @@ A small, versioned engineering toolkit: understand before changing code, choose 
 Requires an installed Claude Code client. The plugin is listed in the [proprock marketplace](https://github.com/proprock/marketplace):
 
 ```text
-claude plugin marketplace add proprock/marketplace
+claude plugin marketplace add https://github.com/proprock/marketplace.git
 claude plugin install kaboost@proprock
 ```
 
