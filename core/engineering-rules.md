@@ -19,7 +19,7 @@
 - Handle clear local changes directly; plan when uncertainty, scope, or risk warrants it.
 - For changes to behavior, CLI or API surfaces, or anything others depend on, invoke plan-before-edit before the first edit. For a Large task, state criteria, non-goals, alternatives, decision, and verification before editing.
 - Investigate root causes using evidence and falsifiable hypotheses.
-- Use TDD for suitable behavioral changes and reproducible bugs.
+- Use TDD for suitable behavioral changes and reproducible bugs; commit the failing tests alone (`TDD: red`, naming the expected failing tests), then the solution (`TDD: green`).
 - Choose unit, integration, or contract tests according to the behavior and boundary affected.
 - Keep tests deterministic and isolated: no network or live services in the default suite, fakes at boundaries, controlled time, bounded waits.
 - Add a test only if it can fail because of a product defect; one scenario per test.
