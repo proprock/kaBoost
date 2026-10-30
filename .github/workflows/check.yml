@@ -1,0 +1,48 @@
+name: Checks
+# The full cycle runs only when code, tests, shipped content, or build inputs change.
+# Text-only changes (README, TODO, DONE, CHANGELOG, docs, behavior reports) run docs-check.yml instead.
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'scripts/**'
+      - 'tests/**'
+      - '!tests/**/*.md'
+      - '!tests/**/*.csv'
+      - 'skills/**'
+      - 'commands/**'
+      - 'core/**'
+      - 'workflows/**'
+      - 'plugins/**'
+      - 'adapters/**'
+      - 'evals/**'
+      - 'toolkit.json'
+      - '.claude-plugin/**'
+      - 'LICENSE'
+      - '.gitattributes'
+      - '.devcontainer/**'
+      - '.github/workflows/**'
+  pull_request:
+    paths:
+      - 'scripts/**'
+      - 'tests/**'
+      - '!tests/**/*.md'
+      - '!tests/**/*.csv'
+      - 'skills/**'
+      - 'commands/**'
+      - 'core/**'
+      - 'workflows/**'
+      - 'plugins/**'
+      - 'adapters/**'
+      - 'evals/**'
+      - 'toolkit.json'
+      - '.claude-plugin/**'
+      - 'LICENSE'
+      - '.gitattributes'
+      - '.devcontainer/**'
+      - '.github/workflows/**'
+permissions:
+  contents: read
+jobs:
+  full:
+    uses: ./.github/workflows/package-checks.yml

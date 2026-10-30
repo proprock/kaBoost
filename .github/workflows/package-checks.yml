@@ -1,7 +1,7 @@
-name: Package checks
+name: Package checks (full cycle)
+# Reusable: called by check.yml for code and test changes and by release-candidate.yml unconditionally.
 on:
-  push:
-  pull_request:
+  workflow_call:
   workflow_dispatch:
 permissions:
   contents: read
