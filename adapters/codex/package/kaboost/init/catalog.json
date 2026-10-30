@@ -1,0 +1,572 @@
+{
+  "schema_version": 1,
+  "features": [
+    {
+      "id": "core-rules",
+      "number": 0,
+      "scope": "repo",
+      "group": "Core",
+      "title": "Attach the core engineering rules",
+      "summary": "Copies the core rules to .claude/kaboost/core-rules.md and imports them from CLAUDE.md, because installing the plugin does not activate them.",
+      "edits": [
+        {
+          "name": "rules",
+          "target": "{repo}/.claude/kaboost/core-rules.md",
+          "mode": "own",
+          "body": "{core}",
+          "version": 1,
+          "tool": "claude"
+        },
+        {
+          "name": "import",
+          "target": "{repo}/CLAUDE.md",
+          "mode": "append",
+          "body": "core-import.md",
+          "version": 1,
+          "tool": "claude"
+        },
+        {
+          "name": "rules-codex",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "{core}",
+          "version": 1,
+          "tool": "codex"
+        }
+      ]
+    },
+    {
+      "id": "agents-import",
+      "number": 26,
+      "scope": "repo",
+      "group": "Instruction files",
+      "title": "CLAUDE.md points to AGENTS.md",
+      "summary": "Adds the line @AGENTS.md to CLAUDE.md so one instruction file serves several agents.",
+      "edits": [
+        {
+          "name": "import",
+          "target": "{repo}/CLAUDE.md",
+          "mode": "append",
+          "body": "agents-import.md",
+          "version": 1,
+          "tool": "claude"
+        }
+      ]
+    },
+    {
+      "id": "agents-index",
+      "number": 27,
+      "scope": "repo",
+      "group": "Instruction files",
+      "title": "AGENTS.md as a compact index",
+      "summary": "Adds a short documentation-index section to AGENTS.md.",
+      "edits": [
+        {
+          "name": "index",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "agents-index.md",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "todo-done",
+      "number": 22,
+      "scope": "repo",
+      "group": "Process",
+      "title": "TODO.md and DONE.md with acceptance criteria",
+      "summary": "Creates TODO.md and DONE.md with tracking rules; refuses if either file already exists unmanaged.",
+      "edits": [
+        {
+          "name": "todo",
+          "target": "{repo}/TODO.md",
+          "mode": "own",
+          "body": "todo.md",
+          "version": 1
+        },
+        {
+          "name": "done",
+          "target": "{repo}/DONE.md",
+          "mode": "own",
+          "body": "done.md",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "changelog",
+      "number": 35,
+      "scope": "repo",
+      "group": "Release",
+      "title": "Keep a Changelog",
+      "summary": "Creates CHANGELOG.md with the Keep a Changelog layout; refuses if the file already exists unmanaged.",
+      "edits": [
+        {
+          "name": "changelog",
+          "target": "{repo}/CHANGELOG.md",
+          "mode": "own",
+          "body": "changelog.md",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "pr-template",
+      "number": 46,
+      "scope": "repo",
+      "group": "Process",
+      "title": "Pull request template",
+      "summary": "Creates .github/PULL_REQUEST_TEMPLATE.md; refuses if it already exists unmanaged.",
+      "edits": [
+        {
+          "name": "template",
+          "target": "{repo}/.github/PULL_REQUEST_TEMPLATE.md",
+          "mode": "own",
+          "body": "pr-template.md",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "python-toolchain",
+      "number": 2,
+      "scope": "repo",
+      "group": "Python",
+      "title": "Python toolchain rules",
+      "summary": "Adds uv, ruff, ty and pytest rules (and the sandbox cache note) to AGENTS.md.",
+      "when": {
+        "any_glob": [
+          "pyproject.toml"
+        ]
+      },
+      "edits": [
+        {
+          "name": "rules",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "python-toolchain.md",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "make-checks",
+      "number": 9,
+      "scope": "repo",
+      "group": "Python",
+      "title": "Makefile check targets",
+      "summary": "Adds sync, format, lint, type, tests and check targets to the Makefile.",
+      "when": {
+        "any_glob": [
+          "pyproject.toml"
+        ]
+      },
+      "edits": [
+        {
+          "name": "targets",
+          "target": "{repo}/Makefile",
+          "mode": "append",
+          "body": "make-checks.mk",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "windows-notes",
+      "number": 33,
+      "scope": "repo",
+      "group": "Windows",
+      "title": "Windows and PowerShell notes",
+      "summary": "Adds PowerShell and file-system notes to AGENTS.md.",
+      "when": {
+        "any_glob": [
+          "*.ps1",
+          "*.sln",
+          "*.vcxproj"
+        ]
+      },
+      "edits": [
+        {
+          "name": "notes",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "windows-notes.md",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "ci-python",
+      "number": 15,
+      "scope": "repo",
+      "group": "Process",
+      "title": "CI on pull requests",
+      "summary": "Creates .github/workflows/kaboost-ci.yml: format, lint, types, tests, distribution build and install check with uv.",
+      "when": {
+        "any_glob": [
+          "pyproject.toml"
+        ]
+      },
+      "edits": [
+        {
+          "name": "workflow",
+          "target": "{repo}/.github/workflows/kaboost-ci.yml",
+          "mode": "own",
+          "body": "ci-python.yml",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "release-check",
+      "number": 21,
+      "scope": "repo",
+      "group": "Release",
+      "title": "Release rules and version consistency check",
+      "summary": "Adds release rules to AGENTS.md and scripts/kaboost_check_version.py, which fails when pyproject.toml and the newest CHANGELOG.md heading disagree.",
+      "when": {
+        "any_glob": [
+          "pyproject.toml"
+        ]
+      },
+      "edits": [
+        {
+          "name": "rules",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "release-rules.md",
+          "version": 1
+        },
+        {
+          "name": "script",
+          "target": "{repo}/scripts/kaboost_check_version.py",
+          "mode": "own",
+          "body": "check-version.py",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "precommit-hooks",
+      "number": 36,
+      "scope": "repo",
+      "group": "Python",
+      "title": "Pre-commit hooks through prek",
+      "summary": "Creates .pre-commit-config.yaml (ruff format, ruff check, ty), adds the no --no-verify rule to AGENTS.md, and installs the git hook with prek (installing prek with uv first if it is missing). Disabling uninstalls the hook.",
+      "when": {
+        "any_glob": [
+          "pyproject.toml"
+        ]
+      },
+      "edits": [
+        {
+          "name": "config",
+          "target": "{repo}/.pre-commit-config.yaml",
+          "mode": "own",
+          "body": "precommit-config.yaml",
+          "version": 1
+        },
+        {
+          "name": "rules",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "precommit-rules.md",
+          "version": 1
+        },
+        {
+          "name": "git-hook",
+          "kind": "git-hook",
+          "command": "prek",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "coverage-review",
+      "number": 37,
+      "scope": "repo",
+      "group": "Process",
+      "title": "Coverage review and targeted mutation checks",
+      "summary": "Adds a short rule to AGENTS.md: review coverage after a big feature; mutation checks only for security-relevant code.",
+      "edits": [
+        {
+          "name": "rules",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "coverage-review.md",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "tool-selection-eval",
+      "number": 44,
+      "scope": "repo",
+      "group": "Process",
+      "title": "Tool selection checks for MCP projects",
+      "summary": "Adds rules for tool descriptions, unique names and a small tool-selection evaluation set to AGENTS.md.",
+      "when": {
+        "any_glob": [
+          ".mcp.json",
+          "mcp.json",
+          "*/mcp*",
+          "src/*/mcp*"
+        ]
+      },
+      "edits": [
+        {
+          "name": "rules",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "tool-selection-eval.md",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "review-skills",
+      "number": 45,
+      "scope": "repo",
+      "group": "Skills",
+      "title": "Skills: PR summary, coverage improvement, release review",
+      "summary": "Adds three explicit-only skills, kaboost-pr-summary, kaboost-coverage-improvement and kaboost-release-review, under .claude/skills (Claude Code) and .agents/skills (Codex).",
+      "edits": [
+        {
+          "name": "pr-summary-claude",
+          "target": "{repo}/.claude/skills/kaboost-pr-summary/SKILL.md",
+          "mode": "own",
+          "body": "skill-pr-summary.claude.md",
+          "version": 1,
+          "tool": "claude",
+          "frontmatter": true
+        },
+        {
+          "name": "coverage-improvement-claude",
+          "target": "{repo}/.claude/skills/kaboost-coverage-improvement/SKILL.md",
+          "mode": "own",
+          "body": "skill-coverage-improvement.claude.md",
+          "version": 1,
+          "tool": "claude",
+          "frontmatter": true
+        },
+        {
+          "name": "release-review-claude",
+          "target": "{repo}/.claude/skills/kaboost-release-review/SKILL.md",
+          "mode": "own",
+          "body": "skill-release-review.claude.md",
+          "version": 1,
+          "tool": "claude",
+          "frontmatter": true
+        },
+        {
+          "name": "pr-summary-codex",
+          "target": "{repo}/.agents/skills/kaboost-pr-summary/SKILL.md",
+          "mode": "own",
+          "body": "skill-pr-summary.codex.md",
+          "version": 1,
+          "tool": "codex",
+          "frontmatter": true
+        },
+        {
+          "name": "pr-summary-codex-policy",
+          "target": "{repo}/.agents/skills/kaboost-pr-summary/agents/openai.yaml",
+          "mode": "own",
+          "body": "skill-policy.yaml",
+          "version": 1,
+          "tool": "codex"
+        },
+        {
+          "name": "coverage-improvement-codex",
+          "target": "{repo}/.agents/skills/kaboost-coverage-improvement/SKILL.md",
+          "mode": "own",
+          "body": "skill-coverage-improvement.codex.md",
+          "version": 1,
+          "tool": "codex",
+          "frontmatter": true
+        },
+        {
+          "name": "coverage-improvement-codex-policy",
+          "target": "{repo}/.agents/skills/kaboost-coverage-improvement/agents/openai.yaml",
+          "mode": "own",
+          "body": "skill-policy.yaml",
+          "version": 1,
+          "tool": "codex"
+        },
+        {
+          "name": "release-review-codex",
+          "target": "{repo}/.agents/skills/kaboost-release-review/SKILL.md",
+          "mode": "own",
+          "body": "skill-release-review.codex.md",
+          "version": 1,
+          "tool": "codex",
+          "frontmatter": true
+        },
+        {
+          "name": "release-review-codex-policy",
+          "target": "{repo}/.agents/skills/kaboost-release-review/agents/openai.yaml",
+          "mode": "own",
+          "body": "skill-policy.yaml",
+          "version": 1,
+          "tool": "codex"
+        }
+      ]
+    },
+    {
+      "id": "core-rules-global",
+      "number": 0,
+      "scope": "global",
+      "group": "Core",
+      "title": "Core engineering rules in your global files",
+      "summary": "Writes the core rules into ~/.claude/CLAUDE.md and ~/.codex/AGENTS.md so they apply in every project.",
+      "edits": [
+        {
+          "name": "claude",
+          "target": "{home}/.claude/CLAUDE.md",
+          "mode": "append",
+          "body": "{core}",
+          "version": 1,
+          "tool": "claude"
+        },
+        {
+          "name": "codex",
+          "target": "{home}/.codex/AGENTS.md",
+          "mode": "append",
+          "body": "{core}",
+          "version": 1,
+          "tool": "codex"
+        }
+      ]
+    },
+    {
+      "id": "code-discovery",
+      "number": 28,
+      "scope": "global",
+      "group": "Personal",
+      "title": "Code discovery order",
+      "summary": "Graph tools first, then symbol tools, then text search.",
+      "edits": [
+        {
+          "name": "claude",
+          "target": "{home}/.claude/CLAUDE.md",
+          "mode": "append",
+          "body": "code-discovery.md",
+          "version": 1,
+          "tool": "claude"
+        },
+        {
+          "name": "codex",
+          "target": "{home}/.codex/AGENTS.md",
+          "mode": "append",
+          "body": "code-discovery.md",
+          "version": 1,
+          "tool": "codex"
+        }
+      ]
+    },
+    {
+      "id": "context7",
+      "number": 39,
+      "scope": "global",
+      "group": "Personal",
+      "title": "Current library documentation",
+      "summary": "Check current docs through Context7 instead of answering from memory.",
+      "edits": [
+        {
+          "name": "claude",
+          "target": "{home}/.claude/CLAUDE.md",
+          "mode": "append",
+          "body": "context7.md",
+          "version": 1,
+          "tool": "claude"
+        },
+        {
+          "name": "codex",
+          "target": "{home}/.codex/AGENTS.md",
+          "mode": "append",
+          "body": "context7.md",
+          "version": 1,
+          "tool": "codex"
+        }
+      ]
+    },
+    {
+      "id": "reasoning-effort",
+      "number": 41,
+      "scope": "global",
+      "group": "Personal",
+      "title": "Reasoning effort",
+      "summary": "Escalate effort only for architecture and hard debugging, and say so.",
+      "edits": [
+        {
+          "name": "claude",
+          "target": "{home}/.claude/CLAUDE.md",
+          "mode": "append",
+          "body": "reasoning-effort.md",
+          "version": 1,
+          "tool": "claude"
+        },
+        {
+          "name": "codex",
+          "target": "{home}/.codex/AGENTS.md",
+          "mode": "append",
+          "body": "reasoning-effort.md",
+          "version": 1,
+          "tool": "codex"
+        }
+      ]
+    },
+    {
+      "id": "compaction",
+      "number": 42,
+      "scope": "global",
+      "group": "Personal",
+      "title": "Compaction and handoff",
+      "summary": "What to keep and drop when compacting context.",
+      "edits": [
+        {
+          "name": "claude",
+          "target": "{home}/.claude/CLAUDE.md",
+          "mode": "append",
+          "body": "compaction.md",
+          "version": 1,
+          "tool": "claude"
+        },
+        {
+          "name": "codex",
+          "target": "{home}/.codex/AGENTS.md",
+          "mode": "append",
+          "body": "compaction.md",
+          "version": 1,
+          "tool": "codex"
+        }
+      ]
+    },
+    {
+      "id": "delegation",
+      "number": 43,
+      "scope": "global",
+      "group": "Personal",
+      "title": "Delegation",
+      "summary": "Delegate bounded subtasks; the main agent keeps architecture and review.",
+      "edits": [
+        {
+          "name": "claude",
+          "target": "{home}/.claude/CLAUDE.md",
+          "mode": "append",
+          "body": "delegation.md",
+          "version": 1,
+          "tool": "claude"
+        },
+        {
+          "name": "codex",
+          "target": "{home}/.codex/AGENTS.md",
+          "mode": "append",
+          "body": "delegation.md",
+          "version": 1,
+          "tool": "codex"
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Claude Code adapter
 
-`plugin.json` is the maintained metadata template. `scripts/build.py` copies canonical content to the committed package. Skills contain no runtime scripts. Core rules and the adaptive workflow are shipped as readable references; installing them does not make them always active.
+`plugin.json` is the maintained metadata template. `scripts/build.py` copies canonical content to the committed package. Skills contain no runtime scripts; the one bundled script is the init engine (`init/kaboost_init.py`, standard library only), which runs only when you invoke `/kaboost:init`. Core rules and the adaptive workflow are shipped as readable references; installing them does not make them always active.
 
 Review/import the core explicitly as described in the root README. Native skill names are namespaced by plugin. Automatic selection is model-dependent; explicit invocation remains available.
 

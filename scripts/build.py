@@ -47,6 +47,12 @@ def expected_files(root=ROOT):
         if not name or any(c not in 'abcdefghijklmnopqrstuvwxyz0123456789-' for c in name):
             raise ValueError(f'Invalid command name: {name}')
         files[f'commands/{name}.md'] = source_file(root, f'commands/{name}.md')
+    init_dir = manifest.get('init')
+    if init_dir:
+        for path in sorted((root / init_dir).rglob('*')):
+            if path.is_file() and '__pycache__' not in path.parts and path.suffix != '.pyc':
+                relative = path.relative_to(root).as_posix()
+                files[relative] = source_file(root, relative)
     files['core/engineering-rules.md'] = source_file(root, manifest['core'])
     files['workflows/adaptive.md'] = source_file(root, manifest['workflow'])
     files['LICENSE'] = source_file(root, 'LICENSE')

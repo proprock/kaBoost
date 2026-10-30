@@ -2,7 +2,7 @@
 
 A small, versioned engineering toolkit: understand before changing code, choose a simple complete solution, and verify the result. Four on-demand skills support planning before edits, project context, systematic debugging, and verification. Core rules are language-agnostic; project tooling stays local.
 
-**Status:** release candidate `v0.1.0-rc.2` (package version 0.1.0); no stable release. Claude Code and Codex CLI have adapters, with commands for Claude Code only. See [compatibility](docs/compatibility.md) for tested versions, evidence and untested combinations. No installer, background sync, hooks, runtime scripts, or bundled MCP servers. Installing a plugin does **not** activate global engineering rules.
+**Status:** release candidate `v0.1.0-rc.2` (package version 0.1.0); no stable release. Claude Code and Codex CLI have adapters, with commands for Claude Code only. See [compatibility](docs/compatibility.md) for tested versions, evidence and untested combinations. No installer, background sync, hooks, or bundled MCP servers. The only script is the init engine, which runs only when you invoke `/kaboost:init`. Installing a plugin does **not** activate the engineering rules; `/kaboost:init` attaches them to a repository when you ask.
 
 ## Quick start
 
@@ -46,10 +46,12 @@ The `kaboost` entry in `proprock/marketplace` is pinned to the reviewed tag and 
 
 ## Activate core rules separately
 
-Review [core/engineering-rules.md](core/engineering-rules.md). For a project, copy the reviewed file into the project, for example as `.claude/engineering-rules.md`, and add an import to the existing project CLAUDE.md; retain its other contents:
+The quick way is `/kaboost:init`: it previews and, after your confirmation, copies the core rules into the repository and adds the import to `CLAUDE.md`; run it again to see the state, update, or disable (it removes only its own marked block). The same command offers other repository practices from the [practices catalog](docs/practices-catalog.md). The manual procedure follows.
+
+Review [core/engineering-rules.md](core/engineering-rules.md). For a project, copy the reviewed file into the project, for example as `.claude/kaboost/core-rules.md`, and add an import to the existing project CLAUDE.md; retain its other contents:
 
 ```text
-@.claude/engineering-rules.md
+@.claude/kaboost/core-rules.md
 ```
 
 The copy is user-managed: review and update it alongside the plugin. In a Claude Code 2.1.312 print-mode test on Linux, an import outside the project did not automatically load the file contents; do not assume that an absolute checkout path activates the rules. Verify loading in your own client and profile. Never replace an existing CLAUDE.md with a generated file. [Project example](examples/project/CLAUDE.md).

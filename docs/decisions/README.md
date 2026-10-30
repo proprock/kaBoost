@@ -11,3 +11,6 @@ All decisions are accepted for the 0.1 implementation, following architecture ap
 
 - [007 — Explicit commands](007-explicit-commands.md)
 - [008 — Evaluation criteria and decision rule](008-evaluation-criteria.md)
+- [009 — Init engine](009-init-engine.md)
+- [010 — Codex init skills](010-codex-init-skills.md)
+- [011 — TDD red/green commits](011-tdd-red-green-commits.md)

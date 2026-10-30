@@ -13,9 +13,12 @@
     "context",
     "debug",
     "help",
+    "init",
+    "init-global",
     "plan",
     "verify"
   ],
+  "init": "init",
   "workflow": "workflows/adaptive.md",
   "adapters": {
     "claude-code": {
@@ -27,5 +30,9 @@
       "output": "adapters/codex/package/kaboost"
     }
   },
-  "runtime_dependencies": []
+  "runtime_dependencies": [],
+  "codex_skills": [
+    "kaboost-init",
+    "kaboost-init-global"
+  ]
 }

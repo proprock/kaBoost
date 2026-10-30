@@ -35,6 +35,20 @@ def expected_files(root=ROOT):
         if not name or any(c not in 'abcdefghijklmnopqrstuvwxyz0123456789-' for c in name):
             raise ValueError(f'Invalid skill name: {name}')
         files[f'skills/{name}/SKILL.md'] = source_file(root, f'skills/{name}/SKILL.md')
+    for name in manifest.get('codex_skills', []):
+        if not name or any(c not in 'abcdefghijklmnopqrstuvwxyz0123456789-' for c in name):
+            raise ValueError(f'Invalid Codex skill name: {name}')
+        policy = source_file(root, f'adapters/codex/skills/{name}/agents/openai.yaml')
+        if b'allow_implicit_invocation: false' not in policy:
+            raise ValueError(f'Codex skill {name} must disable implicit invocation')
+        files[f'skills/{name}/SKILL.md'] = source_file(root, f'adapters/codex/skills/{name}/SKILL.md')
+        files[f'skills/{name}/agents/openai.yaml'] = policy
+    init_dir = manifest.get('init')
+    if init_dir:
+        for path in sorted((root / init_dir).rglob('*')):
+            if path.is_file() and '__pycache__' not in path.parts and path.suffix != '.pyc':
+                relative = path.relative_to(root).as_posix()
+                files[relative] = source_file(root, relative)
     add_inventory(files)
     return root / adapter['output'], files
 
