@@ -140,6 +140,29 @@ class InitTests(unittest.TestCase):
         self.assertFalse((self.home / '.claude/CLAUDE.md').exists())
         self.assertFalse((self.home / '.codex/AGENTS.md').exists())
 
+    def test_global_core_rules_keep_personal_text_and_restore_it(self):
+        claude = self.home / '.claude/CLAUDE.md'
+        codex_dir = self.home / '.codex'
+        codex_dir.mkdir()
+        (codex_dir / 'AGENTS.md').write_bytes(b'# Mine\n')
+        claude.write_bytes(b'# Personal rules\n\nKeep answers short.')
+        original = {claude: claude.read_bytes(), codex_dir / 'AGENTS.md': b'# Mine\n'}
+        preview = self.call('apply', '--ids', 'core-rules-global', scope='global')
+        self.assertEqual(len(preview['changes']), 2)
+        self.assertEqual(claude.read_bytes(), original[claude])
+        self.call('apply', '--ids', 'core-rules-global', '--yes', scope='global')
+        for path, before in original.items():
+            self.assertTrue(path.read_bytes().startswith(before.rstrip(b'\n')))
+            self.assertIn(b'Engineering rules', path.read_bytes())
+        self.assertEqual(self.features('global')['core-rules-global']['state'], 'enabled')
+        self.call('disable', '--ids', 'core-rules-global', '--yes', scope='global')
+        for path, before in original.items():
+            self.assertEqual(path.read_bytes(), before)
+
+    def test_global_scope_never_touches_the_repository(self):
+        self.call('apply', '--ids', 'delegation', '--yes', scope='global')
+        self.assertEqual(list(self.repo.iterdir()), [])
+
     def test_unknown_feature_id_is_rejected(self):
         with self.assertRaises(SystemExit):
             self.call('apply', '--ids', 'no-such-feature')
