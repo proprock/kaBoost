@@ -33,7 +33,7 @@ def expected_files(root=ROOT):
     if manifest['schema_version'] != 1 or manifest['runtime_dependencies']:
         raise ValueError('Unsupported schema or runtime dependencies')
     adapter = manifest['adapters']['claude-code']
-    if adapter['output'] != 'plugins/ai-dev-toolkit':
+    if adapter['output'] != 'plugins/kaboost':
         raise ValueError('Unexpected output directory')
     plugin = json.loads(source_file(root, adapter['template']))
     if plugin['name'] != manifest['name'] or plugin['version'] != manifest['version']:

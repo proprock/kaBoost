@@ -34,7 +34,7 @@ def main():
         (toolkit / 'plugins').mkdir()
         shutil.copyfile(fixture / 'project/.claude/engineering-rules.md',
                         toolkit / 'core/engineering-rules.md')
-        shutil.copytree(fixture / 'plugin', toolkit / 'plugins/ai-dev-toolkit')
+        shutil.copytree(fixture / 'plugin', toolkit / 'plugins/kaboost')
         rows.append(pilot.run_trial(output, scenario, 1, 'toolkit', toolkit, toolkit_sha, True))
         (output / 'summary.json').write_text(json.dumps(rows, indent=2) + '\n', encoding='utf-8')
 

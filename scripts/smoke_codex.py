@@ -31,8 +31,8 @@ def smoke():
         for path, content in owned.items():
             path.write_bytes(content)
         shutil.copytree(ROOT / 'adapters/codex/.agents', market / '.agents')
-        package = market / 'package/ai-dev-toolkit'
-        shutil.copytree(ROOT / 'adapters/codex/package/ai-dev-toolkit', package)
+        package = market / 'package/kaboost'
+        shutil.copytree(ROOT / 'adapters/codex/package/kaboost', package)
         env = dict(os.environ, HOME=str(home), CODEX_HOME=str(profile))
         # Prevent inherited API credentials from leaking into the isolated process.
         env.pop('OPENAI_API_KEY', None)
@@ -50,7 +50,7 @@ def smoke():
                 raise RuntimeError('User-owned instructions or core copy were modified')
             return json.loads(result.stdout)
 
-        identity = 'ai-dev-toolkit@kaboost-codex'
+        identity = 'kaboost@kaboost-codex'
         original = json.loads((package / 'plugin.json').read_text())['version']
         major, minor, patch = map(int, original.split('.'))
         fixture = f'{major}.{minor}.{patch + 1}'

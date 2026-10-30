@@ -1,7 +1,7 @@
 # Codex adapter
 
 Run `python scripts/build_codex.py` from the repository root to generate the
-package in `adapters/codex/package/ai-dev-toolkit`; use `--check` to detect
+package in `adapters/codex/package/kaboost`; use `--check` to detect
 drift. The package contains both the Agent Plugins manifest and a Codex
 compatibility manifest. Skills and the referenced workflow are copied from
 the canonical sources, and the checksum inventory covers the package files.
@@ -17,7 +17,7 @@ From the repository root, after reviewing the source and building the package:
 ```sh
 python scripts/build_codex.py --check
 codex plugin marketplace add ./adapters/codex
-codex plugin add ai-dev-toolkit@kaboost-codex
+codex plugin add kaboost@kaboost-codex
 codex plugin list
 ```
 
@@ -30,7 +30,7 @@ under the same version was not. A Git tag alone is not proof of immutability.
 To remove the plugin and then its catalog:
 
 ```sh
-codex plugin remove ai-dev-toolkit@kaboost-codex
+codex plugin remove kaboost@kaboost-codex
 codex plugin marketplace remove kaboost-codex
 ```
 
@@ -63,9 +63,9 @@ CLI version; a workflow definition alone does not establish a hosted pass.
 On Ubuntu with Codex CLI 0.165.0, an authenticated temporary profile was reset
 to remove the prior test plugin and catalog, then this package was installed.
 The app-server `skills/list` response for an otherwise empty project listed each
-of the three `ai-dev-toolkit:` skills exactly once, with no discovery errors;
+of the three `kaboost:` skills exactly once, with no discovery errors;
 the profile also contained the CLI's built-in system skills. In one model
-session (`gpt-6.1-sol`), an explicit `$ai-dev-toolkit:project-context` request
+session (`gpt-6.1-sol`), an explicit `$kaboost:project-context` request
 caused the agent to read the installed skill and report missing project and Git
 context without writing files. This is one invocation, not a routing or
 effectiveness guarantee. The profile was previously used for KB-103 and reset,
@@ -74,7 +74,7 @@ audited.
 
 When a copy of `project-context` was also placed in the project's
 `.agents/skills`, `skills/list` returned both `project-context` and
-`ai-dev-toolkit:project-context`. Codex did not deduplicate them. Install the
+`kaboost:project-context`. Codex did not deduplicate them. Install the
 plugin or a standalone copy of a given toolkit skill, rather than both, and
 remove an existing standalone copy only after reviewing ownership. A qualified
 plugin skill name makes the desired selection explicit, but does not remove the

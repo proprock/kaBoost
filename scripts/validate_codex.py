@@ -14,7 +14,7 @@ def validate(root=ROOT):
     entry = entries[0]
     if (market['name'], entry['name'], entry['source']) != (
         'kaboost-codex', manifest['name'],
-        {'source': 'local', 'path': './package/ai-dev-toolkit'},
+        {'source': 'local', 'path': './package/kaboost'},
     ):
         raise ValueError('Codex marketplace identity/source mismatch')
     if entry['policy'] != {'installation': 'AVAILABLE', 'authentication': 'ON_INSTALL'}:

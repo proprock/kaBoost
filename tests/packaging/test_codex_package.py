@@ -17,7 +17,7 @@ class CodexPackageTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name).resolve() / 'repo'
         shutil.copytree(ROOT, self.root, ignore=shutil.ignore_patterns('.git', '__pycache__'))
-        self.output = self.root / 'adapters/codex/package/ai-dev-toolkit'
+        self.output = self.root / 'adapters/codex/package/kaboost'
 
     def test_package_contains_canonical_skills_and_resolvable_workflow(self):
         build(self.root)

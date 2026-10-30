@@ -29,7 +29,7 @@ class PackageTests(unittest.TestCase):
         validate(self.root)
 
     def test_tampering_is_detected_and_rebuild_repairs_it(self):
-        path = self.root/'plugins/ai-dev-toolkit/skills/verification/SKILL.md'
+        path = self.root/'plugins/kaboost/skills/verification/SKILL.md'
         path.write_text('tampered', encoding='utf-8')
         with self.assertRaises(ValueError):
             validate(self.root)
@@ -37,7 +37,7 @@ class PackageTests(unittest.TestCase):
         validate(self.root)
 
     def test_unexpected_package_file_is_not_deleted(self):
-        path = self.root/'plugins/ai-dev-toolkit/local.txt'
+        path = self.root/'plugins/kaboost/local.txt'
         path.write_text('local override', encoding='utf-8')
         with self.assertRaises(ValueError):
             build(self.root)
@@ -71,7 +71,7 @@ class PackageTests(unittest.TestCase):
 
     @unittest.skipIf(sys.platform == 'win32', 'Symlink creation may require privileges')
     def test_symlink_output_is_rejected(self):
-        output = self.root/'plugins/ai-dev-toolkit'
+        output = self.root/'plugins/kaboost'
         shutil.rmtree(output)
         output.symlink_to(self.root/'core', target_is_directory=True)
         with self.assertRaises(ValueError):

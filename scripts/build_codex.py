@@ -10,7 +10,7 @@ def expected_files(root=ROOT):
     adapter = manifest['adapters']['codex']
     if manifest['schema_version'] != 1 or manifest['runtime_dependencies']:
         raise ValueError('Unsupported schema or runtime dependencies')
-    if adapter['output'] != 'adapters/codex/package/ai-dev-toolkit':
+    if adapter['output'] != 'adapters/codex/package/kaboost':
         raise ValueError('Unexpected Codex output directory')
     plugin = json.loads(source_file(root, adapter['template']))
     if (plugin['name'], plugin['version']) != (manifest['name'], manifest['version']):

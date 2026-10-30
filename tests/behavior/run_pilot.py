@@ -94,8 +94,8 @@ def run_trial(output, scenario, trial, arm, toolkit_root, toolkit_commit, expand
         with (checkout / '.git' / 'info' / 'exclude').open('a', encoding='utf-8') as f:
             f.write('\n/CLAUDE.md\n/.claude/\n')
         harness = [(p, digest(p)) for p in (local_rules, instructions)]
-        harness.extend((p, digest(p)) for p in (toolkit_root / 'plugins' / 'ai-dev-toolkit').rglob('*') if p.is_file())
-        args = ['--plugin-dir', str(toolkit_root / 'plugins' / 'ai-dev-toolkit')]
+        harness.extend((p, digest(p)) for p in (toolkit_root / 'plugins' / 'kaboost').rglob('*') if p.is_file())
+        args = ['--plugin-dir', str(toolkit_root / 'plugins' / 'kaboost')]
     tools = 'Read,Edit,Write,Glob,Grep,Bash,Skill'
     allowed = 'Read,Edit,Write,Glob,Grep,Skill,Bash(python3 *),Bash(git *)'
     if expanded_permissions:
@@ -128,7 +128,7 @@ def run_trial(output, scenario, trial, arm, toolkit_root, toolkit_commit, expand
     init = next((e for e in events if e.get('type') == 'system' and e.get('subtype') == 'init'), {})
     final = next((e for e in reversed(events) if e.get('type') == 'result'), {})
     skills = set(init.get('skills', []))
-    expected = {f'ai-dev-toolkit:{name}' for name in ('project-context', 'systematic-debugging', 'verification')}
+    expected = {f'kaboost:{name}' for name in ('project-context', 'systematic-debugging', 'verification')}
     discovery = expected.issubset(skills) if arm == 'toolkit' else not (skills & expected)
     harness_ok = all(path.exists() and digest(path) == before for path, before in harness)
     head = checked(['git', 'rev-parse', 'HEAD'], cwd=checkout, env=env).strip()

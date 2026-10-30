@@ -3,8 +3,8 @@
   "interface": {"displayName": "kaBoost Codex"},
   "plugins": [
     {
-      "name": "ai-dev-toolkit",
-      "source": {"source": "local", "path": "./package/ai-dev-toolkit"},
+      "name": "kaboost",
+      "source": {"source": "local", "path": "./package/kaboost"},
       "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
       "category": "Productivity"
     }

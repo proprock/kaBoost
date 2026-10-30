@@ -50,15 +50,15 @@ def prepare(root, ref, destination):
         _, claude = claude_files(snapshot)
         _, codex = codex_files(snapshot)
         packages = {
-            'claude-code': {**{'plugins/ai-dev-toolkit/' + k: v for k, v in claude.items()},
+            'claude-code': {**{'plugins/kaboost/' + k: v for k, v in claude.items()},
                             '.claude-plugin/marketplace.json': (snapshot / '.claude-plugin/marketplace.json').read_bytes()},
-            'codex': {**{'package/ai-dev-toolkit/' + k: v for k, v in codex.items()},
+            'codex': {**{'package/kaboost/' + k: v for k, v in codex.items()},
                       '.agents/plugins/marketplace.json': (snapshot / 'adapters/codex/.agents/plugins/marketplace.json').read_bytes()},
         }
         destination.mkdir(parents=True)
         checksums = {}
         for client, files in packages.items():
-            name = f'ai-dev-toolkit-{version}-{client}.zip'
+            name = f'kaboost-{version}-{client}.zip'
             with zipfile.ZipFile(destination / name, 'w', compression=zipfile.ZIP_DEFLATED) as bundle:
                 for path, data in sorted(files.items()):
                     info = zipfile.ZipInfo(path, date_time=(1980, 1, 1, 0, 0, 0))
