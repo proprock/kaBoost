@@ -2,7 +2,7 @@
 
 Approved 2026-10-30 from a survey of the maintainer's repositories with agent instructions (11 projects with rule files, plus personal Codex and Cursor configuration). Counts are the number of those 11 projects that contain the same or a similar practice; they say nothing about benefit. Project names and content are not recorded here. The numbers are the survey numbers, kept so earlier decisions stay traceable.
 
-The catalog is the feature base for `/kaboost:init` (KB-221) and the source of additions to the core rules (KB-222).
+The catalog is the feature base for `/kaboost:init` and `/kaboost:init-global` (KB-221, KB-223) and the source of additions to the core rules (KB-222).
 
 ## Already in the toolkit (removed from the candidates)
 
@@ -20,7 +20,7 @@ Covered by [core rules](../core/engineering-rules.md), the [adaptive workflow](.
 | 25 | Before adding a dependency compare two or three options and get agreement | 4 | |
 | 50 | Add a test only if it can fail because of a product defect; one scenario, one test | 1 | Candidate, decide during review |
 
-## Personal global files (applied by `/kaboost:init` on explicit consent)
+## Personal global files (applied by `/kaboost:init-global` on explicit consent)
 
 Written as a managed section into the user's global instruction files for Claude Code (`~/.claude/CLAUDE.md`) and Codex (`~/.codex/AGENTS.md`). Never at plugin installation.
 
@@ -33,6 +33,8 @@ Written as a managed section into the user's global instruction files for Claude
 | 43 | Delegate bounded subtasks to subagents; the main agent owns architecture | 1 |
 
 ## Repository features offered by `/kaboost:init`
+
+The first feature of both commands is attaching the core rules (project level for `init`, global files for `init-global`), because installing the plugin does not activate them.
 
 | # | Practice | Projects | Note |
 | --- | --- | --- | --- |
