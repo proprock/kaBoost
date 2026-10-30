@@ -33,7 +33,7 @@
         "queue"
       ]
     },
-    "prompt": "In resident mode the card queue ticks every 15 s while idle (usage polling). Cards that arrive after an idle period disappear before their configured display time is up. Find why and fix it, add a regression test, and run focused checks."
+    "prompt": "In resident mode the card queue ticks every 15 s while idle (usage polling). Cards that arrive after an idle period disappear before their configured display time is up. A card's display time should only count time while the card is shown, starting from the first tick that selects it. Find why and fix it, add a regression test, and run focused checks."
   },
   {
     "id": "ah-queue-wait-card",
@@ -69,7 +69,7 @@
         "activation"
       ]
     },
-    "prompt": "Clicking a card for a Claude terminal (CLI) session takes several seconds to focus the window on a cold disk cache. Find the cause and make the click fast for sessions that have a recorded window, keeping a fallback for when focusing that window fails. Update or add tests and run focused checks."
+    "prompt": "Clicking a card for a Claude terminal (CLI) session takes several seconds to focus the window on a cold disk cache. Find the cause and make the click fast for sessions that have a recorded window, keeping a fallback for when focusing that window fails. Keep the signatures of the existing activation trait methods unchanged. Update or add tests and run focused checks."
   },
   {
     "id": "ah-usage-days-hours",
