@@ -29,6 +29,7 @@ This file records completed tasks with dates and verification evidence. [TODO.md
 - [x] KB-015: Define independent acceptance tests and the Large task's readiness gate before agent trials. Completed 2026-10-29. Evidence: [pilot preparation](tests/behavior/pilot-candidates.md), independent acceptance scripts, and [readiness gate](tests/behavior/pilot-plan.md).
 - [x] KB-016: Run three paired baseline/toolkit trials per task, alternating arm order and isolating trial state. Completed 2026-10-29. Evidence: [pilot results](tests/behavior/pilot-results-2026-10-29.md); the trials include failed requirements and are not a release pass.
 - [x] KB-017: Record correctness, unrelated changes, test adequacy, architecture violations, manual interventions, actual tokens where available, and wall time using the evaluation protocol. Completed 2026-10-29. Evidence: [pilot results](tests/behavior/pilot-results-2026-10-29.md) and [per-arm measurements](tests/behavior/pilot-results-2026-10-29.csv).
+- [x] KB-024: Run the full CI cycle only for code, test, shipped-content and build-input changes; add a light docs check for text and an unconditional release-candidate workflow for tags and manual runs. Completed 2026-10-30. Evidence: [full cycle on the branch push, ten jobs green](https://github.com/proprock/kaBoost/actions/runs/41051896236) and a [docs-check run](https://github.com/proprock/kaBoost/actions/runs/41051895395); the unconditional tag path is untested until a tag is pushed.
 
 ## P1 — Second client: Codex
 
