@@ -30,8 +30,10 @@ import run_pilot as pilot  # noqa: E402  (reuse frozen commit, model and prompts
 LARGE = pilot.NATURAL_LARGE
 HOLDOUT = ('Add an opt-in --output-dir DIR option to scripts/build.py that builds the package into DIR instead of the committed '
            'plugins/ai-dev-toolkit directory; with --check it should verify DIR. Preserve existing behavior. Implement and run focused checks.')
-PROMPTS = {'small': pilot.PROMPTS['small'], 'large': LARGE, 'holdout': HOLDOUT}
-EVALUATORS = {'small': 'acceptance_readme.py', 'large': 'acceptance_json_cli.py', 'holdout': 'acceptance_output_dir.py'}
+HOLDOUT2 = 'Rename the verification skill to verify-completion. Keep everything else unchanged. Run focused checks.'
+PROMPTS = {'small': pilot.PROMPTS['small'], 'large': LARGE, 'holdout': HOLDOUT, 'holdout2': HOLDOUT2}
+EVALUATORS = {'small': 'acceptance_readme.py', 'large': 'acceptance_json_cli.py', 'holdout': 'acceptance_output_dir.py',
+              'holdout2': 'acceptance_rename_skill.py'}
 VARIANTS = ('V0', 'V1', 'V2', 'V3')  # BASE (no toolkit) is also accepted
 
 V1_DESCRIPTION = (
@@ -53,6 +55,9 @@ description: Use BEFORE the first edit when a task adds or changes a CLI flag, o
 Skip only for typo, documentation, or one-line local fixes.
 '''
 
+V2G_STEP = ('2. Before the first edit, write a short plan in your reply with these headings: Acceptance criteria, Non-goals, '
+            'Unchanged behavior, Alternative rejected, Checks. Do not edit files until it is written.')
+
 V3_CORE_LINE = (
     '- Before the first edit that changes behavior, a CLI or API surface, an output format, or an interface that other code or users depend on: '
     'find what depends on it (callers, tests, docs, current behavior for default and invalid inputs), then state in a short block the acceptance criteria, '
@@ -65,6 +70,12 @@ ORIGINAL_DESCRIPTION = ('Inspect or refresh repository context when onboarding, 
 def build_variant(variant, plugin, core):
     """Rewrite copies of the plugin and core file for one variant."""
     if variant in ('V0', 'BASE'):
+        return
+    if variant == 'V2G':
+        plan = plugin / 'skills' / 'plan-before-edit' / 'SKILL.md'
+        text = plan.read_text(encoding='utf-8')
+        old = next(l for l in text.split('\n') if l.startswith('2. Before the first edit'))
+        plan.write_text(text.replace(old, V2G_STEP), encoding='utf-8')
         return
     skill = plugin / 'skills' / 'project-context' / 'SKILL.md'
     text = skill.read_text(encoding='utf-8')
@@ -87,7 +98,10 @@ def build_variant(variant, plugin, core):
     core.write_text('\n'.join(core_lines), encoding='utf-8')
 
 
-def analyse(events):
+KEYWORDS = {'holdout2': ('verification',)}
+
+
+def analyse(events, scenario=''):
     """Return routing metrics from stream-json events."""
     order, text_before, skills, edited, all_calls = [], [], [], False, []
     for event in events:
@@ -109,7 +123,7 @@ def analyse(events):
     first_edit = next((i for i, n in enumerate(order) if n in ('Edit', 'Write')), None)
     skill_before = any(n == 'Skill' for n in (order[:first_edit] if first_edit is not None else order))
     pre = [b for b in all_calls[:first_edit if first_edit is not None else len(all_calls)]]
-    dependents = any(k in str(b.get('input', {})) for b in pre for k in ('validate.py', 'tests/packaging', 'test_package'))
+    dependents = any(k in str(b.get('input', {})) for b in pre for k in KEYWORDS.get(scenario, ('validate.py', 'tests/packaging', 'test_package')))
     ran_tests = any(b['name'] == 'Bash' and ('unittest' in str(b['input']) or 'tests/packaging' in str(b['input'])) for b in all_calls)
     return {'inspected_dependents_before_edit': dependents, 'ran_packaging_tests': ran_tests, 'edited': first_edit is not None, 'skill_called': bool(skills), 'skills': ';'.join(skills),
             'skill_before_edit': skill_before, 'gate_stated_before_edit': stated,
@@ -164,7 +178,7 @@ def run(output, variant, scenario, n, toolkit_plugin, core_src):
            'plugin_loaded': any(p.get('name') == 'ai-dev-toolkit' for p in init.get('plugins', [])),
            'seconds': round(duration, 1), 'cost_usd': final.get('total_cost_usd'),
            'denials': len(final.get('permission_denials', [])), 'acceptance_exit': acceptance.returncode, 'packaging_exit': packaging.returncode,
-           **analyse(events)}
+           **analyse(events, scenario)}
     print(name, {k: row[k] for k in ('exit', 'gate_met', 'skill_called', 'acceptance_exit', 'cost_usd')}, flush=True)
     return row
 
@@ -175,6 +189,7 @@ def main():
     parser.add_argument('--large', type=int, default=10)
     parser.add_argument('--small', type=int, default=5)
     parser.add_argument('--holdout', type=int, default=0)
+    parser.add_argument('--holdout2', type=int, default=0)
     parser.add_argument('--workers', type=int, default=4)
     parser.add_argument('--variants', default=','.join(VARIANTS))
     args = parser.parse_args()
@@ -185,7 +200,7 @@ def main():
         raise SystemExit('Working tree must be clean')
     output.mkdir(parents=True)
     plugin, core = ROOT / 'plugins' / 'ai-dev-toolkit', ROOT / 'core' / 'engineering-rules.md'
-    jobs = [(v, s, n) for v in args.variants.split(',') for s, count in (('large', args.large), ('small', args.small), ('holdout', args.holdout))
+    jobs = [(v, s, n) for v in args.variants.split(',') for s, count in (('large', args.large), ('small', args.small), ('holdout', args.holdout), ('holdout2', args.holdout2))
             for n in range(1, count + 1)]
     random.Random(20261029).shuffle(jobs)
     rows = []
