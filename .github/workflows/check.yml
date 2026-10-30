@@ -48,5 +48,23 @@ on:
 permissions:
   contents: read
 jobs:
+  gate:
+    # A pushed red TDD commit fails by design; pull requests always run, so the head is still checked.
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.red.outputs.skip }}
+    steps:
+      - id: red
+        env:
+          EVENT: ${{ github.event_name }}
+          MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          if [ "$EVENT" = push ] && printf '%s' "$MESSAGE" | grep -q 'TDD: red'; then
+            echo skip=true >> "$GITHUB_OUTPUT"
+          else
+            echo skip=false >> "$GITHUB_OUTPUT"
+          fi
   full:
+    needs: gate
+    if: needs.gate.outputs.skip != 'true'
     uses: ./.github/workflows/package-checks.yml
