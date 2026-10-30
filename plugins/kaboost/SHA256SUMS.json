@@ -1,6 +1,11 @@
 {
   ".claude-plugin/plugin.json": "bb073771b3c7658b68ffb4e81460a6988741eb2c3c5021db55fb05d427d29d4b",
   "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+  "commands/context.md": "4926c532c0c7ea5eab5ed7eea9f62bfc2db8711fdf7b0c15916aeb480cf5a3d9",
+  "commands/debug.md": "131bb687b0e5b8b997ae5ea7b9885901804b52238df63bdb5cc581926654598d",
+  "commands/help.md": "3d740f5d8e5e6239971ecd892f6a91bb220a64854fd51b8929ccf354d079ba43",
+  "commands/plan.md": "39339b7a800ed710f48e58c80d57c4321c9d06b7e47bd85d8f4018adc99740f0",
+  "commands/verify.md": "b04650bbe7cfe7768db3a2de2539a75e98fb51483acf8491dd6b9b5d2130f459",
   "core/engineering-rules.md": "f0bf86400e4647cc3b3421ac8606aa866b8ddc8c6cd7e0fd625a092c28f83fcd",
   "skills/plan-before-edit/SKILL.md": "ed0308752d321f4fa0fc8fbfea9e979e660aa243afbcefbc0693a78720764f2c",
   "skills/project-context/SKILL.md": "621a98827ea849485e337917e2e579d8a381dae3547a8c0dc933aaf11bbc17af",

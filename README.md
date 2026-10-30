@@ -30,6 +30,18 @@ Restart Claude Code. Invoke a skill explicitly, for example:
 /kaboost:verification Check this change against the ticket acceptance criteria.
 ```
 
+Each skill also has a short command, for explicit choice instead of relying on description routing. Run `/kaboost:help` to see which fits.
+
+| Command | Purpose |
+| :- | :- |
+| `/kaboost:plan <task>` | State criteria, non-goals, constraints, an alternative, and checks before the first edit |
+| `/kaboost:debug <symptom>` | Investigate a failure systematically |
+| `/kaboost:verify [criteria]` | Check the current change against its criteria |
+| `/kaboost:context [topic]` | Inspect or refresh repository context, or hand off a session |
+| `/kaboost:help [task]` | Show which command fits |
+
+Commands are Claude Code only; the Codex package ships skills. They are user-invoked and add nothing to the skill listing.
+
 Releases are pinned in the marketplace: the `kaboost` entry in `proprock/marketplace` carries the reviewed `ref` or `sha` of this repository. No v0.1.0 tag is published by this change, so the catalog currently follows the default branch. The catalog installs only after the package has been pushed; local installation is available immediately.
 
 ## Activate core rules separately

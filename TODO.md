@@ -56,6 +56,7 @@ Frozen until KB-207 is resolved: do not start KB-209 through KB-212 while natura
 - [ ] KB-210: Add an opt-in Rust module using the project's selected toolchain and checks.
 - [ ] KB-211: Add an opt-in C++ module using the project's selected build system, compiler, and checks.
 - [ ] KB-212: Verify language modules introduce no global tooling mandates or changes to unrelated projects.
+- [ ] KB-215 (feeds KB-207): Measure whether the `/kaboost:plan` reply format produces the written gate (criteria, non-goals, constraints, alternative, checks) before the first edit, against natural prompting and `plan-before-edit` alone, with matched scenarios and cost.
 - [ ] KB-213: Measure context and process overhead after each substantial content addition; simplify policies that fail the relevant gates.
 
 **Done when:** the intended development workflow is covered without heavyweight procedures for routine changes, and optional modules preserve the language-agnostic core. Features without a demonstrated use case may be explicitly deferred with a reason.
@@ -86,5 +87,5 @@ Frozen until KB-207 is resolved: do not start KB-209 through KB-212 while natura
 
 - Full implementation means validated engineering content, workflows, and selected native adapters—not a universal plugin platform.
 - Custom installers, package managers, sync engines, workstation bootstrap, dotfiles, and secrets synchronization remain out of scope.
-- Hooks, agents, commands, MCP integrations, and Jira connectors require a concrete use case and a separate scope decision; they are not implicit backlog commitments.
+- Hooks, agents, MCP integrations, and Jira connectors require a concrete use case and a separate scope decision; they are not implicit backlog commitments. Commands are in scope per [ADR 007](docs/decisions/007-explicit-commands.md).
 - User Environment Sync remains an independent future project. Ordinary toolkit installation must not depend on it. See the [boundary](docs/sync-boundary.md).
