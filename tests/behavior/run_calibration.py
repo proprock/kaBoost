@@ -3,7 +3,7 @@
 Usage: python3 tests/behavior/run_calibration.py OUTPUT_DIR --tasks FILE [FILE...] [--arms BASE,V0,CMD] [--n N] [--workers N]
 Each task names a local repository and a fix commit. The agent starts from the fix's parent, in a fresh
 repository without history (so the fix cannot be read). After the session the fix commit's test files are
-copied in and the oracle command decides pass/fail. Requires an authenticated Claude profile; each session is
+copied in and the oracle command decides pass/fail; a model judge (blind to the arm, given the fix as reference) scores the diff as a secondary measure. Requires an authenticated Claude profile; each session is
 capped at USD 0.40. Private tasks (tests/behavior/private/) write only to OUTPUT_DIR; keep it out of Git.
 """
 import argparse
@@ -12,6 +12,7 @@ import json
 import os
 from pathlib import Path
 import random
+import re
 import shutil
 import subprocess
 import sys
@@ -52,6 +53,28 @@ def prepare(task, checkout, env):
     return parent
 
 
+RUBRIC = """You grade one proposed solution to a software task. You see the task text, a reference diff (the project's own accepted fix) and the candidate diff. Judge behavior, not similarity: a different but correct approach is fine. Scores are integers 1-5.
+- behavior: the candidate fixes the stated problem the way the task describes.
+- contract: existing behavior, public APIs and strictness that the task says to keep are preserved; no regressions.
+- tests: it adds or updates tests that would fail without the fix and check the behavior, not the implementation.
+- minimal: no unrelated, speculative or needless changes.
+Reply with only one JSON object: {"behavior": n, "contract": n, "tests": n, "minimal": n, "overall": n, "note": "one sentence"}. overall is your holistic 1-5 score."""
+
+
+def judge(task, reference, candidate, env):
+    prompt = (f"{RUBRIC}\n\n## Task\n{task['prompt']}\n\n## Reference diff\n{reference[:30000]}\n\n## Candidate diff\n{candidate[:30000] or '(empty)'}\n")
+    try:
+        result = subprocess.run(['claude', '-p', '--model', pilot.MODEL, '--effort', 'medium', '--tools', '', '--setting-sources', '',
+                                 '--strict-mcp-config', '--no-session-persistence', '--output-format', 'json', '--max-budget-usd', '0.15'],
+                                input=prompt, cwd=env['TMPDIR'], env=env, text=True, capture_output=True, timeout=300)
+        outer = json.loads(result.stdout)
+        match = re.search(r'\{.*\}', outer.get('result', ''), re.S)
+        scores = json.loads(match.group(0)) if match else {}
+        return scores, outer.get('total_cost_usd') or 0
+    except (subprocess.TimeoutExpired, json.JSONDecodeError, KeyError, OSError):
+        return {}, 0
+
+
 def run(output, shared_target, task, arm, n, plugin, core):
     name = f"{task['id']}-{arm}-{n}"
     record = output / name
@@ -90,8 +113,12 @@ def run(output, shared_target, task, arm, n, plugin, core):
         except json.JSONDecodeError:
             pass
     final = next((e for e in reversed(events) if e.get('type') == 'result'), {})
-    # Oracle: the fix commit's own test files replace the agent's copies, then the test command decides.
+    pilot.checked(['git', 'add', '-A'], cwd=checkout, env=env)
+    candidate = pilot.checked(['git', 'diff', '--cached', 'HEAD'], cwd=checkout, env=env)
     source = REPOS / task['repo']
+    reference = subprocess.run(['git', 'show', '--format=', task['fix']], cwd=source, capture_output=True, text=True).stdout
+    scores, judge_cost = judge(task, reference, candidate, dict(env, TMPDIR=str(record)))
+    # Oracle: the fix commit's own test files replace the agent's copies, then the test command decides.
     for relative in task['oracle']['files']:
         data = subprocess.run(['git', 'show', f"{task['fix']}:{relative}"], cwd=source, capture_output=True).stdout
         (checkout / relative).write_bytes(data)
@@ -102,8 +129,9 @@ def run(output, shared_target, task, arm, n, plugin, core):
            'cost_usd': final.get('total_cost_usd'), 'denials': len(final.get('permission_denials', [])),
            'oracle_pass': oracle.returncode == 0, 'files_changed': max(len(changed) - 1, 0),
            'skill_called': analysis['skill_called'], 'gate_full_before_edit': analysis['gate_full_before_edit'],
-           'edited': analysis['edited']}
-    print(name, {k: row[k] for k in ('exit', 'oracle_pass', 'gate_full_before_edit', 'cost_usd')}, flush=True)
+           'edited': analysis['edited'], 'judge_cost_usd': judge_cost,
+           **{f'judge_{k}': scores.get(k) for k in ('behavior', 'contract', 'tests', 'minimal', 'overall')}}
+    print(name, {k: row[k] for k in ('exit', 'oracle_pass', 'judge_overall', 'cost_usd')}, flush=True)
     return row
 
 
