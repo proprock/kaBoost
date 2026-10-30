@@ -45,7 +45,7 @@ This file contains unfinished work from MVP completion through the supported too
 
 ### Language modules
 
-KB-207 was closed on 2026-10-30 (routing verified, outcome benefit unproven), so these tasks are no longer frozen. Before starting KB-209 through KB-212, check them against the KB-219 to KB-221 practice base: `/kaboost:init` packs may replace them.
+Decision 2026-10-30: language modules belong at project level, so KB-209 through KB-212 are delivered as per-stack packs of `/kaboost:init` (KB-221), offered and applied in the project rather than shipped as plugin-wide modules. Start them after the KB-219 to KB-221 practice base exists; each pack keeps the "opt-in" and "no global tooling mandate" requirements below.
 
 - [ ] KB-209: Add an opt-in Python module covering project-established uv, pytest, ruff, ty, and prek workflows.
 - [ ] KB-210: Add an opt-in Rust module using the project's selected toolchain and checks.
