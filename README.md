@@ -2,7 +2,7 @@
 
 A small, versioned engineering toolkit: understand before changing code, choose a simple complete solution, and verify the result. Four on-demand skills support planning before edits, project context, systematic debugging, and verification. Core rules are language-agnostic; project tooling stays local.
 
-**Status:** 0.1.0 candidate, not published. Claude Code and Codex CLI have local adapters. See [compatibility](docs/compatibility.md) for tested versions, evidence and untested combinations. No installer, background sync, hooks, runtime scripts, or bundled MCP servers. Installing a plugin does **not** activate global engineering rules.
+**Status:** release candidate `v0.1.0-rc.2` (package version 0.1.0); no stable release. Claude Code and Codex CLI have adapters, with commands for Claude Code only. See [compatibility](docs/compatibility.md) for tested versions, evidence and untested combinations. No installer, background sync, hooks, runtime scripts, or bundled MCP servers. Installing a plugin does **not** activate global engineering rules.
 
 ## Quick start
 
@@ -42,7 +42,7 @@ Each skill also has a short command, for explicit choice instead of relying on d
 
 Commands are Claude Code only; the Codex package ships skills. They are user-invoked and add nothing to the skill listing.
 
-Releases are pinned in the marketplace: the `kaboost` entry in `proprock/marketplace` carries the reviewed `ref` or `sha` of this repository. No v0.1.0 tag is published by this change, so the catalog currently follows the default branch. The catalog installs only after the package has been pushed; local installation is available immediately.
+The `kaboost` entry in `proprock/marketplace` is pinned to the reviewed tag and commit of the release candidate (`v0.1.0-rc.2`). Moving to another release means changing that pin; see [migration](docs/migration.md).
 
 ## Activate core rules separately
 
