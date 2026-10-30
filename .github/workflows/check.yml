@@ -1,5 +1,6 @@
 name: Checks
 # The full cycle runs only when code, tests, shipped content, or build inputs change.
+# Pull requests and pushes of commits marked 'TDD: red' are handled by the gate job below.
 # Text-only changes (README, TODO, DONE, CHANGELOG, docs, behavior reports) run docs-check.yml instead.
 on:
   push:
