@@ -1,0 +1,110 @@
+[
+  {
+    "id": "ah-ipc-unknown-field",
+    "repo": "aHerald",
+    "fix": "145984c",
+    "prep": "rust_shim",
+    "oracle": {
+      "files": [
+        "tests/ipc.rs"
+      ],
+      "cmd": [
+        "cargo",
+        "test",
+        "--test",
+        "ipc"
+      ]
+    },
+    "prompt": "A resident aHerald process that is still running from an older build stops accepting events from a newer hook: the pipe is closed with error 800700e9 when an event carries a field the older build does not know. Make an older resident keep accepting such events, without loosening the strictness of the request wrapper. Add a regression test and run focused checks."
+  },
+  {
+    "id": "ah-queue-idle-gap",
+    "repo": "aHerald",
+    "fix": "2fdbd5e",
+    "prep": "rust_shim",
+    "oracle": {
+      "files": [
+        "tests/queue.rs"
+      ],
+      "cmd": [
+        "cargo",
+        "test",
+        "--test",
+        "queue"
+      ]
+    },
+    "prompt": "In resident mode the card queue ticks every 15 s while idle (usage polling). Cards that arrive after an idle period disappear before their configured display time is up. Find why and fix it, add a regression test, and run focused checks."
+  },
+  {
+    "id": "ah-queue-wait-card",
+    "repo": "aHerald",
+    "fix": "758de33",
+    "prep": "rust_shim",
+    "oracle": {
+      "files": [
+        "tests/queue.rs"
+      ],
+      "cmd": [
+        "cargo",
+        "test",
+        "--test",
+        "queue"
+      ]
+    },
+    "prompt": "In a live Claude Code session a permission request and the permission-prompt notification for the same session arrived about 6 s apart and two cards were shown for one waiting prompt. A still-open wait card for a session should not be duplicated by repeated prompts from that session, while other sessions keep their own cards and a prompt that was resolved can ask again later. Fix this, add a regression test, and run focused checks."
+  },
+  {
+    "id": "ah-activation-window-first",
+    "repo": "aHerald",
+    "fix": "f564632",
+    "prep": "rust_shim",
+    "oracle": {
+      "files": [
+        "tests/activation.rs"
+      ],
+      "cmd": [
+        "cargo",
+        "test",
+        "--test",
+        "activation"
+      ]
+    },
+    "prompt": "Clicking a card for a Claude terminal (CLI) session takes several seconds to focus the window on a cold disk cache. Find the cause and make the click fast for sessions that have a recorded window, keeping a fallback for when focusing that window fails. Update or add tests and run focused checks."
+  },
+  {
+    "id": "ah-usage-days-hours",
+    "repo": "aHerald",
+    "fix": "e859795",
+    "prep": "rust_shim",
+    "oracle": {
+      "files": [
+        "tests/usage_compact.rs"
+      ],
+      "cmd": [
+        "cargo",
+        "test",
+        "--test",
+        "usage_compact"
+      ]
+    },
+    "prompt": "The usage summary labels the weekly window 'week' and shows long countdowns in whole days only. Label the weekly window '7d' and show countdowns of a day or more as '<days>d <hours>h' with hours rounded down: 86400 s is '1d 0h', 89999 s is '1d 0h', 90000 s is '1d 1h', 172799 s is '1d 23h', 172800 s is '2d 0h', 558000 s is '6d 11h'. Countdowns under a day keep their current format. Example line: 'Codex remain: 5h 25% / 2:35, 7d 10% / 6d 11h'. Update tests and run focused checks."
+  },
+  {
+    "id": "ah-tray-mode-label",
+    "repo": "aHerald",
+    "fix": "588fd74",
+    "prep": "rust_shim",
+    "oracle": {
+      "files": [
+        "tests/usage_compact.rs"
+      ],
+      "cmd": [
+        "cargo",
+        "test",
+        "--test",
+        "usage_compact"
+      ]
+    },
+    "prompt": "The tray menu and tooltip usage line does not say whether the figures are remaining or used. Put the configured usage display mode in the label: 'Codex remain: 5h 25% / 2:35, week 10% / 6d' or 'Codex used: 5h 75% / 2:35, week 90% / 6d'. The status-only form 'Codex: <status>' gets the same label, 'Codex <mode>: <status>'. Update tests and run focused checks."
+  }
+]
