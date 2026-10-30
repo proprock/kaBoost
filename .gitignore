@@ -1,3 +1,6 @@
 __pycache__/
 *.py[cod]
 .test-results/
+
+# Private-project calibration inputs and results (KB-216); never commit
+tests/behavior/private/
