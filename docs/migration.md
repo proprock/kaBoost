@@ -1,6 +1,6 @@
 # Local overrides and migration
 
-The toolkit is a release candidate (`v0.1.0-rc.2`); a stable release will need
+The toolkit is a release candidate (`v0.1.0-rc.3`); a stable release will need
 its own reviewed ref and release notes. Use this procedure for reviewed versions. Keep
 user and project instructions and any customized core copy under their owner's
 control, outside plugin caches and generated package directories. A cache edit
