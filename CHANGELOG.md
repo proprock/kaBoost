@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.1.0-rc.1 — release candidate
+## 0.1.0 — release candidate
 
-Release candidate for 0.1.0; the package version is 0.1.0. Not a stable release.
+Release candidate (tags `v0.1.0-rc.N`); the package version is 0.1.0. Not a stable release.
 
 - Canonical language-agnostic engineering rules and four focused skills, including plan-before-edit for routing risky changes to planning.
 - Claude Code marketplace package and explicit core-rule import.
