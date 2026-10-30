@@ -9,7 +9,7 @@ The script is `init/kaboost_init.py` in this plugin, two directories above this 
 1. Run `python3 <script> status --scope repo --targets codex` and read the JSON. If the user only asked for status, show the table below and stop.
 2. Show the features grouped by `group` with their state: enabled, disabled, outdated, partial, drift, or conflict. For drift and conflict give the reason from `edits[].note`. Features that do not fit this repository are not listed.
 3. Ask in plain text, one group at a time with a numbered list, which disabled or outdated features to enable and which enabled ones to disable (only disabling if the user asked to disable). Stop if nothing is chosen.
-4. Preview without `--yes`: `python3 <script> apply --scope repo --targets codex --ids <ids>` (or `disable`). Summarize each file (create, modify, delete), show short diffs, and list skipped features with their reasons.
+4. Preview without `--yes`: `python3 <script> apply --scope repo --targets codex --ids <ids>` (or `disable`). Summarize each file (create, modify, delete), show short diffs, list the `commands` the script will run (for example installing a git hook) and skipped features with their reasons.
 5. Ask for confirmation. Only after a clear yes, run the same command again with `--yes`. Do not use `--force` unless the user has reviewed a hand-edited block and asks for it.
 6. Report what was written, where the backups (`*.kaboost-bak-*`) are, and what was skipped and why. Disabling removes only the managed block and restores the file.
 

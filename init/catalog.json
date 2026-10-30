@@ -253,7 +253,7 @@
       "scope": "repo",
       "group": "Python",
       "title": "Pre-commit hooks through prek",
-      "summary": "Creates .pre-commit-config.yaml (ruff format, ruff check, ty) and adds the no --no-verify rule to AGENTS.md. Nothing is installed; you run prek install yourself.",
+      "summary": "Creates .pre-commit-config.yaml (ruff format, ruff check, ty), adds the no --no-verify rule to AGENTS.md, and installs the git hook with prek (installing prek with uv first if it is missing). Disabling uninstalls the hook.",
       "when": {
         "any_glob": [
           "pyproject.toml"
@@ -272,6 +272,12 @@
           "target": "{repo}/AGENTS.md",
           "mode": "append",
           "body": "precommit-rules.md",
+          "version": 1
+        },
+        {
+          "name": "git-hook",
+          "kind": "git-hook",
+          "command": "prek",
           "version": 1
         }
       ]

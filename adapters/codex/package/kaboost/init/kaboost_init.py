@@ -1,12 +1,16 @@
 """kaBoost init engine: managed sections in repository and global instruction files.
 
 Standard library only. Runs only when a user invokes /kaboost:init or /kaboost:init-global; nothing here
-runs at installation or in the background. Every change is a marked block that this tool can update or remove
+runs at installation or in the background. File changes are marked blocks that this tool can update or remove
 without touching anything outside it:
 
     <!-- kaboost:begin KEY vN sha=<12 hex> pre=<n> created=<0|1> -->   (or "# ..." in non-Markdown files)
     ...body...
     <!-- kaboost:end KEY -->
+
+A feature may also install a git hook (`kind: git-hook`): the engine runs the named tool's `install` or
+`uninstall` after the files are written, installing the tool with `uv tool install` first when it is missing, and
+restores the files if a command fails. All of it happens only with --yes.
 
 `sha` is the hash of the body at write time, so edits made inside a block are detected as drift and never
 overwritten without --force. `pre` and `created` let disabling restore the original bytes exactly.
@@ -16,7 +20,10 @@ import datetime
 import difflib
 import hashlib
 import json
+import os
 import re
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -118,7 +125,82 @@ def resolve(edit, root, home):
     return Path(edit['target'].replace('{repo}', str(root)).replace('{home}', str(home)))
 
 
+def hook_file(root):
+    """The pre-commit hook path git uses for this repository (worktrees and core.hooksPath included), or None."""
+    try:
+        done = subprocess.run(['git', '-C', str(root), 'rev-parse', '--git-path', 'hooks/pre-commit'],
+                              capture_output=True, text=True)
+    except OSError:
+        return None
+    if done.returncode != 0 or not done.stdout.strip():
+        return None
+    path = Path(done.stdout.strip())
+    return path if path.is_absolute() else root / path
+
+
+def hook_state(edit, root):
+    path = hook_file(root)
+    if path is None:
+        return 'conflict', 'not a git repository, so no git hook can be installed'
+    if not path.exists():
+        return 'absent', ''
+    if edit['command'] in path.read_text(encoding='utf-8', errors='replace'):
+        return 'enabled', ''
+    return 'conflict', f'{path} exists and was not installed by {edit["command"]}'
+
+
+def find_tool(name):
+    """Locate a command on PATH, falling back to the folder where `uv tool install` puts executables."""
+    found = shutil.which(name)
+    if found or not shutil.which('uv'):
+        return found
+    done = subprocess.run(['uv', 'tool', 'dir', '--bin'], capture_output=True, text=True)
+    return shutil.which(name, path=done.stdout.strip()) if done.returncode == 0 and done.stdout.strip() else None
+
+
+def plan_hook(edit, root, install):
+    """Return the commands that install or remove a git hook, or raise Refusal; nothing runs here."""
+    command = edit['command']
+    state, note = hook_state(edit, root)
+    if state == 'conflict':
+        raise Refusal(note)
+    if install:
+        if state == 'enabled':
+            return []
+        steps = []
+        if find_tool(command) is None:
+            if not shutil.which('uv'):
+                raise Refusal(f'{command} is not installed and uv is not available to install it; install {command} first')
+            steps.append(['uv', 'tool', 'install', command])
+        return steps + [[command, 'install']]
+    if state == 'absent':
+        return []
+    if find_tool(command) is None:
+        raise Refusal(f'{command} was not found; delete {hook_file(root)} by hand to remove the hook')
+    return [[command, 'uninstall']]
+
+
+def execute(actions, root):
+    results = []
+    for action in actions:
+        argv = list(action['argv'])
+        resolved = find_tool(argv[0]) if argv[0] != 'uv' else shutil.which('uv')
+        argv[0] = resolved or argv[0]
+        try:
+            done = subprocess.run(argv, cwd=root, capture_output=True, text=True)
+            result = {'command': ' '.join(action['argv']), 'returncode': done.returncode,
+                      'output': (done.stdout + done.stderr).strip()[-500:]}
+        except OSError as error:
+            result = {'command': ' '.join(action['argv']), 'returncode': 127, 'output': str(error)}
+        results.append(result)
+        if result['returncode'] != 0:
+            break
+    return results
+
+
 def edit_state(edit, key, root, home):
+    if edit.get('kind') == 'git-hook':
+        return hook_state(edit, root)
     path = resolve(edit, root, home)
     text, _, _, existed = read(path)
     try:
@@ -165,7 +247,8 @@ def feature_state(feature, root, home, tools=None):
     for edit in active_edits(feature, root, home, tools):
         key = f"{feature['id']}:{edit['name']}"
         state, note = edit_state(edit, key, root, home)
-        states.append({'edit': edit['name'], 'target': str(resolve(edit, root, home)), 'state': state, 'note': note})
+        target = f"git hook ({edit['command']})" if edit.get('kind') == 'git-hook' else str(resolve(edit, root, home))
+        states.append({'edit': edit['name'], 'target': target, 'state': state, 'note': note})
     kinds = {s['state'] for s in states}
     if not states:
         overall = 'unavailable'
@@ -201,11 +284,14 @@ def status(catalog, scope, root, home, show_all, tools=None):
     return rows
 
 
-def plan_apply(feature, root, home, tools, force, pending=None):
+def plan_apply(feature, root, home, tools, force, pending=None, actions=None):
     """Return {path: new_text} for one feature on top of the changes already pending, or raise Refusal; nothing is
     written here. The result includes the pending paths it builds on."""
     changes = dict(pending or {})
     for edit in active_edits(feature, root, home, tools):
+        if edit.get('kind') == 'git-hook':
+            actions.extend({'feature': feature['id'], 'argv': argv} for argv in plan_hook(edit, root, True))
+            continue
         key = f"{feature['id']}:{edit['name']}"
         path = resolve(edit, root, home)
         text, _, _, existed = read(path)
@@ -232,9 +318,12 @@ def plan_apply(feature, root, home, tools, force, pending=None):
     return changes
 
 
-def plan_disable(feature, root, home, tools, pending=None):
+def plan_disable(feature, root, home, tools, pending=None, actions=None):
     changes = dict(pending or {})
     for edit in active_edits(feature, root, home, tools):
+        if edit.get('kind') == 'git-hook':
+            actions.extend({'feature': feature['id'], 'argv': argv} for argv in plan_hook(edit, root, False))
+            continue
         key = f"{feature['id']}:{edit['name']}"
         path = resolve(edit, root, home)
         text = changes[path] if path in changes else read(path)[0]
@@ -280,18 +369,26 @@ def run(catalog, args, root, home):
         raise SystemExit(f'Unknown feature ids for scope {args.scope}: {unknown}')
     tools = parse_targets(args.targets, catalog)
     stamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-    report, pending = [], {}
+    report, pending, actions = [], {}, []
     for fid in feature_ids:
         feature = by_id[fid]
+        mine = []
         try:
-            planned = (plan_apply(feature, root, home, tools, args.force, pending) if args.command == 'apply'
-                       else plan_disable(feature, root, home, tools, pending))
+            planned = (plan_apply(feature, root, home, tools, args.force, pending, mine) if args.command == 'apply'
+                       else plan_disable(feature, root, home, tools, pending, mine))
         except Refusal as error:
             report.append({'feature': fid, 'result': 'skipped', 'reason': str(error)})
             continue
         touched = [p for p, text in planned.items() if pending.get(p) != text]
         pending.update(planned)
-        report.append({'feature': fid, 'result': 'planned' if touched else 'nothing to do', 'files': [str(p) for p in touched]})
+        actions.extend(mine)
+        report.append({'feature': fid, 'result': 'planned' if touched or mine else 'nothing to do',
+                       'files': [str(p) for p in touched]})
+    results, undo = [], []
+    if args.yes and args.command == 'disable' and actions:
+        results = execute(actions, root)
+        if any(r['returncode'] != 0 for r in results):
+            pending = {}
     changes = []
     for path, new_text in pending.items():
         old_text, newline, bom, existed = read(path)
@@ -303,6 +400,7 @@ def run(catalog, args, root, home):
         changes.append({'file': str(path), 'action': 'delete' if deleting else ('modify' if existed else 'create'),
                         'diff': diff})
         if args.yes:
+            undo.append((path, path.read_bytes() if existed else None))
             if deleting:
                 path.unlink()
                 continue
@@ -311,7 +409,21 @@ def run(catalog, args, root, home):
                 backup.write_bytes(path.read_bytes())
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(to_bytes(new_text, newline if existed else '\n', bom))
-    return {'command': args.command, 'written': bool(args.yes), 'report': report, 'changes': changes}
+    if args.yes and args.command == 'apply' and actions:
+        results = execute(actions, root)
+    failed = any(r['returncode'] != 0 for r in results)
+    if failed:
+        for path, old in reversed(undo):
+            if old is None:
+                path.unlink(missing_ok=True)
+            else:
+                path.write_bytes(old)
+        for item in report:
+            if item['result'] == 'planned':
+                item.update(result='failed', reason='a command failed; nothing was left half-done')
+    return {'command': args.command, 'written': bool(args.yes) and not failed, 'report': report, 'changes': changes,
+            'commands': [{'feature': a['feature'], 'command': ' '.join(a['argv'])} for a in actions],
+            'command_results': results}
 
 
 def _created(old_text):
@@ -337,8 +449,9 @@ def main(argv=None):
         return 0
     if not args.ids:
         parser.error('--ids is required for apply and disable')
-    print(json.dumps(run(catalog, args, root, home), indent=2))
-    return 0
+    result = run(catalog, args, root, home)
+    print(json.dumps(result, indent=2))
+    return 1 if any(r['returncode'] != 0 for r in result['command_results']) else 0
 
 
 if __name__ == '__main__':
