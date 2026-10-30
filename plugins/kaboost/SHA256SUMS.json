@@ -14,7 +14,7 @@
   "init/features/agents-index.md": "dc3b27b3a36f15f9b2500c221fa934dbaaf6c5331e4d615b5cb8f6c79f42e70e",
   "init/features/changelog.md": "2224749698f8a5e12dbe319e2c7d6545ee75038a13e051ead4ee980fa03472f0",
   "init/features/check-version.py": "a5aefb7c7ad6d165b6822f833009be002b473b36296885d890754bc77e733af5",
-  "init/features/ci-python.yml": "11f0615eccdfe6cd6f65afa9d7c5621a3409d090aa48d31aa9e042e0c76e849a",
+  "init/features/ci-python.yml": "b0ba9fc1a56a53bd897f4d5a1b03025f3808ba964faa15793c47eb85a6fb1967",
   "init/features/code-discovery.md": "dbff2c22b812f56fc47ec1521a6fc2699a7007e3f7188353fdd53c2fb2a88767",
   "init/features/compaction.md": "3f035d2f10f24802c887348136cf497d7f65344241f9d9ca1799a35e8cfc31e9",
   "init/features/context7.md": "8c2b490e57c4d8220e73129a95e6bc18150677c1b914a3354601aeec2ed6877c",
@@ -44,5 +44,5 @@
   "skills/project-context/SKILL.md": "621a98827ea849485e337917e2e579d8a381dae3547a8c0dc933aaf11bbc17af",
   "skills/systematic-debugging/SKILL.md": "eb0c91d993469f7898f6c86ab8987401a64807b772ad5cfa3c8fe8e67cd53a58",
   "skills/verification/SKILL.md": "16c7526170871723a1c70093b9bfb82413ac19cb23a2f38512b6c915fc09a58a",
-  "workflows/adaptive.md": "91d4026c8e4803de9c53bb3695661b9c7eb9b498f38ede85122b69b4e20f8e7e"
+  "workflows/adaptive.md": "8c89bc785f383a47fc7e2a4bdb0a9388a43ea9f61a2e15d4a8c32ee26362fe00"
 }

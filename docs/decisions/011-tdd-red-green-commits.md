@@ -8,7 +8,7 @@ When work is test-driven, record it as two commits: the failing tests alone (`KB
 
 `scripts/audit_tdd.py [range] [--run 'cmd {tests}']` pairs each red with the next green of the same task and reports: a red without a green (or the reverse), a missing task ID or `Expected failing:` line, a red commit that touches non-test files, a green commit that touches only test files. With `--run` it checks out both commits in detached worktrees and requires the named tests to fail on red and pass on green.
 
-CI: a red commit fails by design. CI judges the pull-request head, so push the pair together; a red commit pushed alone to a branch with push-triggered CI fails that run and that is expected. Find the first failing commit with `git bisect --first-parent`, which stays on merge commits, and do not squash-merge a branch whose pairs should stay minable.
+CI: a red commit fails by design. Push-triggered runs skip a head commit whose message contains `TDD: red` (the `if` on the full-cycle job; the `ci-python` init feature carries the same condition), and pull-request runs never skip, so the pull-request head is always checked and a branch can never be merged with an unchecked red head. Pushing the pair together also works. Find the first failing commit with `git bisect --first-parent`, which stays on merge commits, and do not squash-merge a branch whose pairs should stay minable.
 
 ## Evidence
 
