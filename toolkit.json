@@ -13,9 +13,11 @@
     "context",
     "debug",
     "help",
+    "init",
     "plan",
     "verify"
   ],
+  "init": "init",
   "workflow": "workflows/adaptive.md",
   "adapters": {
     "claude-code": {
