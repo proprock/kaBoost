@@ -26,9 +26,6 @@ This file contains unfinished work from MVP completion through the supported too
 
 ### Release and remote distribution
 
-- [ ] KB-019: Review release contents, source SHA, canonical/generated consistency, license, checksums, changelog, and accidental-secret checks.
-- [ ] KB-021: Verify remote Git installation and tag pinning from a clean profile after candidate publication; test update and rollback between reviewed refs. Done so far: clean-profile install of the pinned `v0.1.0-rc.2` through `proprock/marketplace` (with commands present). Remaining: update and rollback between two reviewed refs.
-- [ ] KB-022: Finalize the tested client/OS support matrix, exact commands, limitations, and migration notes.
 - [ ] KB-023: Publish v0.1.0 when authorized and all release gates are met; verify installation from its published tag.
 
 **Done when:** the published MVP is reproducibly installable, supported combinations have evidence, and the behavior pilot meets the [documented gates](docs/roadmap.md). Candidate publication enables remote checks; it does not establish stable-release readiness.

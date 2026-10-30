@@ -1,11 +1,11 @@
 # Compatibility and evidence
 
-Documentation reviewed 2026-10-29. “Documented” is not “runtime tested.” No universal plugin or instruction-precedence semantics are claimed.
+Documentation reviewed 2026-10-30. “Documented” is not “runtime tested.” No universal plugin or instruction-precedence semantics are claimed.
 
 | Client | Instruction surface | Delivery and update | Toolkit status |
 | --- | --- | --- | --- |
-| Claude Code | ~/.claude/CLAUDE.md, project CLAUDE.md/rules; imports compose context | .claude-plugin/plugin.json, custom Git/local marketplace; native update/uninstall | MVP; exact local evidence below |
-| Codex CLI | $CODEX_HOME/AGENTS.md, project hierarchy; closer rules specialize | Agent Skills, .codex-plugin/plugin.json; local marketplace | Unreleased adapter; exact local evidence below |
+| Claude Code | ~/.claude/CLAUDE.md, project CLAUDE.md/rules; imports compose context | .claude-plugin/plugin.json, custom Git/local marketplace; native update/uninstall | Release candidate `v0.1.0-rc.2` (skills and commands); exact evidence below |
+| Codex CLI | $CODEX_HOME/AGENTS.md, project hierarchy; closer rules specialize | Agent Skills, .codex-plugin/plugin.json; local marketplace | Release candidate adapter (skills only, no commands); exact local evidence below |
 | Gemini CLI | ~/.gemini/GEMINI.md and hierarchical project context | gemini-extension.json; Git/local install, --ref, update/uninstall; gallery | Researched; no adapter |
 | Cursor | User Rules settings, project rules/AGENTS.md | Cursor plugins and Agent Plugins; GitHub marketplace import; native management | Researched; no adapter |
 | Copilot CLI | ~/.copilot/copilot-instructions.md, repository/path instructions | Git/URL/local custom marketplace, native plugins/update | Researched; no adapter; not a claim about every Copilot surface |
@@ -26,13 +26,26 @@ Codex's file hierarchy is documented; Claude and Gemini compose multiple instruc
 | Codex CLI isolated local marketplace lifecycle | 0.165.0 passed; see adapter guide | Pending | Pending |
 | Authenticated skill discovery / explicit invocation | Claude 2.1.312 and Codex CLI 0.165.0 passed with profile caveats; see records | Pending | Pending |
 | Behavior pilot | Claude and Codex trials recorded; release gate not met | Pending | Pending |
-| Remote tagged marketplace install | Pending publication | Pending publication | Pending publication |
+| Remote tagged marketplace install (`proprock/marketplace`, pinned `v0.1.0-rc.2`) | Pending | Claude 2.1.308 passed in a clean profile (version 0.1.0, five commands present) | Pending |
+| Update and rollback between two pinned Git tags (fixture repository, versions 0.1.0 and 0.1.1) | Pending | Claude 2.1.308 passed with `plugin update`; uninstall and reinstall also restored 0.1.0 | Pending |
+| Release artifacts reproducible and complete | CI (Ubuntu) archives are byte-identical to a local macOS build of the same tag; inventory, license and secret-pattern checks passed | Same comparison | Not compared |
 
 [Validation record](validation.md), [Codex adapter guide](../adapters/codex/README.md), and [comparison results](../tests/behavior/codex-comparison-results-2026-10-29.md) record scope and limitations. Portable files use LF and ordinary copies without Unix symlinks or shell scripts. OS portability still requires native runtime tests.
 
+## Candidate support statement
+
+Supported means tested at the points above, nothing broader.
+
+- **Claude Code:** install, update, rollback and removal verified for the local marketplace on Linux, macOS and Windows (2.1.312) and for the pinned remote candidate on macOS (2.1.308). Linux and Windows remote installs are untested.
+- **Codex CLI:** local marketplace lifecycle on Linux (0.165.0). macOS, Windows and remote installs are untested. Skills only; the `/kaboost:*` commands do not exist for Codex.
+- **Commands:** `/kaboost:plan`, `debug`, `verify`, `context`, `help` (Claude Code only). Only `plan` has a behavior measurement.
+- **Not claimed:** any improvement in task outcome. Measured so far: skill routing and the written plan work as described; outcomes did not improve and cost per session rose (see the [calibration report](../tests/behavior/kb216-calibration-2026-10-30.md)). Hooks, MCP servers and background processes are not part of the toolkit.
+
+Exact commands are in the [README](../README.md); migration is in [migration.md](migration.md).
+
 ## Client version and revalidation policy
 
-The unreleased toolkit has **no established supported version range or minimum**. The table records tested points only: Claude Code 2.1.301 and 2.1.312 and Codex CLI 0.165.0. A passed lifecycle does not imply authenticated loading, instruction behavior, remote distribution, or release readiness. Other versions and client surfaces are unverified until evidence is recorded; patch releases are not automatically assumed compatible. A release must identify its exact tested toolkit commit, client versions, OS, and check scope before claiming support.
+The release candidate has **no established supported version range or minimum**. The table records tested points only: Claude Code 2.1.301, 2.1.308 (remote candidate install, update and rollback on macOS), and 2.1.312, and Codex CLI 0.165.0 (local lifecycle only; no remote tag or macOS/Windows check). A passed lifecycle does not imply authenticated loading, instruction behavior, remote distribution, or release readiness. Other versions and client surfaces are unverified until evidence is recorded; patch releases are not automatically assumed compatible. A release must identify its exact tested toolkit commit, client versions, OS, and check scope before claiming support.
 
 Review the client vendor's current primary documentation and release notes before adding a client, changing a tested client version, or preparing a release. Compare native manifest and catalog fields, installation/update/removal commands, skill discovery and instruction loading against the adapter and documented limitations. Record sources, date, version, affected surfaces, and any changed assumptions; a documentation review alone is not runtime evidence.
 
