@@ -44,6 +44,26 @@ def body_of(edit):
     return text.replace('\r\n', '\n').rstrip('\n') + '\n'
 
 
+def split_front(body):
+    """Split leading YAML frontmatter from the body; ('', body) when there is none."""
+    if body.startswith('---\n'):
+        end = body.find('\n---\n', 3)
+        if end != -1:
+            return body[:end + 5], body[end + 5:]
+    return '', body
+
+
+def is_front(text):
+    return text.startswith('---\n') and text.endswith('\n---\n') and split_front(text)[0] == text
+
+
+def parts(edit):
+    """(frontmatter, managed body). Frontmatter stays above the begin marker so skill files keep a valid header;
+    it belongs to the block's version, so changing it needs a version bump."""
+    body = body_of(edit)
+    return split_front(body) if edit.get('frontmatter') else ('', body)
+
+
 def digest(body):
     return hashlib.sha256(body.encode('utf-8')).hexdigest()[:12]
 
@@ -109,7 +129,7 @@ def edit_state(edit, key, root, home):
         if edit['mode'] == 'own' and existed and text != '':
             return 'conflict', f'{path.name} exists and is not managed by kaBoost'
         return 'absent', ''
-    body = body_of(edit)
+    body = parts(edit)[1]
     if digest(block['inner']) != block['sha']:
         return 'drift', f'{key}: the block was edited after it was written'
     if block['version'] != edit['version'] or block['sha'] != digest(body):
@@ -191,20 +211,24 @@ def plan_apply(feature, root, home, tools, force, pending=None):
         text, _, _, existed = read(path)
         text = changes.get(path, text)
         block = find_block(text, key)
-        body, style = body_of(edit), style_of(path)
+        front, body = parts(edit)
+        style = style_of(path)
         if block is None:
             if edit['mode'] == 'own' and path not in changes and existed and text != '':
                 raise Refusal(f'{path.name} exists and is not managed by kaBoost')
             pre = '' if text == '' else (('\n' if not text.endswith('\n') else '') + '\n')
             created = 0 if existed or path in changes else 1
-            changes[path] = text + pre + render(key, edit['version'], body, style, len(pre), created)
+            changes[path] = text + pre + front + render(key, edit['version'], body, style, len(pre), created)
             continue
         if digest(block['inner']) != block['sha'] and not force:
             raise Refusal(f'{key}: the block was edited after it was written; review it, then use --force to overwrite')
         if block['version'] == edit['version'] and block['sha'] == digest(body) and digest(block['inner']) == block['sha']:
             continue
         new = render(key, edit['version'], body, style, block['pre'], block['created'])
-        changes[path] = text[:block['start']] + new + text[block['stop']:]
+        head = text[:block['start']]
+        if front and is_front(head):
+            head = front
+        changes[path] = head + new + text[block['stop']:]
     return changes
 
 
@@ -221,6 +245,8 @@ def plan_disable(feature, root, home, tools, pending=None):
             raise Refusal(f'{key}: the block was edited; review it and remove it by hand')
         start = block['start']
         before = text[:start]
+        if edit.get('frontmatter') and is_front(before):
+            before = ''
         if block['pre'] and before.endswith('\n' * block['pre']):
             before = before[:-block['pre']]
         result = before + text[block['stop']:]

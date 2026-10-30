@@ -197,6 +197,216 @@
       ]
     },
     {
+      "id": "ci-python",
+      "number": 15,
+      "scope": "repo",
+      "group": "Process",
+      "title": "CI on pull requests",
+      "summary": "Creates .github/workflows/kaboost-ci.yml: format, lint, types, tests, distribution build and install check with uv.",
+      "when": {
+        "any_glob": [
+          "pyproject.toml"
+        ]
+      },
+      "edits": [
+        {
+          "name": "workflow",
+          "target": "{repo}/.github/workflows/kaboost-ci.yml",
+          "mode": "own",
+          "body": "ci-python.yml",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "release-check",
+      "number": 21,
+      "scope": "repo",
+      "group": "Release",
+      "title": "Release rules and version consistency check",
+      "summary": "Adds release rules to AGENTS.md and scripts/kaboost_check_version.py, which fails when pyproject.toml and the newest CHANGELOG.md heading disagree.",
+      "when": {
+        "any_glob": [
+          "pyproject.toml"
+        ]
+      },
+      "edits": [
+        {
+          "name": "rules",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "release-rules.md",
+          "version": 1
+        },
+        {
+          "name": "script",
+          "target": "{repo}/scripts/kaboost_check_version.py",
+          "mode": "own",
+          "body": "check-version.py",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "precommit-hooks",
+      "number": 36,
+      "scope": "repo",
+      "group": "Python",
+      "title": "Pre-commit hooks through prek",
+      "summary": "Creates .pre-commit-config.yaml (ruff format, ruff check, ty) and adds the no --no-verify rule to AGENTS.md. Nothing is installed; you run prek install yourself.",
+      "when": {
+        "any_glob": [
+          "pyproject.toml"
+        ]
+      },
+      "edits": [
+        {
+          "name": "config",
+          "target": "{repo}/.pre-commit-config.yaml",
+          "mode": "own",
+          "body": "precommit-config.yaml",
+          "version": 1
+        },
+        {
+          "name": "rules",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "precommit-rules.md",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "coverage-review",
+      "number": 37,
+      "scope": "repo",
+      "group": "Process",
+      "title": "Coverage review and targeted mutation checks",
+      "summary": "Adds a short rule to AGENTS.md: review coverage after a big feature; mutation checks only for security-relevant code.",
+      "edits": [
+        {
+          "name": "rules",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "coverage-review.md",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "tool-selection-eval",
+      "number": 44,
+      "scope": "repo",
+      "group": "Process",
+      "title": "Tool selection checks for MCP projects",
+      "summary": "Adds rules for tool descriptions, unique names and a small tool-selection evaluation set to AGENTS.md.",
+      "when": {
+        "any_glob": [
+          ".mcp.json",
+          "mcp.json",
+          "*/mcp*",
+          "src/*/mcp*"
+        ]
+      },
+      "edits": [
+        {
+          "name": "rules",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "tool-selection-eval.md",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "review-skills",
+      "number": 45,
+      "scope": "repo",
+      "group": "Skills",
+      "title": "Skills: PR summary, coverage improvement, release review",
+      "summary": "Adds three explicit-only skills, kaboost-pr-summary, kaboost-coverage-improvement and kaboost-release-review, under .claude/skills (Claude Code) and .agents/skills (Codex).",
+      "edits": [
+        {
+          "name": "pr-summary-claude",
+          "target": "{repo}/.claude/skills/kaboost-pr-summary/SKILL.md",
+          "mode": "own",
+          "body": "skill-pr-summary.claude.md",
+          "version": 1,
+          "tool": "claude",
+          "frontmatter": true
+        },
+        {
+          "name": "coverage-improvement-claude",
+          "target": "{repo}/.claude/skills/kaboost-coverage-improvement/SKILL.md",
+          "mode": "own",
+          "body": "skill-coverage-improvement.claude.md",
+          "version": 1,
+          "tool": "claude",
+          "frontmatter": true
+        },
+        {
+          "name": "release-review-claude",
+          "target": "{repo}/.claude/skills/kaboost-release-review/SKILL.md",
+          "mode": "own",
+          "body": "skill-release-review.claude.md",
+          "version": 1,
+          "tool": "claude",
+          "frontmatter": true
+        },
+        {
+          "name": "pr-summary-codex",
+          "target": "{repo}/.agents/skills/kaboost-pr-summary/SKILL.md",
+          "mode": "own",
+          "body": "skill-pr-summary.codex.md",
+          "version": 1,
+          "tool": "codex",
+          "frontmatter": true
+        },
+        {
+          "name": "pr-summary-codex-policy",
+          "target": "{repo}/.agents/skills/kaboost-pr-summary/agents/openai.yaml",
+          "mode": "own",
+          "body": "skill-policy.yaml",
+          "version": 1,
+          "tool": "codex"
+        },
+        {
+          "name": "coverage-improvement-codex",
+          "target": "{repo}/.agents/skills/kaboost-coverage-improvement/SKILL.md",
+          "mode": "own",
+          "body": "skill-coverage-improvement.codex.md",
+          "version": 1,
+          "tool": "codex",
+          "frontmatter": true
+        },
+        {
+          "name": "coverage-improvement-codex-policy",
+          "target": "{repo}/.agents/skills/kaboost-coverage-improvement/agents/openai.yaml",
+          "mode": "own",
+          "body": "skill-policy.yaml",
+          "version": 1,
+          "tool": "codex"
+        },
+        {
+          "name": "release-review-codex",
+          "target": "{repo}/.agents/skills/kaboost-release-review/SKILL.md",
+          "mode": "own",
+          "body": "skill-release-review.codex.md",
+          "version": 1,
+          "tool": "codex",
+          "frontmatter": true
+        },
+        {
+          "name": "release-review-codex-policy",
+          "target": "{repo}/.agents/skills/kaboost-release-review/agents/openai.yaml",
+          "mode": "own",
+          "body": "skill-policy.yaml",
+          "version": 1,
+          "tool": "codex"
+        }
+      ]
+    },
+    {
       "id": "core-rules-global",
       "number": 0,
       "scope": "global",

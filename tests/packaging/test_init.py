@@ -1,5 +1,6 @@
 import contextlib
 import io
+import subprocess
 import json
 from pathlib import Path
 import sys
@@ -179,6 +180,77 @@ class InitTests(unittest.TestCase):
         self.call('disable', '--ids', 'agents-index,python-toolchain,windows-notes', '--yes')
         self.assertEqual(path.read_bytes(), b'# Mine\n')
 
+    def snapshot(self):
+        return {str(p.relative_to(self.repo)): p.read_bytes() for p in sorted(self.repo.rglob('*')) if p.is_file()}
+
+    def test_every_repository_feature_applies_and_disables_to_the_original_files(self):
+        (self.repo / 'pyproject.toml').write_text('[project]\nversion = "1.2.0"\n')
+        (self.repo / '.mcp.json').write_text('{}\n')
+        (self.repo / 'AGENTS.md').write_bytes(b'# Mine\r\n')
+        (self.repo / 'Makefile').write_bytes(b'all:\n\ttrue')
+        before = self.snapshot()
+        catalog = init.load_catalog()
+        ids = ','.join(f['id'] for f in catalog['features'] if f['scope'] == 'repo')
+        self.assertEqual({f['id'] for f in catalog['features'] if f['scope'] == 'repo'},
+                         set(self.features('repo', '--all')))
+        for targets in ('claude,codex',):
+            preview = self.call('apply', '--ids', ids, '--targets', targets)
+            self.assertFalse(preview['written'])
+            self.assertEqual(self.snapshot(), before)
+            applied = self.call('apply', '--ids', ids, '--yes', '--targets', targets)
+            self.assertEqual([r['result'] for r in applied['report'] if r['result'] == 'skipped'], [])
+            self.assertEqual(self.call('apply', '--ids', ids, '--yes', '--targets', targets)['changes'], [])
+            states = {f: v['state'] for f, v in self.features('repo', '--all', '--targets', targets).items()}
+            self.assertEqual(set(states.values()), {'enabled'}, states)
+            self.call('disable', '--ids', ids, '--yes', '--targets', targets)
+            after = {k: v for k, v in self.snapshot().items() if not k.endswith('.kaboost-bak-')
+                     and '.kaboost-bak-' not in k}
+            self.assertEqual(after, before)
+
+    def test_skill_files_keep_a_valid_header_and_split_by_tool(self):
+        self.call('apply', '--ids', 'review-skills', '--yes', '--targets', 'claude')
+        claude = self.repo / '.claude/skills/kaboost-pr-summary/SKILL.md'
+        text = claude.read_text()
+        self.assertTrue(text.startswith('---\nname: kaboost-pr-summary\n'))
+        self.assertIn('disable-model-invocation: true', text.split('---')[1])
+        self.assertLess(text.index('kaboost:begin'), text.index('# Pull request summary'))
+        self.assertGreater(text.index('kaboost:begin'), text.index('\n---\n'))
+        self.assertFalse((self.repo / '.agents').exists())
+        self.call('apply', '--ids', 'review-skills', '--yes', '--targets', 'codex')
+        codex = self.repo / '.agents/skills/kaboost-pr-summary'
+        self.assertTrue((codex / 'SKILL.md').read_text().startswith('---\nname: kaboost-pr-summary\n'))
+        self.assertNotIn('disable-model-invocation', (codex / 'SKILL.md').read_text())
+        self.assertIn('allow_implicit_invocation: false', (codex / 'agents/openai.yaml').read_text())
+        self.call('disable', '--ids', 'review-skills', '--yes', '--targets', 'claude,codex')
+        self.assertEqual(self.snapshot(), {})
+
+    def test_skill_bodies_are_identical_for_both_tools(self):
+        for key in ('pr-summary', 'coverage-improvement', 'release-review'):
+            claude = init.split_front((init.HERE / f'features/skill-{key}.claude.md').read_text())
+            codex = init.split_front((init.HERE / f'features/skill-{key}.codex.md').read_text())
+            self.assertEqual(claude[1], codex[1])
+
+    def test_version_check_script_detects_a_mismatch(self):
+        (self.repo / 'pyproject.toml').write_text('[project]\nversion = "1.2.0"\n')
+        (self.repo / 'CHANGELOG.md').write_text('# Changelog\n\n## [Unreleased]\n\n## [1.2.0] - 2026-01-31\n')
+        self.call('apply', '--ids', 'release-check', '--yes')
+        script = self.repo / 'scripts/kaboost_check_version.py'
+        run = lambda: subprocess.run([sys.executable, '-I', str(script), str(self.repo)], capture_output=True, text=True)
+        self.assertEqual(run().returncode, 0)
+        (self.repo / 'pyproject.toml').write_text('[project]\nversion = "1.3.0"\n')
+        result = run()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('1.3.0', result.stderr)
+
+    def test_relevance_of_new_features(self):
+        self.assertNotIn('ci-python', self.features())
+        self.assertNotIn('tool-selection-eval', self.features())
+        (self.repo / '.mcp.json').write_text('{}')
+        (self.repo / 'pyproject.toml').write_text('[project]\n')
+        features = self.features()
+        for fid in ('ci-python', 'release-check', 'precommit-hooks', 'tool-selection-eval', 'coverage-review', 'review-skills'):
+            self.assertIn(fid, features)
+
     def test_repo_scope_splits_files_by_tool(self):
         self.call('apply', '--ids', 'core-rules,agents-index', '--yes', '--targets', 'claude')
         self.assertTrue((self.repo / '.claude/kaboost/core-rules.md').is_file())
@@ -208,6 +280,9 @@ class InitTests(unittest.TestCase):
             self.assertIn(feature['scope'], ('repo', 'global'))
             for edit in feature['edits']:
                 self.assertIn(edit['mode'], ('own', 'append'))
+                if edit.get('frontmatter'):
+                    self.assertEqual(edit['mode'], 'own')
+                    self.assertTrue(init.parts(edit)[0].startswith('---\n'))
                 self.assertTrue(init.body_of(edit).strip())
                 self.assertRegex(edit['target'], r'^\{(repo|home)\}/')
 
