@@ -27,7 +27,7 @@ def validate(root=ROOT):
     market = json.loads(source_file(root, '.claude-plugin/marketplace.json'))
     entry, = market['plugins']
     if (market['name'], entry['name'], entry['version'], entry['source']) != (
-        'proprock', manifest['name'], manifest['version'], './plugins/kaboost'):
+        'kaboost-local', manifest['name'], manifest['version'], './plugins/kaboost'):
         raise ValueError('Marketplace identity/source/version mismatch')
     # Check local Markdown links without requiring network access.
     documents = [root/'README.md', root/'CHANGELOG.md']

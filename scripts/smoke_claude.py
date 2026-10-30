@@ -48,7 +48,7 @@ def smoke():
             return result.stdout
 
         run('plugin', 'marketplace', 'add', str(market))
-        identity = 'kaboost@proprock'
+        identity = 'kaboost@kaboost-local'
         run('plugin', 'install', identity)
         run('plugin', 'install', identity)
         listing = run('plugin', 'list', '--json')
@@ -66,7 +66,7 @@ def smoke():
             else:
                 data['version'] = fixture_version
             path.write_text(json.dumps(data), encoding='utf-8')
-        run('plugin', 'marketplace', 'update', 'kaboost')
+        run('plugin', 'marketplace', 'update', 'kaboost-local')
         run('plugin', 'update', identity)
         if fixture_version not in run('plugin', 'list', '--json'):
             raise RuntimeError('Update version missing')
@@ -74,14 +74,14 @@ def smoke():
         # Roll back by restoring the fixture to the checked-in version.
         shutil.copyfile(ROOT/'.claude-plugin/marketplace.json', market/'.claude-plugin/marketplace.json')
         shutil.copyfile(ROOT/'plugins/kaboost/.claude-plugin/plugin.json', market/'plugins/kaboost/.claude-plugin/plugin.json')
-        run('plugin', 'marketplace', 'update', 'kaboost')
+        run('plugin', 'marketplace', 'update', 'kaboost-local')
         run('plugin', 'install', identity)
         if original_version not in run('plugin', 'list', '--json'):
             raise RuntimeError('Rollback version missing')
         run('plugin', 'uninstall', identity)
         if identity in run('plugin', 'list', '--json'):
             raise RuntimeError('Uninstalled plugin still present')
-        run('plugin', 'marketplace', 'remove', 'kaboost')
+        run('plugin', 'marketplace', 'remove', 'kaboost-local')
         print('Local marketplace lifecycle passed; no inference or global profile changes.')
 
 
