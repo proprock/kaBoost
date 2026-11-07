@@ -5,7 +5,7 @@ Date: 2026-10-29. Environment: Linux; Python 3.10.12. Claude Code 2.1.301. Sourc
 | Command / check | Result | Limit |
 | --- | --- | --- |
 | `python3 scripts/build.py --check` | Passed | Canonical/generated equality; no runtime claim |
-| `python3 scripts/validate.py` | Passed | Constrained canonical format, manifests, versions, local links, line budget, inventory |
+| `python3 scripts/validate.py` | Passed | Constrained canonical format, manifests, versions, current release named in the release documents, local links, line budget, inventory |
 | `python3 -m unittest discover -s tests/packaging -v` | Passed | Repeatability, tamper detection/repair, unknown-file preservation, unsafe paths, versions, symlink refusal |
 | `python3 scripts/check_secrets.py` | Passed | Common credential patterns only |
 | `claude plugin validate --strict .` | Passed | Native marketplace metadata |

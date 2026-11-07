@@ -40,6 +40,11 @@ def validate(root=ROOT):
     if (market['name'], entry['name'], entry['version'], entry['source']) != (
         'kaboost-local', manifest['name'], manifest['version'], './plugins/kaboost'):
         raise ValueError('Marketplace identity/source/version mismatch')
+    # Release facts are reconciled by hand; at least make every release document name the current release.
+    current = f"`v{manifest['version']}`"
+    for name in ('README.md', 'docs/compatibility.md', 'docs/release-gate-assessment.md', 'docs/migration.md'):
+        if current not in (root/name).read_text(encoding='utf-8'):
+            raise ValueError(f'{name} does not name the current release {current}; update its release facts')
     # Check local Markdown links without requiring network access.
     documents = [root/'README.md', root/'CHANGELOG.md']
     for folder in ('core', 'skills', 'commands', 'workflows', 'docs', 'adapters', 'examples'):
