@@ -15,6 +15,8 @@ import tempfile
 from pathlib import Path
 
 TASK = re.compile(r'^([A-Za-z]+-\d+)\b')
+# Test ids come from commit messages and are substituted into a shell command, so only plain ids pass.
+SAFE_TESTS = re.compile(r'^(?!-)[\w./:\[\]-]+( (?!-)[\w./:\[\]-]+)*$')
 
 
 def git(*args, cwd=None):
@@ -99,7 +101,10 @@ def main(argv=None):
     problems += check_structure(pairs, args.test_path_pattern)
     for red, green in pairs:
         print(f"{red['task']}: red {red['sha'][:8]} -> green {green['sha'][:8]} ({red['expected']})")
-        if args.run:
+        if args.run and not SAFE_TESTS.match(red['expected']):
+            problems.append(f"{red['sha'][:8]}: unsafe test id in 'Expected failing:' (allowed: letters, digits, "
+                            "_ . / : [ ] -, separated by single spaces); not run")
+        elif args.run:
             red_code = run_at(red['sha'], args.run, red['expected'], repo)
             green_code = run_at(green['sha'], args.run, red['expected'], repo)
             if red_code == 0:
