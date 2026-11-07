@@ -73,7 +73,7 @@ claude plugin update kaboost@kaboost-local
 
 For the catalog install, use `claude plugin marketplace update proprock` and `claude plugin update kaboost@proprock`.
 
-A pinned `ref` or `sha` intentionally stays pinned. To change releases, uninstall the plugin, update the pin in the catalog, refresh the marketplace, and reinstall. Rollback uses the same steps with the previous reference. Restart the session and verify `claude plugin list`. Do not edit the plugin cache; keep overrides in user/project rules. Review and update the separate project-local core copy explicitly too.
+A pinned `ref` or `sha` intentionally stays pinned. When the catalog moves the pin to a new release, `marketplace update` followed by `plugin update` installs it. To choose a release yourself, uninstall the plugin, update the pin in your catalog, refresh the marketplace, and reinstall. Rollback uses the same steps with the previous reference. Restart the session and verify `claude plugin list`. Do not edit the plugin cache; keep overrides in user/project rules. Review and update the separate project-local core copy explicitly too.
 
 ```text
 claude plugin uninstall kaboost@proprock
