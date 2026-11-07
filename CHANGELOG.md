@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- `/kaboost:init` and `$kaboost-init` no longer load the core rules twice in Claude Code when a repository serves both clients: the Claude copy is not added when `CLAUDE.md` imports `AGENTS.md` and `AGENTS.md` carries the core, and an existing duplicate is reported with the command that removes it (KB-235).
+
 ## 0.1.0 — 2026-11-07
 
 First stable release, tag `v0.1.0`. The package content is that of the release candidate `v0.1.0-rc.3`; candidates and the release share the package version 0.1.0, so move from a candidate by reinstalling (see [migration](docs/migration.md)).

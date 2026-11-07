@@ -32,6 +32,12 @@ PLUGIN = HERE.parent
 BEGIN = re.compile(r'^(?:<!-- |# )kaboost:begin (?P<key>\S+) v(?P<ver>\d+) sha=(?P<sha>[0-9a-f]{12}) '
                    r'pre=(?P<pre>\d+) created=(?P<created>[01])(?: -->)?$', re.M)
 END = r'^(?:<!-- |# )kaboost:end {key}(?: -->)?$'
+IMPORTS_AGENTS = re.compile(r'^[ \t]*@AGENTS\.md[ \t]*$', re.M)
+DUPLICATE_CORE = ('Claude Code loads the core rules twice: CLAUDE.md imports .claude/kaboost/core-rules.md and also '
+                  'AGENTS.md, which carries the core for Codex. Keep the AGENTS.md copy by running '
+                  '`disable --scope repo --targets claude --ids core-rules`.')
+SKIPPED_CLAUDE_CORE = ('Claude Code reads the core rules through AGENTS.md (CLAUDE.md imports it), so the Claude copy '
+                       'was not added.')
 
 
 class Refusal(Exception):
@@ -267,6 +273,31 @@ def feature_state(feature, root, home, tools=None):
     return overall, states
 
 
+def core_paths(root, pending):
+    """CLAUDE.md and AGENTS.md as they will be after the pending changes."""
+    return [pending[p] if p in pending else read(p)[0] for p in (root / 'CLAUDE.md', root / 'AGENTS.md')]
+
+
+def claude_reads_agents_core(root, pending=None):
+    claude, agents = core_paths(root, pending or {})
+    try:
+        return IMPORTS_AGENTS.search(claude) is not None and find_block(agents, 'core-rules:rules-codex') is not None
+    except Refusal:
+        return False
+
+
+def claude_has_own_core(root, pending=None):
+    try:
+        return find_block(core_paths(root, pending or {})[0], 'core-rules:import') is not None
+    except Refusal:
+        return False
+
+
+def core_warnings(root, pending=None):
+    """Repository scope: the core reaches Claude Code twice, through its own copy and through AGENTS.md."""
+    return [DUPLICATE_CORE] if claude_has_own_core(root, pending) and claude_reads_agents_core(root, pending) else []
+
+
 def status(catalog, scope, root, home, show_all, tools=None):
     rows = []
     for feature in catalog['features']:
@@ -369,21 +400,36 @@ def run(catalog, args, root, home):
         raise SystemExit(f'Unknown feature ids for scope {args.scope}: {unknown}')
     tools = parse_targets(args.targets, catalog)
     stamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-    report, pending, actions = [], {}, []
-    for fid in feature_ids:
-        feature = by_id[fid]
-        mine = []
-        try:
-            planned = (plan_apply(feature, root, home, tools, args.force, pending, mine) if args.command == 'apply'
-                       else plan_disable(feature, root, home, tools, pending, mine))
-        except Refusal as error:
-            report.append({'feature': fid, 'result': 'skipped', 'reason': str(error)})
-            continue
-        touched = [p for p, text in planned.items() if pending.get(p) != text]
-        pending.update(planned)
-        actions.extend(mine)
-        report.append({'feature': fid, 'result': 'planned' if touched or mine else 'nothing to do',
-                       'files': [str(p) for p in touched]})
+
+    def plan_all(without_claude_core):
+        report, pending, actions = [], {}, []
+        for fid in feature_ids:
+            feature, feature_tools = by_id[fid], tools
+            if without_claude_core and fid == 'core-rules':
+                feature_tools = [t for t in (tools or known_tools(catalog)) if t != 'claude']
+            mine = []
+            try:
+                planned = (plan_apply(feature, root, home, feature_tools, args.force, pending, mine)
+                           if args.command == 'apply' else plan_disable(feature, root, home, feature_tools, pending, mine))
+            except Refusal as error:
+                report.append({'feature': fid, 'result': 'skipped', 'reason': str(error)})
+                continue
+            touched = [p for p, text in planned.items() if pending.get(p) != text]
+            pending.update(planned)
+            actions.extend(mine)
+            report.append({'feature': fid, 'result': 'planned' if touched or mine else 'nothing to do',
+                           'files': [str(p) for p in touched]})
+        return report, pending, actions
+
+    report, pending, actions = plan_all(False)
+    repo_apply = args.command == 'apply' and args.scope == 'repo'
+    if (repo_apply and 'core-rules' in feature_ids and core_warnings(root, pending)
+            and not claude_has_own_core(root)):
+        report, pending, actions = plan_all(True)
+        for item in report:
+            if item['feature'] == 'core-rules':
+                item['note'] = SKIPPED_CLAUDE_CORE
+    warnings = core_warnings(root, pending) if args.scope == 'repo' else []
     results, undo = [], []
     if args.yes and args.command == 'disable' and actions:
         results = execute(actions, root)
@@ -421,7 +467,8 @@ def run(catalog, args, root, home):
         for item in report:
             if item['result'] == 'planned':
                 item.update(result='failed', reason='a command failed; nothing was left half-done')
-    return {'command': args.command, 'written': bool(args.yes) and not failed, 'report': report, 'changes': changes,
+    return {'command': args.command, 'written': bool(args.yes) and not failed, 'report': report,
+            'warnings': warnings, 'changes': changes,
             'commands': [{'feature': a['feature'], 'command': ' '.join(a['argv'])} for a in actions],
             'command_results': results}
 
@@ -445,7 +492,9 @@ def main(argv=None):
     catalog = load_catalog()
     root, home = args.root.resolve(), args.home.resolve()
     if args.command == 'status':
-        print(json.dumps({'scope': args.scope, 'features': status(catalog, args.scope, root, home, args.all, parse_targets(args.targets, catalog))}, indent=2))
+        features = status(catalog, args.scope, root, home, args.all, parse_targets(args.targets, catalog))
+        warnings = core_warnings(root) if args.scope == 'repo' else []
+        print(json.dumps({'scope': args.scope, 'features': features, 'warnings': warnings}, indent=2))
         return 0
     if not args.ids:
         parser.error('--ids is required for apply and disable')
