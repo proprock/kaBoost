@@ -250,9 +250,12 @@ def active_edits(feature, root, home, tools):
 
 def feature_state(feature, root, home, tools=None):
     states = []
+    via_agents = feature['id'] == 'core-rules' and feature['scope'] == 'repo' and claude_reads_agents_core(root)
     for edit in active_edits(feature, root, home, tools):
         key = f"{feature['id']}:{edit['name']}"
         state, note = edit_state(edit, key, root, home)
+        if via_agents and edit.get('tool') == 'claude' and state == 'absent':
+            state, note = 'enabled', 'Claude Code reads the core rules through AGENTS.md, which CLAUDE.md imports'
         target = f"git hook ({edit['command']})" if edit.get('kind') == 'git-hook' else str(resolve(edit, root, home))
         states.append({'edit': edit['name'], 'target': target, 'state': state, 'note': note})
     kinds = {s['state'] for s in states}
