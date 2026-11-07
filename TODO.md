@@ -23,7 +23,6 @@ Complete with the `v0.1.0` release (KB-023); see [DONE.md](DONE.md).
 ### Remote distribution and platform evidence
 
 - [ ] KB-112: Distribute the Codex adapter remotely (the Codex marketplace is local only) and verify install, update, rollback and removal from a published ref; run the Codex lifecycle on macOS and Windows. Record results in compatibility.
-- [ ] KB-113: Verify the pinned remote Claude Code install on Linux (Windows passed for `v0.1.0` and `v0.1.1`), and repeat rollback between published refs (not repeated since rc.2; update from `v0.1.0` to `v0.1.1` passed on Windows).
 
 **Done when:** two clients consume the same canonical engineering content through independently verified native mechanisms, with reproducible lifecycle procedures.
 
