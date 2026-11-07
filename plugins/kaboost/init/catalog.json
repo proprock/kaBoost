@@ -129,6 +129,30 @@
       ]
     },
     {
+      "id": "tdd-commits",
+      "number": 11,
+      "scope": "repo",
+      "group": "Process",
+      "title": "TDD red/green commits",
+      "summary": "Adds the red/green commit rule to AGENTS.md and creates scripts/kaboost_audit_tdd.py, which checks the pairs; refuses if the script already exists unmanaged.",
+      "edits": [
+        {
+          "name": "rules",
+          "target": "{repo}/AGENTS.md",
+          "mode": "append",
+          "body": "tdd-commits.md",
+          "version": 1
+        },
+        {
+          "name": "script",
+          "target": "{repo}/scripts/kaboost_audit_tdd.py",
+          "mode": "own",
+          "body": "audit_tdd.py",
+          "version": 1
+        }
+      ]
+    },
+    {
       "id": "python-toolchain",
       "number": 2,
       "scope": "repo",

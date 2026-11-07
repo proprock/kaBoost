@@ -4,13 +4,13 @@ Tracks KB-213. Run `python3 scripts/measure_context.py` (add `--check` to fail o
 
 ## Static context
 
-| Tier | When it enters context | Measured (2026-10-30) | Budget |
+| Tier | When it enters context | Measured (2026-11-08) | Budget |
 | --- | --- | --- | --- |
-| Always loaded | Core rules in the project instruction plus the name and description of every skill and command | 1253 (core 889, listing 364) | 1500 |
+| Always loaded | Core rules in the project instruction plus the name and description of every skill and command | 1225 (core 861, listing 364) | 1500 |
 | Largest skill body | When the skill is invoked | 457 (`project-context`) | 600 |
-| Largest command body | When the command is invoked | 487 (`init`) | 600 |
+| Largest command body | When the command is invoked | 587 (`init`) | 600 |
 
-The budgets are proposed with about 15–20% headroom. They are budgets, not prohibitions: a change that exceeds one is raised with the maintainer, and on confirmation the limit is changed in `scripts/measure_context.py` and here. The KB-222 core additions are the first case: the core is 46 lines, 889 tokens.
+The budgets are proposed with about 15–20% headroom. They are budgets, not prohibitions: a change that exceeds one is raised with the maintainer, and on confirmation the limit is changed in `scripts/measure_context.py` and here. The KB-222 core additions are the first case: the core reached 46 lines, 889 tokens; KB-228 moved the TDD commit rule to an init feature (861 tokens).
 
 Not measured: whether the client adds disabled-implicit Codex skills to its listing ([ADR 010](decisions/010-codex-init-skills.md)); that needs a real Codex session.
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- The TDD red/green commit rule left the core rules and the adaptive workflow; the core keeps "use TDD where suitable". The rule is now the opt-in `tdd-commits` feature of `/kaboost:init`, which adds it to `AGENTS.md` and ships the pair audit as `scripts/kaboost_audit_tdd.py`. Projects that want to keep the rule enable the feature after updating their core copy (KB-228).
+
 ## 0.1.1 — 2026-11-08
 
 Patch release, tag `v0.1.1`. Core rules, skills and the other commands are unchanged; move from 0.1.0 with `claude plugin marketplace update proprock` and `claude plugin update kaboost@proprock`.
