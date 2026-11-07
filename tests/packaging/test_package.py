@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import re
 import shutil
 import sys
 import tempfile
@@ -68,6 +69,17 @@ class PackageTests(unittest.TestCase):
                 path.write_text(json.dumps(data), encoding='utf-8')
                 with self.assertRaisesRegex(ValueError, 'stable SemVer'):
                     validate(self.root)
+
+    def test_release_documents_must_name_the_current_release(self):
+        version = json.loads((self.root/'toolkit.json').read_text())['version']
+        for name in ('README.md', 'docs/compatibility.md', 'docs/release-gate-assessment.md', 'docs/migration.md'):
+            with self.subTest(document=name):
+                path = self.root/name
+                original = path.read_text(encoding='utf-8')
+                path.write_text(original.replace(f'`v{version}`', '`v0.0.9`'), encoding='utf-8')
+                with self.assertRaisesRegex(ValueError, f'{name}.*v{re.escape(version)}'):
+                    validate(self.root)
+                path.write_text(original, encoding='utf-8')
 
     @unittest.skipIf(sys.platform == 'win32', 'Symlink creation may require privileges')
     def test_symlink_output_is_rejected(self):
