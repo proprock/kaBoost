@@ -4,7 +4,7 @@ Documentation reviewed 2026-10-30. “Documented” is not “runtime tested.”
 
 | Client | Instruction surface | Delivery and update | Toolkit status |
 | --- | --- | --- | --- |
-| Claude Code | ~/.claude/CLAUDE.md, project CLAUDE.md/rules; imports compose context | .claude-plugin/plugin.json, custom Git/local marketplace; native update/uninstall | Release candidate `v0.1.0-rc.2` (skills and commands); exact evidence below |
+| Claude Code | ~/.claude/CLAUDE.md, project CLAUDE.md/rules; imports compose context | .claude-plugin/plugin.json, custom Git/local marketplace; native update/uninstall | Release candidate `v0.1.0-rc.3` (skills and commands); exact evidence below |
 | Codex CLI | $CODEX_HOME/AGENTS.md, project hierarchy; closer rules specialize | Agent Skills, .codex-plugin/plugin.json; local marketplace | Release candidate adapter (skills only, no commands); exact local evidence below |
 | Gemini CLI | ~/.gemini/GEMINI.md and hierarchical project context | gemini-extension.json; Git/local install, --ref, update/uninstall; gallery | Researched; no adapter |
 | Cursor | User Rules settings, project rules/AGENTS.md | Cursor plugins and Agent Plugins; GitHub marketplace import; native management | Researched; no adapter |

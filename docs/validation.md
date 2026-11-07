@@ -14,7 +14,7 @@ Date: 2026-10-29. Environment: Linux; Python 3.10.12. Claude Code 2.1.301. Sourc
 
 Lifecycle evidence: registered a local fixture, installed twice, found plugin in inventory, bumped fixture metadata to 0.1.1, refreshed catalog and updated plugin, observed 0.1.1, uninstalled, restored original metadata, reinstalled 0.1.0, uninstalled, and removed the catalog. Existing `env` settings sentinel survived every step. Temporary configuration was deleted afterward.
 
-Pending: Git transport and published tag pinning, authenticated model behavior on macOS and Windows, and release-gate assessment. No efficacy or full cross-platform support claim is made. Follow tests/behavior/README.md and docs/roadmap.md before release.
+Pending: Git transport and published tag pinning, authenticated model behavior on macOS and Windows, and release-gate assessment. No efficacy or full cross-platform support claim is made. Follow tests/behavior/README.md and docs/roadmap.md before release. Since this record: Git transport and tag pinning were verified on macOS (KB-021) and the release gates were assessed (KB-018); see [compatibility](compatibility.md) and the [gate assessment](release-gate-assessment.md).
 
 ## Additional Linux checks — 2026-10-29
 

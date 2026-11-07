@@ -13,7 +13,7 @@ flowchart TD
   E[Separate environment configuration] -. enables core import .-> S
 ```
 
-`toolkit.json` enumerates version, sources, four independent skills, one adapter, and zero runtime dependencies. Canonical Markdown/Agent Skills describes behavior; native metadata describes delivery. Build copies bytes into the Claude package and creates a SHA-256 inventory. Generated files are committed so clients need no build tools. CI rejects drift. There is no runtime dependency resolver or workflow interpreter.
+`toolkit.json` enumerates version, sources, four independent skills, the Claude Code commands, the init catalog, two adapters (Claude Code and Codex), and zero runtime dependencies. Canonical Markdown/Agent Skills describes behavior; native metadata describes delivery. Build copies bytes into each client package and creates a SHA-256 inventory. Generated files are committed so clients need no build tools. CI rejects drift. There is no runtime dependency resolver or workflow interpreter; the only runtime script is the init engine, which runs only when the user invokes init ([ADR 009](decisions/009-init-engine.md)).
 
 The core has 30–50 lines and is imported separately. Skills progressively load focused procedures. [Adaptive workflow](../workflows/adaptive.md) defines Small/Medium/Large and is an on-demand reference, not an extra always-on document. Agents should not silently assume this reference was loaded.
 
