@@ -1,7 +1,6 @@
 # Local overrides and migration
 
-The toolkit is a release candidate (`v0.1.0-rc.3`); a stable release will need
-its own reviewed ref and release notes. Use this procedure for reviewed versions. Keep
+The current release is `v0.1.0`. Use this procedure for reviewed versions. Keep
 user and project instructions and any customized core copy under their owner's
 control, outside plugin caches and generated package directories. A cache edit
 can be replaced by an update and is not a durable override.
@@ -40,6 +39,22 @@ On 2026-10-29, both enhanced harnesses passed on Ubuntu with Claude Code
 2.1.312 and Codex CLI 0.165.0, using local fixture metadata versions 0.1.0 and
 0.1.1 and disposable profiles. These are fixture updates, not published releases;
 no model was invoked during these checks.
+
+## Moving from a release candidate to v0.1.0
+
+The candidates `v0.1.0-rc.N` and the release `v0.1.0` all carry the package
+version 0.1.0, so do not rely on `claude plugin update` to notice the move.
+After the catalog pin moves, refresh the catalog and reinstall:
+
+```text
+claude plugin marketplace update proprock
+claude plugin uninstall kaboost@proprock
+claude plugin install kaboost@proprock
+```
+
+Restart the session and check `claude plugin list`. Project-local core copies
+and blocks written by `/kaboost:init` are not touched; run `/kaboost:init status`
+in a project to see whether a block is outdated.
 
 ## Migrating from the pre-candidate names
 

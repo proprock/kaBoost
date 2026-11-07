@@ -4,8 +4,8 @@ Documentation reviewed 2026-10-30. “Documented” is not “runtime tested.”
 
 | Client | Instruction surface | Delivery and update | Toolkit status |
 | --- | --- | --- | --- |
-| Claude Code | ~/.claude/CLAUDE.md, project CLAUDE.md/rules; imports compose context | .claude-plugin/plugin.json, custom Git/local marketplace; native update/uninstall | Release candidate `v0.1.0-rc.3` (skills and commands); exact evidence below |
-| Codex CLI | $CODEX_HOME/AGENTS.md, project hierarchy; closer rules specialize | Agent Skills, .codex-plugin/plugin.json; local marketplace | Release candidate adapter (skills only, no commands); exact local evidence below |
+| Claude Code | ~/.claude/CLAUDE.md, project CLAUDE.md/rules; imports compose context | .claude-plugin/plugin.json, custom Git/local marketplace; native update/uninstall | Release `v0.1.0`, content of `v0.1.0-rc.3` (skills and commands); exact evidence below |
+| Codex CLI | $CODEX_HOME/AGENTS.md, project hierarchy; closer rules specialize | Agent Skills, .codex-plugin/plugin.json; local marketplace | Released adapter, local marketplace only (skills only, no commands); exact local evidence below |
 | Gemini CLI | ~/.gemini/GEMINI.md and hierarchical project context | gemini-extension.json; Git/local install, --ref, update/uninstall; gallery | Researched; no adapter |
 | Cursor | User Rules settings, project rules/AGENTS.md | Cursor plugins and Agent Plugins; GitHub marketplace import; native management | Researched; no adapter |
 | Copilot CLI | ~/.copilot/copilot-instructions.md, repository/path instructions | Git/URL/local custom marketplace, native plugins/update | Researched; no adapter; not a claim about every Copilot surface |
@@ -32,9 +32,9 @@ Codex's file hierarchy is documented; Claude and Gemini compose multiple instruc
 
 [Validation record](validation.md), [Codex adapter guide](../adapters/codex/README.md), and [comparison results](../tests/behavior/codex-comparison-results-2026-10-29.md) record scope and limitations. Portable files use LF and ordinary copies without Unix symlinks or shell scripts. OS portability still requires native runtime tests.
 
-## Candidate support statement
+## Support statement for v0.1.0
 
-Supported means tested at the points above, nothing broader.
+Supported means tested at the points above, nothing broader. The release content equals `v0.1.0-rc.3`, so the candidate evidence applies to it; installation from the published `v0.1.0` tag is checked after publication (KB-023).
 
 - **Claude Code:** install, update, rollback and removal verified for the local marketplace on Linux, macOS and Windows (2.1.312) and for the pinned remote candidate on macOS (2.1.308). Linux and Windows remote installs are untested.
 - **Codex CLI:** local marketplace lifecycle on Linux (0.165.0). macOS, Windows and remote installs are untested. Skills only; the `/kaboost:*` commands do not exist for Codex.
@@ -45,7 +45,7 @@ Exact commands are in the [README](../README.md); migration is in [migration.md]
 
 ## Client version and revalidation policy
 
-The release candidate has **no established supported version range or minimum**. The table records tested points only: Claude Code 2.1.301, 2.1.308 (remote candidate install, update and rollback on macOS), and 2.1.312, and Codex CLI 0.165.0 (local lifecycle only; no remote tag or macOS/Windows check). A passed lifecycle does not imply authenticated loading, instruction behavior, remote distribution, or release readiness. Other versions and client surfaces are unverified until evidence is recorded; patch releases are not automatically assumed compatible. A release must identify its exact tested toolkit commit, client versions, OS, and check scope before claiming support.
+`v0.1.0` has **no established supported version range or minimum**. The table records tested points only: Claude Code 2.1.301, 2.1.308 (remote candidate install, update and rollback on macOS), and 2.1.312, and Codex CLI 0.165.0 (local lifecycle only; no remote tag or macOS/Windows check). A passed lifecycle does not imply authenticated loading, instruction behavior, remote distribution, or release readiness. Other versions and client surfaces are unverified until evidence is recorded; patch releases are not automatically assumed compatible. A release must identify its exact tested toolkit commit, client versions, OS, and check scope before claiming support.
 
 Review the client vendor's current primary documentation and release notes before adding a client, changing a tested client version, or preparing a release. Compare native manifest and catalog fields, installation/update/removal commands, skill discovery and instruction loading against the adapter and documented limitations. Record sources, date, version, affected surfaces, and any changed assumptions; a documentation review alone is not runtime evidence.
 

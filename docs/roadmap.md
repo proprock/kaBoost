@@ -18,9 +18,11 @@ Release gate: no critical requirement/security/boundary violation; quality no wo
 
 Tag v0.1.0 only after checking the release inventory, changelog, source SHA, license, secret scan, native loading, and pending evidence. Publication/push is a separate authorized action. Remote install cannot be claimed before publication. Do not fabricate pilot results.
 
+`v0.1.0` ships on these gates without an effectiveness claim ([ADR 012](decisions/012-stable-release-gates.md)); evidence from real use (KB-025) continues for 0.2.
+
 ## Next
 
-1. Verify remote distribution for the existing Codex adapter after reviewed publication.
+1. Verify remote distribution for the existing Codex adapter after reviewed publication (KB-112).
 2. Complete outstanding native lifecycle and core-loading checks by client and OS; document a supported version range only after tests.
 3. Add architecture review, requirements/task references, or TDD skills only when pilot tasks expose a gap.
 4. Add language-specific Python/Rust/C++ modules without imposing their tools globally.
