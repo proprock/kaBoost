@@ -374,6 +374,22 @@ class InitTests(unittest.TestCase):
         self.assertEqual(self.call('status')['warnings'], [])
         self.assertIn('Engineering rules', (self.repo / 'AGENTS.md').read_text())
 
+    def test_init_entry_points_fall_back_from_python3(self):
+        order = '`python3`, `python`, `py -3`'
+        for name in ('init.md', 'init-global.md'):
+            text = (ROOT / 'commands' / name).read_text(encoding='utf-8')
+            allowed = next(line for line in text.split('---')[1].splitlines() if line.startswith('allowed-tools:'))
+            for launcher in ('python3', 'python', 'py -3'):
+                # The pattern must match the quoted command the steps tell the agent to run.
+                self.assertIn(f'Bash({launcher} "${{CLAUDE_PLUGIN_ROOT}}/init/kaboost_init.py" *)', allowed)
+            self.assertIn(order, text)
+            self.assertIn('with the Bash tool exactly as written', text)
+            self.assertNotIn('`python3 "', text)
+        for name in ('kaboost-init', 'kaboost-init-global'):
+            text = (ROOT / 'adapters/codex/skills' / name / 'SKILL.md').read_text(encoding='utf-8')
+            self.assertIn(order, text)
+            self.assertNotIn('`python3 <script>', text)
+
     def test_global_scope_never_touches_the_repository(self):
         self.call('apply', '--ids', 'delegation', '--yes', scope='global')
         self.assertEqual(list(self.repo.iterdir()), [])
