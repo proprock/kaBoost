@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'init' / 'features'))
@@ -62,6 +63,16 @@ class AuditTests(unittest.TestCase):
         code, _, err = self.audit('--run', CHECK)
         self.assertEqual(code, 1)
         self.assertIn('pass on the red commit', err)
+
+    def test_unsafe_test_ids_never_reach_the_shell(self):
+        self.commit({'README.md': 'x'}, 'KB-1: start')
+        self.commit({'tests/test_calc.py': 't'}, 'KB-7: test\n\nTDD: red\nExpected failing: tests/test_calc.py; rm -rf ~')
+        self.commit({'calc.py': 'c'}, 'KB-7: implement\n\nTDD: green')
+        with mock.patch.object(audit, 'run_at', return_value=0) as run_at:
+            code, _, err = self.audit('--run', 'pytest {tests}')
+        run_at.assert_not_called()
+        self.assertEqual(code, 1)
+        self.assertIn('unsafe test id', err)
 
     def test_structural_problems(self):
         self.pair(red_files={'tests/test_calc.py': 't', 'calc.py': 'def add(a, b):\n    return 0\n'})

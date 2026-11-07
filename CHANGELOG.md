@@ -3,6 +3,7 @@
 ## Unreleased
 
 - The TDD red/green commit rule left the core rules and the adaptive workflow; the core keeps "use TDD where suitable". The rule is now the opt-in `tdd-commits` feature of `/kaboost:init`, which adds it to `AGENTS.md` and ships the pair audit as `scripts/kaboost_audit_tdd.py`. Projects that want to keep the rule enable the feature after updating their core copy (KB-228).
+- `kaboost_audit_tdd.py --run` no longer passes test ids from commit messages to the shell unchecked: an `Expected failing:` line with characters outside plain test ids is reported and not run (KB-236).
 
 ## 0.1.1 — 2026-11-08
 
