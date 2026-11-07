@@ -26,9 +26,9 @@ Codex's file hierarchy is documented; Claude and Gemini compose multiple instruc
 | Codex CLI isolated local marketplace lifecycle | 0.165.0 passed; see adapter guide | Pending | Pending |
 | Authenticated skill discovery / explicit invocation | Claude 2.1.312 and Codex CLI 0.165.0 passed with profile caveats; see records | Pending | Pending |
 | Behavior pilot | Claude and Codex trials recorded; release gate not met | Pending | Pending |
-| Remote tagged marketplace install (`proprock/marketplace`, pinned `v0.1.0-rc.3`) | Pending | Claude 2.1.308 passed in a clean profile for rc.2 (five commands) and rc.3 (commit `e068b9d`, seven commands, files identical to the tag) | Pending |
+| Remote tagged marketplace install (`proprock/marketplace`, pinned `v0.1.0` since commit `a4a7730`) | Pending | Claude 2.1.308 passed in a clean profile for rc.2 (five commands) and rc.3 (commit `e068b9d`, seven commands, files identical to the tag) | Claude 2.1.316 passed in a clean profile for `v0.1.0` on Windows 11 (commit `c3867d0`, seven commands, files identical to the tag) |
 | Update and rollback between two pinned Git tags (fixture repository, versions 0.1.0 and 0.1.1) | Pending | Claude 2.1.308 passed with `plugin update`; uninstall and reinstall also restored 0.1.0 | Pending |
-| Release artifacts reproducible and complete | CI (Ubuntu) archives are byte-identical to a local macOS build of the same tag; inventory, license and secret-pattern checks passed | Same comparison | Not compared |
+| Release artifacts reproducible and complete | CI (Ubuntu) archives are byte-identical to a local macOS build of the same tag; inventory, license and secret-pattern checks passed. CI archives of `v0.1.0` are byte-identical to those of `v0.1.0-rc.3` | Same comparison | Local build of `v0.1.0` (Python 3.14.3, zlib-ng): same files and inventory, different archive bytes (KB-316) |
 
 [Validation record](validation.md), [Codex adapter guide](../adapters/codex/README.md), and [comparison results](../tests/behavior/codex-comparison-results-2026-10-29.md) record scope and limitations. Portable files use LF and ordinary copies without Unix symlinks or shell scripts. OS portability still requires native runtime tests.
 

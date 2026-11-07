@@ -16,18 +16,14 @@ This file contains unfinished work from MVP completion through the supported too
 
 ## P0 — Complete and release the MVP
 
-### Release and remote distribution
-
-- [ ] KB-023: Publish v0.1.0 when authorized and all release gates are met ([ADR 012](docs/decisions/012-stable-release-gates.md)); move the `proprock/marketplace` pin to the tag and verify installation from it.
-
-**Done when:** the published MVP is reproducibly installable, supported combinations have evidence, and the behavior pilot meets the [documented gates](docs/roadmap.md). Candidate publication enables remote checks; it does not establish stable-release readiness.
+Complete with the `v0.1.0` release (KB-023); see [DONE.md](DONE.md).
 
 ## P1 — Prove portability and strengthen lifecycle
 
 ### Remote distribution and platform evidence
 
 - [ ] KB-112: Distribute the Codex adapter remotely (the Codex marketplace is local only) and verify install, update, rollback and removal from a published ref; run the Codex lifecycle on macOS and Windows. Record results in compatibility.
-- [ ] KB-113: Verify the pinned remote Claude Code install on Linux and Windows, and repeat update and rollback between published refs for the current candidate (not repeated for rc.3).
+- [ ] KB-113: Verify the pinned remote Claude Code install on Linux (Windows passed for `v0.1.0`, KB-023), and repeat update and rollback between published refs (not repeated since rc.2).
 
 **Done when:** two clients consume the same canonical engineering content through independently verified native mechanisms, with reproducible lifecycle procedures.
 
@@ -88,6 +84,7 @@ Decision 2026-10-30: language modules belong at project level, so KB-209 through
 - [ ] KB-313: Add a scheduled (weekly) workflow that installs the latest Claude Code and Codex CLI and runs the disposable-profile lifecycle smoke tests, so client changes surface before a release; tested versions are fixed points (Claude Code 2.1.301–2.1.312, Codex CLI 0.165.0).
 - [ ] KB-314: Pin GitHub Actions by commit SHA and review the `curl | bash` client installers in CI.
 - [ ] KB-315: Make `scripts/validate.py` fail when compatibility, the gate assessment or the roadmap name an older release candidate than the current tag, so release facts cannot drift between manual reconciliations.
+- [ ] KB-316: Make release archives byte-identical across platforms. A Windows build of the `v0.1.0` tag (Python 3.14.3, zlib `1.3.1.zlib-ng`) has the same files and inventory as the CI (Ubuntu) archives but different bytes: `scripts/prepare_release.py` leaves `ZipInfo.create_system` at its platform default (`fat` on Windows, `unx` on Linux), and zlib-ng produces a different deflate stream. Set `create_system = 3`, then either store entries uncompressed or document that archives are reproducible only for the same zlib; add the comparison to the Windows column of compatibility.
 
 **Done when:** every claimed adapter has tested delivery and behavior evidence, and maintenance procedures are documented. Unused integrations remain explicitly deferred; they do not block releases for the selected supported clients.
 
