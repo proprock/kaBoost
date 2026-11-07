@@ -75,12 +75,17 @@ def judge(task, reference, candidate, env):
         return {}, 0
 
 
-def run(output, shared_target, task, arm, n, plugin, core):
+def run(output, template, task, arm, n, plugin, core):
     name = f"{task['id']}-{arm}-{n}"
     record = output / name
     record.mkdir()
     checkout = record / 'checkout'
-    env = dict(os.environ, GIT_CONFIG_GLOBAL='/dev/null', CARGO_TARGET_DIR=str(shared_target))
+    # A private copy of the warmed target directory per session: a directory shared by different source trees
+    # reuses test binaries built from another checkout (same package id), so the oracle ran stale code.
+    target = record / 'target'
+    if template is not None and task['prep'] == 'rust_shim':
+        shutil.copytree(template, target)
+    env = dict(os.environ, GIT_CONFIG_GLOBAL='/dev/null', CARGO_TARGET_DIR=str(target))
     prepare(task, checkout, env)
     args = []
     if arm != 'BASE':
@@ -124,6 +129,7 @@ def run(output, shared_target, task, arm, n, plugin, core):
         (checkout / relative).write_bytes(data)
     oracle = pilot.command(task['oracle']['cmd'], cwd=checkout, env=env, timeout=600)
     changed = pilot.command(['git', 'diff', '--stat', 'HEAD'], cwd=checkout, env=env).stdout.strip().splitlines()
+    shutil.rmtree(target, ignore_errors=True)  # build output is several GB per session; the record keeps the diff and events
     analysis = routing.analyse(events, '')
     row = {'task': task['id'], 'arm': arm, 'n': n, 'exit': code, 'seconds': round(seconds, 1),
            'cost_usd': final.get('total_cost_usd'), 'denials': len(final.get('permission_denials', [])),
@@ -153,12 +159,21 @@ def main():
     if args.only:
         tasks = [t for t in tasks if t['id'] in args.only.split(',')]
     output.mkdir(parents=True)
-    shared_target = output / 'cargo-target'
+    template = None
+    first = next((t for t in tasks if t['prep'] == 'rust_shim'), None)
+    if first:
+        template = output / 'target-template'
+        warm = output / 'warm-checkout'
+        env = dict(os.environ, GIT_CONFIG_GLOBAL='/dev/null', CARGO_TARGET_DIR=str(template))
+        prepare(first, warm, env)
+        result = pilot.command(['cargo', 'test', '--no-run'], cwd=warm, env=env, timeout=1800)
+        if result.returncode:
+            raise SystemExit(f'Warming the cargo target failed: {result.stderr[-2000:]}')
     jobs = [(t, a, n) for t in tasks for a in args.arms.split(',') for n in range(1, args.n + 1)]
     random.Random(20261030).shuffle(jobs)
     plugin, core = ROOT / 'plugins' / 'kaboost', ROOT / 'core' / 'engineering-rules.md'
     with ThreadPoolExecutor(args.workers) as pool:
-        rows = list(pool.map(lambda j: run(output, shared_target, *j, plugin, core), jobs))
+        rows = list(pool.map(lambda j: run(output, template, *j, plugin, core), jobs))
     with (output / 'summary.csv').open('w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=list(rows[0]))
         writer.writeheader()
