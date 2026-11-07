@@ -1,7 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.1.1 — 2026-11-08
 
+Patch release, tag `v0.1.1`. Core rules, skills and the other commands are unchanged; move from 0.1.0 with `claude plugin marketplace update proprock` and `claude plugin update kaboost@proprock`.
+
+- `/kaboost:init` and `/kaboost:init-global` ran no script without asking: their allowed-tools patterns did not match the quoted command they run, so every call needed approval and non-interactive runs were denied. The patterns now match, and the steps require the Bash tool (KB-227).
+- The init commands and the Codex init skills work on Windows without `python3`: they try `python3`, `python` and `py -3` in turn (KB-227).
 - `/kaboost:init` and `$kaboost-init` no longer load the core rules twice in Claude Code when a repository serves both clients: the Claude copy is not added when `CLAUDE.md` imports `AGENTS.md` and `AGENTS.md` carries the core, and an existing duplicate is reported with the command that removes it (KB-235).
 
 ## 0.1.0 — 2026-11-07

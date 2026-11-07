@@ -1,6 +1,6 @@
 # Release gate assessment
 
-Assessed 2026-10-30 against the gates in the [roadmap](roadmap.md) for the release candidate `v0.1.0-rc.2`; reassessed 2026-11-07 for the content of `v0.1.0`, which equals `v0.1.0-rc.3` (KB-027). Unmeasured items are labeled unassessed, not passed. The behavior work is a pilot plus later experiments, not statistical proof.
+Assessed 2026-10-30 against the gates in the [roadmap](roadmap.md) for the release candidate `v0.1.0-rc.2`; reassessed 2026-11-07 for the content of `v0.1.0`, which equals `v0.1.0-rc.3` (KB-027). The patch release `v0.1.1` changes only the init engine and the init commands and skills, which run only when the user invokes them; the always-loaded context is unchanged (1253 tokens estimated, [context overhead](context-overhead.md)), so the measurements below carry over without a new behavior run. Unmeasured items are labeled unassessed, not passed. The behavior work is a pilot plus later experiments, not statistical proof.
 
 | Gate | Status | Evidence and limits |
 | --- | --- | --- |
