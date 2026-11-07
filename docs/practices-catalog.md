@@ -53,6 +53,7 @@ The first feature of both commands is attaching the core rules (project level fo
 | 44 | Tool-selection eval and schema hygiene test | 1 | MCP projects only |
 | 45 | Skills for PR summary, coverage improvement and final release review | 1 | |
 | 46 | Pull request template | 1 | |
+| 11 | TDD red/green commits with an audit script (KB-218) | — | Opt-in since KB-228; TDD itself stays in the core |
 
 ## Not taken
 

@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / 'scripts'))
+sys.path.insert(0, str(ROOT / 'init' / 'features'))
 import audit_tdd as audit  # noqa: E402
 
 CHECK = f'{sys.executable} -c "import sys; sys.path.insert(0, \'.\'); import calc; sys.exit(0 if calc.add(1, 2) == 3 else 1)"'

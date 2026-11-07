@@ -5,7 +5,7 @@ A red commit contains only the failing tests; its message has the trailer `TDD: 
 `TDD: green` and contains the solution. The audit checks the structure and, with --run, executes the project's
 test command in detached worktrees: the named tests must fail on the red commit and pass on the green one.
 
-Usage: python scripts/audit_tdd.py [REV_RANGE] [--run 'python -m unittest {tests}'] [--test-path-pattern REGEX]
+Usage: python scripts/kaboost_audit_tdd.py [REV_RANGE] [--run 'python -m unittest {tests}'] [--test-path-pattern REGEX]
 """
 import argparse
 import re

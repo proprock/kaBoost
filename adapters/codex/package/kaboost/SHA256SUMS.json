@@ -1,10 +1,11 @@
 {
   ".codex-plugin/plugin.json": "e16b790bdba692ba214f6652b62596a9381d7a5d9588ff404fc921f104f86827",
   "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
-  "core/engineering-rules.md": "519dac601e4da24b2f1200c4dcca563e8d0a6bb6c272e72e933881f803c5f8aa",
-  "init/catalog.json": "552c28204288b115475b248e2fdb5a4763bfc84d8eaaa3194911aadb9717fdcc",
+  "core/engineering-rules.md": "d1e01f73ca0d06a2f8ffffff8ef7402c3306c7d3a436b09b594ec30e5f6b7d61",
+  "init/catalog.json": "f27394073e3ab17ce06dbecb25fc207170bafdc400c599f0de9aca9cc454b1f9",
   "init/features/agents-import.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
   "init/features/agents-index.md": "dc3b27b3a36f15f9b2500c221fa934dbaaf6c5331e4d615b5cb8f6c79f42e70e",
+  "init/features/audit_tdd.py": "3860bc11f3a50d5a279f6bfaa96295475d199148777652fb5dcdff87145ee321",
   "init/features/changelog.md": "2224749698f8a5e12dbe319e2c7d6545ee75038a13e051ead4ee980fa03472f0",
   "init/features/check-version.py": "a5aefb7c7ad6d165b6822f833009be002b473b36296885d890754bc77e733af5",
   "init/features/ci-python.yml": "b0ba9fc1a56a53bd897f4d5a1b03025f3808ba964faa15793c47eb85a6fb1967",
@@ -29,6 +30,7 @@
   "init/features/skill-pr-summary.codex.md": "e8d9afdea74ad51430ec48e0810efa992c8b57595eb706090aa6ed3702fa085b",
   "init/features/skill-release-review.claude.md": "b5a2edf123c01aa4dac3d06056c9a66b15cc752874366fd01ee5d211be439eb0",
   "init/features/skill-release-review.codex.md": "b8867b15257cdb65face5ee191672ccff7571b7077a4d25bc8f6c19a87fc34df",
+  "init/features/tdd-commits.md": "6664b0aca4f4b3340d84356fe0287cbf066348e3292b254e3386704c78df3688",
   "init/features/todo.md": "a3b51d164067ee331fbb45c295e0d1ceacade80da26e3fa9b899108b019ce113",
   "init/features/tool-selection-eval.md": "e86a290458a0a9ef3ca3b316554b3c87d2761aca85f06f84103513a5c4d83d76",
   "init/features/windows-notes.md": "a049482e723554d44faae61f56f3e260de83a93a1ba9db41b6315b4261d2efbf",
@@ -42,5 +44,5 @@
   "skills/project-context/SKILL.md": "621a98827ea849485e337917e2e579d8a381dae3547a8c0dc933aaf11bbc17af",
   "skills/systematic-debugging/SKILL.md": "eb0c91d993469f7898f6c86ab8987401a64807b772ad5cfa3c8fe8e67cd53a58",
   "skills/verification/SKILL.md": "16c7526170871723a1c70093b9bfb82413ac19cb23a2f38512b6c915fc09a58a",
-  "workflows/adaptive.md": "8c89bc785f383a47fc7e2a4bdb0a9388a43ea9f61a2e15d4a8c32ee26362fe00"
+  "workflows/adaptive.md": "53aad5becf8ae3f046015c64cd251b036430ddf8e4b8b6ef9731d5089a58c0c4"
 }
