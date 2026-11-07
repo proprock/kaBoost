@@ -14,18 +14,21 @@ Measures the roadmap release gate "Small-task median time/token overhead at most
 | Measure | BASE | V0 |
 | --- | --- | --- |
 | Oracle passed | 8/10 | 10/10 |
+| Median total tokens per session | 155,073 | 147,185 |
+| Median input tokens of the first turn | 13,184 | 14,918 |
 | Median agent cost per session | USD 0.132 | USD 0.127 |
 | Mean agent cost per session | USD 0.138 | USD 0.130 |
 | Cost per passing session | USD 0.172 | USD 0.130 |
 | Median wall time | 85.0 s | 55.6 s |
 | Planning skill invoked | 0 | 0 |
 
-Overhead of V0 against BASE: median cost −4.2%, median wall time −34.6%. The gate (at most +20%) is met on this task. Per-session record: [CSV](kb027-small-overhead-2026-11-07.csv).
+Overhead of V0 against BASE: median total tokens −5.1%, median cost −4.2%, median wall time −34.6%. The gate (at most +20%) is met on this task. Per-session record: [CSV](kb027-small-overhead-2026-11-07.csv).
 
 ## Limits
 
 - One task and 10 sessions per arm. The pass difference (8/10 against 10/10) is not significant (Fisher exact, two-sided p ≈ 0.47) and is not an improvement claim.
-- Cost is the token proxy: the client's `total_cost_usd`, derived from token use including cache reads. Token counts were not recorded separately.
+- Tokens were read afterwards from the session event logs of the run (not committed) into a [token CSV](kb027-small-overhead-2026-11-07-tokens.csv): total tokens are the input, cache-creation, cache-read and output tokens of the final `result` event, dominated by cache reads; cost is the client's `total_cost_usd`.
+- The release content reached every V0 session: the `kaboost` plugin and its skills appear in the init event of 10/10 V0 sessions and 0/10 BASE sessions, and the first turn's input is about 1,730 tokens larger in V0, more than the skill and command listing alone (364 estimated, [context overhead](../../docs/context-overhead.md)); the core and listing together are estimated at 1253 by characters ÷ 4.
 - Wall time includes cargo builds. Three BASE sessions took over 140 s, two of which failed the oracle; the time difference rests on them and is not evidence of a speed-up.
 - Conditions differ from KB-217: Windows instead of macOS (the real Windows binary is built, not the shim), Claude Code 2.1.316 instead of 2.1.308. BASE passed 8/10 here against 7/10 there.
 - Judge defect: for toolkit arms the candidate diff includes the files the harness adds (`.claude/engineering-rules.md`, `CLAUDE.md`), so the judge scored "minimal" 2 in every V0 session, and `files_changed` counts those two files. Judge scores for toolkit arms here and in KB-217 are biased against the toolkit (KB-234); the judge is not used for the gate.
