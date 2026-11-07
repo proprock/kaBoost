@@ -34,7 +34,7 @@
   "init/features/todo.md": "a3b51d164067ee331fbb45c295e0d1ceacade80da26e3fa9b899108b019ce113",
   "init/features/tool-selection-eval.md": "e86a290458a0a9ef3ca3b316554b3c87d2761aca85f06f84103513a5c4d83d76",
   "init/features/windows-notes.md": "a049482e723554d44faae61f56f3e260de83a93a1ba9db41b6315b4261d2efbf",
-  "init/kaboost_init.py": "7ada253f436bc6184c612ab92dfbbe972094c9ee35e691bbe6b00b21beda5965",
+  "init/kaboost_init.py": "0b912ed67310edcaa1794a3d6b83fe2b988752532428f0f60db3fb2eb64749e1",
   "plugin.json": "697b501da7ebf6180c68af66b51f191975fe6bc918cb43e75d7fd8395919c955",
   "skills/kaboost-init-global/SKILL.md": "ba608a2c0fbd0650fea94a0a4be59bc32e62eb76683d766280f889040c8d0810",
   "skills/kaboost-init-global/agents/openai.yaml": "b98cecbea0d67ed0b8ea9064f743492b041ae0a0646087dd2d62b9dac7815201",
