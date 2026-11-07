@@ -319,6 +319,21 @@ class InitTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('1.3.0', result.stderr)
 
+    def test_tdd_commits_feature_ships_the_rule_and_the_audit_script(self):
+        self.assertEqual(self.features()['tdd-commits']['state'], 'disabled')
+        self.call('apply', '--ids', 'tdd-commits', '--yes')
+        self.assertIn('TDD: red', (self.repo / 'AGENTS.md').read_text(encoding='utf-8'))
+        script = self.repo / 'scripts/kaboost_audit_tdd.py'
+        source = (init.HERE / 'features/audit_tdd.py').read_text(encoding='utf-8').replace('\r\n', '\n')
+        self.assertIn(source, script.read_text(encoding='utf-8').replace('\r\n', '\n'))
+        result = subprocess.run([sys.executable, '-I', str(script), '--help'], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('scripts/kaboost_audit_tdd.py', result.stdout)
+
+    def test_core_and_workflow_leave_tdd_commits_to_the_feature(self):
+        for path in ('core/engineering-rules.md', 'workflows/adaptive.md'):
+            self.assertNotIn('TDD: red', (ROOT / path).read_text(encoding='utf-8'), path)
+
     def test_relevance_of_new_features(self):
         self.assertNotIn('ci-python', self.features())
         self.assertNotIn('tool-selection-eval', self.features())
