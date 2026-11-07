@@ -336,6 +336,34 @@ class InitTests(unittest.TestCase):
         self.assertNotIn('Engineering rules', (self.repo / 'AGENTS.md').read_text())
         self.assertTrue((self.repo / '.claude/kaboost/core-rules.md').is_file())
 
+    def test_core_reaches_claude_once_through_agents_md(self):
+        result = self.call('apply', '--ids', 'core-rules,agents-import', '--yes')
+        claude = (self.repo / 'CLAUDE.md').read_text()
+        self.assertIn('@AGENTS.md', claude)
+        self.assertNotIn('@.claude/kaboost/core-rules.md', claude)
+        self.assertFalse((self.repo / '.claude/kaboost/core-rules.md').exists())
+        self.assertIn('Engineering rules', (self.repo / 'AGENTS.md').read_text())
+        notes = [item.get('note', '') for item in result['report'] if item['feature'] == 'core-rules']
+        self.assertIn('AGENTS.md', notes[0])
+        self.assertEqual(result['warnings'], [])
+
+    def test_claude_command_skips_its_copy_when_agents_md_has_the_core(self):
+        self.call('apply', '--ids', 'core-rules', '--yes', '--targets', 'codex')
+        self.call('apply', '--ids', 'agents-import,core-rules', '--yes', '--targets', 'claude')
+        self.assertFalse((self.repo / '.claude/kaboost/core-rules.md').exists())
+        self.assertEqual(self.call('status', '--targets', 'claude')['warnings'], [])
+
+    def test_existing_duplicate_core_is_reported_with_its_fix(self):
+        self.call('apply', '--ids', 'core-rules,agents-import', '--yes', '--targets', 'claude')
+        self.assertEqual(self.call('status')['warnings'], [])
+        result = self.call('apply', '--ids', 'core-rules', '--yes', '--targets', 'codex')
+        self.assertEqual(len(result['warnings']), 1)
+        self.assertIn('disable --scope repo --targets claude --ids core-rules', result['warnings'][0])
+        self.assertEqual(len(self.call('status')['warnings']), 1)
+        self.call('disable', '--ids', 'core-rules', '--yes', '--targets', 'claude')
+        self.assertEqual(self.call('status')['warnings'], [])
+        self.assertIn('Engineering rules', (self.repo / 'AGENTS.md').read_text())
+
     def test_global_scope_never_touches_the_repository(self):
         self.call('apply', '--ids', 'delegation', '--yes', scope='global')
         self.assertEqual(list(self.repo.iterdir()), [])
