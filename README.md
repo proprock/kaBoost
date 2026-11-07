@@ -1,5 +1,11 @@
 # kaBoost — AI Development Toolkit
 
+[![Checks](https://github.com/proprock/kaBoost/actions/workflows/check.yml/badge.svg?branch=master)](https://github.com/proprock/kaBoost/actions/workflows/check.yml)
+[![Release](https://img.shields.io/github/v/release/proprock/kaBoost)](https://github.com/proprock/kaBoost/releases/latest)
+[![License](https://img.shields.io/github/license/proprock/kaBoost)](LICENSE)
+[![Claude Code plugin](https://img.shields.io/badge/Claude_Code-plugin-D97757)](https://github.com/proprock/marketplace)
+[![Codex CLI](https://img.shields.io/badge/Codex_CLI-local_marketplace-412991)](adapters/codex/README.md)
+
 A small, versioned engineering toolkit: understand before changing code, choose a simple complete solution, and verify the result. Four on-demand skills support planning before edits, project context, systematic debugging, and verification. Core rules are language-agnostic; project tooling stays local.
 
 **Status:** release `v0.1.0`, the first stable release; no effectiveness claim (see the [gate assessment](docs/release-gate-assessment.md)). Claude Code and Codex CLI have adapters, with commands for Claude Code only. See [compatibility](docs/compatibility.md) for tested versions, evidence and untested combinations. No installer, background sync, hooks, or bundled MCP servers. The only script is the init engine, which runs only when you invoke `/kaboost:init`. Installing a plugin does **not** activate the engineering rules; `/kaboost:init` attaches them to a repository when you ask.
