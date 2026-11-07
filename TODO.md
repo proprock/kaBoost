@@ -16,21 +16,18 @@ This file contains unfinished work from MVP completion through the supported too
 
 ## P0 — Complete and release the MVP
 
-### Client loading and portability
-
-
-### Behavior pilot
-
-
 ### Release and remote distribution
 
-- [ ] KB-025 (blocks KB-023): Collect evidence from real use of the release candidate. Use `v0.1.0-rc.N` in the maintainer's projects with the TDD red/green commit rule (KB-218); after about twenty red/green pairs (proposed; adjust), mine them and compare process compliance and rework with the earlier history, then record the result in the [gate assessment](docs/release-gate-assessment.md).
-- [ ] KB-023: Publish v0.1.0 when authorized and all release gates are met, including the KB-025 evidence; verify installation from its published tag.
+- [ ] KB-023: Publish v0.1.0 when authorized and all release gates are met ([ADR 012](docs/decisions/012-stable-release-gates.md)); move the `proprock/marketplace` pin to the tag and verify installation from it.
 
 **Done when:** the published MVP is reproducibly installable, supported combinations have evidence, and the behavior pilot meets the [documented gates](docs/roadmap.md). Candidate publication enables remote checks; it does not establish stable-release readiness.
 
 ## P1 — Prove portability and strengthen lifecycle
 
+### Remote distribution and platform evidence
+
+- [ ] KB-112: Distribute the Codex adapter remotely (the Codex marketplace is local only) and verify install, update, rollback and removal from a published ref; run the Codex lifecycle on macOS and Windows. Record results in compatibility.
+- [ ] KB-113: Verify the pinned remote Claude Code install on Linux and Windows, and repeat update and rollback between published refs for the current candidate (not repeated for rc.3).
 
 **Done when:** two clients consume the same canonical engineering content through independently verified native mechanisms, with reproducible lifecycle procedures.
 
@@ -43,12 +40,25 @@ This file contains unfinished work from MVP completion through the supported too
 - [ ] KB-205: Add independent code-review only where it provides value beyond verification; otherwise record its explicit deferral. Deferred: manual review found a missed compatibility regression, but the pilot did not compare a dedicated review skill against existing verification. Revisit when a concrete review need exceeds verification or a matched evaluation shows additional defects found without disproportionate overhead. See [pilot workflow review](docs/pilot-workflow-review.md).
 - [ ] KB-208: Test durable project-context refresh and task/session handoff against changed Git state and existing user instructions.
 
+### Init, process rules and evaluation follow-ups
+
+- [ ] KB-025 (moved from P0 for 0.2; no longer blocks KB-023, see [ADR 012](docs/decisions/012-stable-release-gates.md)): Collect evidence from real use of the release. Before it gates anything, define measurable criteria (for example red/green pairs passing `scripts/audit_tdd.py --run`, the share of fix or revert commits touching the same files within N days, manual interventions), a baseline window and a time box. Use the release in the maintainer's projects with the TDD red/green commit rule (KB-218); after about twenty red/green pairs, mine them, compare with the baseline, and record the result in the [gate assessment](docs/release-gate-assessment.md).
+
+- [ ] KB-227: Make `/kaboost:init`, `/kaboost:init-global` and the Codex init skills work on Windows without `python3`. They call `python3` and `allowed-tools` permits only `Bash(python3 ...)`; on a machine without Store Python `python3` is the Store stub, while the README tells maintainers to use `py -3`. Add a fallback (`python3`, `python`, `py -3`) with matching permissions, and exercise the command path on Windows (the engine tests use `sys.executable`, so they do not cover it).
+- [ ] KB-228: Move the TDD red/green commit rule (KB-218, ADR 011 "accepted for trial") out of the always-loaded core into an opt-in `init` feature until its benefit is measured, and ship `scripts/audit_tdd.py` with that feature. In the core it asks every project for two commits per change, a pushed red commit fails CI wherever the skip condition is missing (only `ci-python` carries it), and squash merges lose the pairs.
+- [ ] KB-229: Exercise the interactive `/kaboost:init` and `/kaboost:init-global` flow (feature choice, preview, confirmation) end to end in Claude Code, and `$kaboost-init` in a live Codex session; KB-221, KB-223 and KB-224 closed without it.
+- [ ] KB-230: Revise the ADR 008 decision rule. Requiring the pass-rate gain in points to reach the cost increase in percent caps any arm at (100 − baseline pass rate)% extra cost, so with the 20–80% calibration band and n = 10 almost no process feature can qualify; it also counts single-session correctness only. Consider cost per passing session alone, downstream measures (regressions after merge, handoff quality, reviewability), weaker or cheaper models, and multi-session tasks; replace the A/B-only revisit conditions of KB-203 to KB-205 with a log of real-use misses.
+- [ ] KB-231: Allow prerelease versions (`0.1.0-rc.N`) in `scripts/validate.py` and the package manifests, so `claude plugin update` can move between candidates instead of uninstall and reinstall.
+- [ ] KB-232: Maintainer decision on two AGENTS.md rules: branch naming per milestone (`feature/<milestone-name>`) does not match practice (`feature/<n>-<slug>` per pull request), and the ban on manual branch deletion leaves branches whose content reached master by other commits undeletable by GitHub (`feature/23-calibration-harness`: its harness fixes reached master only with KB-027, as new commits).
+- [ ] KB-234: Keep harness-injected files out of the judged diff in `tests/behavior/run_calibration.py`: toolkit arms add `.claude/engineering-rules.md` and `CLAUDE.md` after the base commit, so the judge sees them as unrelated changes ("minimal" 2 in every V0 session of KB-027) and `files_changed` counts them. Commit them into the base for those arms, then recheck the judge before using it again.
+- [ ] KB-233: Record or retire the `claude plugin eval` assets (`evals/large-json-cli`, `tests/behavior/run_plugin_eval.py`); no task covers them, and `tests/behavior/test_plugin_eval_setup.py` is not run by CI.
+
 ### Language modules
 
 Decision 2026-10-30: language modules belong at project level, so KB-209 through KB-212 are delivered as per-stack packs of `/kaboost:init` (KB-221), offered and applied in the project rather than shipped as plugin-wide modules. Start them after the KB-219 to KB-221 practice base exists; each pack keeps the "opt-in" and "no global tooling mandate" requirements below.
 
-- [ ] KB-209: Add an opt-in Python module covering project-established uv, pytest, ruff, ty, and prek workflows.
-- [ ] KB-210: Add an opt-in Rust module using the project's selected toolchain and checks.
+- [ ] KB-209: Add an opt-in Python module covering project-established uv, pytest, ruff, ty, and prek workflows. Mostly delivered by the init features `python-toolchain`, `make-checks`, `ci-python` and `precommit-hooks` (KB-221, KB-225); reconcile and keep only the remainder (for example the uv sandbox notes, practice 40).
+- [ ] KB-210: Add an opt-in Rust module using the project's selected toolchain and checks. Demand exists: the KB-216 calibration tasks come from a Rust repository; include CI with the `TDD: red` skip condition.
 - [ ] KB-211: Add an opt-in C++ module using the project's selected build system, compiler, and checks.
 - [ ] KB-212: Verify language modules introduce no global tooling mandates or changes to unrelated projects.
 - [ ] KB-213: Measure context and process overhead after each substantial content addition (the KB-222 core additions are the first case); simplify policies that fail the relevant gates. Static context is measured by `scripts/measure_context.py` with budgets and a record in [context overhead](docs/context-overhead.md) (2026-10-30: 1253 tokens always loaded). Open: process overhead against a no-toolkit baseline (needs model sessions under ADR 008) and the Codex skill-listing check.
@@ -75,6 +85,9 @@ Decision 2026-10-30: language modules belong at project level, so KB-209 through
 - [ ] KB-310: Define deprecation, migration, and release-maintenance procedures, including what triggers compatibility revalidation.
 - [ ] KB-311: Document provenance and review requirements for optional third-party extensions; never auto-install them.
 - [ ] KB-312: Reconcile README, roadmap, compatibility matrix, TODO, and DONE before every release.
+- [ ] KB-313: Add a scheduled (weekly) workflow that installs the latest Claude Code and Codex CLI and runs the disposable-profile lifecycle smoke tests, so client changes surface before a release; tested versions are fixed points (Claude Code 2.1.301–2.1.312, Codex CLI 0.165.0).
+- [ ] KB-314: Pin GitHub Actions by commit SHA and review the `curl | bash` client installers in CI.
+- [ ] KB-315: Make `scripts/validate.py` fail when compatibility, the gate assessment or the roadmap name an older release candidate than the current tag, so release facts cannot drift between manual reconciliations.
 
 **Done when:** every claimed adapter has tested delivery and behavior evidence, and maintenance procedures are documented. Unused integrations remain explicitly deferred; they do not block releases for the selected supported clients.
 

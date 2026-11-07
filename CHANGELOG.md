@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.1.0 — release candidate
+## 0.1.0 — 2026-11-07
 
-Release candidate (tags `v0.1.0-rc.N`); the package version is 0.1.0. Not a stable release.
+First stable release, tag `v0.1.0`. The package content is that of the release candidate `v0.1.0-rc.3`; candidates and the release share the package version 0.1.0, so move from a candidate by reinstalling (see [migration](docs/migration.md)).
 
 - Canonical language-agnostic engineering rules and four focused skills, including plan-before-edit for routing risky changes to planning.
 - Claude Code marketplace package and explicit core-rule import.
