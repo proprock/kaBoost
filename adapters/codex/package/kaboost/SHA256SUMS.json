@@ -1,5 +1,5 @@
 {
-  ".codex-plugin/plugin.json": "52605829325f1825cb9d05c678066a134cbb396bafd2bfd4fe47b3716150b79e",
+  ".codex-plugin/plugin.json": "e16b790bdba692ba214f6652b62596a9381d7a5d9588ff404fc921f104f86827",
   "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
   "core/engineering-rules.md": "519dac601e4da24b2f1200c4dcca563e8d0a6bb6c272e72e933881f803c5f8aa",
   "init/catalog.json": "552c28204288b115475b248e2fdb5a4763bfc84d8eaaa3194911aadb9717fdcc",
@@ -33,7 +33,7 @@
   "init/features/tool-selection-eval.md": "e86a290458a0a9ef3ca3b316554b3c87d2761aca85f06f84103513a5c4d83d76",
   "init/features/windows-notes.md": "a049482e723554d44faae61f56f3e260de83a93a1ba9db41b6315b4261d2efbf",
   "init/kaboost_init.py": "7ada253f436bc6184c612ab92dfbbe972094c9ee35e691bbe6b00b21beda5965",
-  "plugin.json": "dfdc2f96cfd770d627f952c3594b473fe63ed7a4b41a4cbf231d3e4980f5ba40",
+  "plugin.json": "697b501da7ebf6180c68af66b51f191975fe6bc918cb43e75d7fd8395919c955",
   "skills/kaboost-init-global/SKILL.md": "ba608a2c0fbd0650fea94a0a4be59bc32e62eb76683d766280f889040c8d0810",
   "skills/kaboost-init-global/agents/openai.yaml": "b98cecbea0d67ed0b8ea9064f743492b041ae0a0646087dd2d62b9dac7815201",
   "skills/kaboost-init/SKILL.md": "761306ddce5761ad3b0218ed1a2f0aecd138f7d8f777b47bd1badf010dd17ae1",
