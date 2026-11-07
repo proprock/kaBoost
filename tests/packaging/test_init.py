@@ -351,7 +351,12 @@ class InitTests(unittest.TestCase):
         self.call('apply', '--ids', 'core-rules', '--yes', '--targets', 'codex')
         self.call('apply', '--ids', 'agents-import,core-rules', '--yes', '--targets', 'claude')
         self.assertFalse((self.repo / '.claude/kaboost/core-rules.md').exists())
-        self.assertEqual(self.call('status', '--targets', 'claude')['warnings'], [])
+        status = self.call('status', '--targets', 'claude')
+        self.assertEqual(status['warnings'], [])
+        core = next(f for f in status['features'] if f['id'] == 'core-rules')
+        self.assertEqual(core['state'], 'enabled')
+        self.assertIn('AGENTS.md', core['edits'][0]['note'])
+        self.assertEqual(self.features('repo')['core-rules']['state'], 'enabled')
 
     def test_existing_duplicate_core_is_reported_with_its_fix(self):
         self.call('apply', '--ids', 'core-rules,agents-import', '--yes', '--targets', 'claude')
