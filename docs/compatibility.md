@@ -51,6 +51,8 @@ Review the client vendor's current primary documentation and release notes befor
 
 Repeat the relevant checks when the client version, OS, native package or catalog format, canonical skill metadata, installation procedure, or instruction activation changes; also repeat them after an observed regression or a vendor-announced breaking change. Run both package builders in check mode, both adapter validations, packaging tests, and the affected client's disposable-profile lifecycle harness. For changes to discovery or instruction semantics, additionally repeat authenticated discovery, explicit invocation and the affected core/precedence scenario; record profile caveats. Repeat remote install and rollback checks only when reviewed published refs are available, and rerun affected behavior scenarios when model-facing content or routing changes. A new OS or surface needs its own native evidence, not extrapolation.
 
+The [Latest clients](../.github/workflows/latest-clients.yml) workflow runs every Monday (and on demand): it installs the newest Claude Code on Linux, macOS and Windows and the newest Codex CLI on Linux, and runs the disposable-profile lifecycle smoke tests (KB-313). A pass there is an early signal, not a tested point for this table; a failure triggers the revalidation above.
+
 Record commands, source commit, client and model versions where applicable, OS, results and limitations. A failed, unavailable or unrun check is not a pass: leave that combination unverified, investigate the failure and update documentation before making a support claim. CI configuration or an old successful run does not prove that a new commit or version passed. The release gate in [roadmap](roadmap.md) remains separate from compatibility checks.
 
 ## Primary sources
