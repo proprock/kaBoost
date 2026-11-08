@@ -84,6 +84,10 @@ Restart the session and check `claude plugin list`. Project-local core copies
 and blocks written by `/kaboost:init` are not touched; run `/kaboost:init status`
 in a project to see whether a block is outdated.
 
+Candidates after `v0.2.0` carry their own package version (`0.3.0-rc.1`,
+`0.3.0-rc.2`, then `0.3.0`), so `claude plugin marketplace update` followed by
+`claude plugin update` moves between them without a reinstall (KB-231).
+
 ## Migrating from the pre-candidate names
 
 Before `v0.1.0-rc.2` the plugin and the local marketplace were both called
