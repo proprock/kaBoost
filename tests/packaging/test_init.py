@@ -549,7 +549,10 @@ class InitTests(unittest.TestCase):
                 if edit.get('kind') == 'git-hook':
                     self.assertTrue(edit['command'])
                     continue
-                self.assertIn(edit['mode'], ('own', 'append'))
+                self.assertIn(edit['mode'], ('own', 'append', 'exact'))
+                if edit['mode'] == 'exact':
+                    self.assertIn(edit['owner'], init.body_of(edit))
+                    self.assertNotIn(init.digest(init.body_of(edit)), edit.get('previous', []))
                 if edit.get('frontmatter'):
                     self.assertEqual(edit['mode'], 'own')
                     self.assertTrue(init.parts(edit)[0].startswith('---\n'))

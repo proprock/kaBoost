@@ -23,6 +23,8 @@ class GuardTests(unittest.TestCase):
             'git push --no-verify origin main',
             'git -c core.hooksPath=/dev/null commit -m x',
             '/usr/bin/git commit --no-verify',
+            '"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command \'git commit --no-verify -m probe\'',
+            'bash -lc "git commit -n -m x"',
         ):
             self.assertTrue(guard.bypass(command), command)
 

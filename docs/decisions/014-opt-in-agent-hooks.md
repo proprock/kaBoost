@@ -28,5 +28,6 @@ Both clients now document the same hook shape. Claude Code reads `hooks` from `.
 
 - Supersedes the hooks part of the scope boundary in ADR 007 and the sentence in ADR 009 that keeps agent hooks out of `init`. Agents, MCP integrations and Jira connectors stay out of scope.
 - A hook runs code on the user's machine on every matching tool call. The preview shows the script and the settings entry in full, and the script uses only the Python standard library.
-- Codex needs `[features] hooks = true` in the user's `config.toml`. `init` does not change it; the preview says whether it is set.
+- Codex hooks are a stable feature that is on by default in Codex CLI 0.160.0 (`codex features list`), so `init` changes no Codex configuration. Codex runs a project hook only after the user trusts the project and the hook; until then the hook does nothing, and the feature summary says so.
+- Implementation (KB-226): the `no-verify-guard` feature, `mode: exact` in the engine for JSON files. Verified on Windows 11: Claude Code 2.1.319 runs project hooks through Git Bash and blocked `git commit --no-verify`. In `codex exec` (0.160.0) the untrusted project hook did not run, and Codex passed the command to PowerShell as `powershell.exe -Command '...'`, which the guard unwraps.
 - Whether the guard changes behavior is measured as a miss-log count ([ADR 013](013-cost-per-pass-and-miss-log.md)): `--no-verify` commits before and after enabling it.
