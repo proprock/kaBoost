@@ -11,13 +11,15 @@ The question is whether the opt-in `tdd-commits` feature (`v0.2.0`) produces val
 | [aHerald](https://github.com/proprock/aHerald) (Rust, Conventional Commits with the task ID at the end, merge commits) | M1 and M2 | First commit (2026-10-24) to the commit that enables `tdd-commits` | After that commit until the time box ends |
 | kaBoost | M1 only: the rule has been in force since the first commits, so there is no baseline; its pairs come from agent sessions the maintainer supervised closely | None | Commits after 2026-11-08 |
 
-Another repository joins only if `tdd-commits` is enabled in it with a recorded boundary commit and it has at least two weeks of history before that commit.
+Each repository listed in the boundary table below is measured like aHerald (M1 and M2, its own baseline) from its own boundary commit. Another repository joins only if `tdd-commits` is enabled in it with a recorded boundary commit and it has at least two weeks of history before that commit.
 
 The boundary is the merge commit on `master` that brings in the `tdd-commits` block. Record its SHA and date in the table below when it lands; everything after it on the first-parent line of `master` is treatment.
 
 | Repository | Boundary commit | Date |
 | --- | --- | --- |
 | aHerald | pending | |
+| [watchdog](https://github.com/proprock/watchdog) (Conventional Commits; task IDs must move to the end of the subject, `(WD-182)`, for pairs to be found) | pending | |
+| private repository (Conventional Commits without task IDs; it must add them for pairs; only aggregate numbers are published) | pending | |
 
 ## Metrics
 
@@ -38,7 +40,7 @@ M1 has no baseline. It shows whether the rule works as written, not whether it h
 
 ## Time box and stop rule
 
-- Start: the aHerald boundary commit. End: when the two repositories together have 20 pairs, or six weeks after the start, whichever comes first.
+- Start: the aHerald boundary commit. End: when all repositories together have 20 pairs, or six weeks after the start, whichever comes first.
 - Fewer than 10 pairs at the end means the result is inconclusive: record that, stop collecting, and do not extend the window.
 - Mine once at the end. Looking at interim numbers is allowed but changes nothing above.
 
