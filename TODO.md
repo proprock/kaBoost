@@ -45,7 +45,6 @@ Complete with the `v0.1.0` release (KB-023); see [DONE.md](DONE.md).
 
 Decision 2026-10-30: language modules belong at project level, so KB-209 through KB-212 are delivered as per-stack packs of `/kaboost:init` (KB-221), offered and applied in the project rather than shipped as plugin-wide modules. Start them after the KB-219 to KB-221 practice base exists; each pack keeps the "opt-in" and "no global tooling mandate" requirements below.
 
-- [ ] KB-209: Add an opt-in Python module covering project-established uv, pytest, ruff, ty, and prek workflows. Mostly delivered by the init features `python-toolchain`, `make-checks`, `ci-python` and `precommit-hooks` (KB-221, KB-225); reconcile and keep only the remainder (for example the uv sandbox notes, practice 40).
 - [ ] KB-211: Add an opt-in C++ module using the project's selected build system, compiler, and checks.
 - [ ] KB-212: Verify language modules introduce no global tooling mandates or changes to unrelated projects.
 - [ ] KB-213: Measure context and process overhead after each substantial content addition (the KB-222 core additions are the first case); simplify policies that fail the relevant gates. Static context is measured by `scripts/measure_context.py` with budgets and a record in [context overhead](docs/context-overhead.md) (2026-11-08: 1225 tokens always loaded). Open: process overhead against a no-toolkit baseline (needs model sessions under ADR 008) and the Codex skill-listing check.
