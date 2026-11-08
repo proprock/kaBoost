@@ -1,7 +1,8 @@
 """Audit TDD red/green commit pairs.
 
 A red commit contains only the failing tests; its message has the trailer `TDD: red` and a line
-`Expected failing: <test ids>`. A later green commit with the same task ID (`KB-123:`) has the trailer
+`Expected failing: <test ids>`. A later green commit with the same task ID (`KB-123: ...` at the start of the
+subject or `... (KB-123)` at its end) has the trailer
 `TDD: green` and contains the solution. The audit checks the structure and, with --run, executes the project's
 test command in detached worktrees: the named tests must fail on the red commit and pass on the green one.
 
@@ -14,7 +15,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-TASK = re.compile(r'^([A-Za-z]+-\d+)\b')
+# The task ID opens the subject (`KB-7: ...`) or closes it in parentheses (`fix: ... (KB-7)`).
+TASK = re.compile(r'^([A-Za-z]+-\d+)\b|\(([A-Za-z]+-\d+)\)\s*$')
 # Test ids come from commit messages and are substituted into a shell command, so only plain ids pass.
 SAFE_TESTS = re.compile(r'^(?!-)[\w./:\[\]-]+( (?!-)[\w./:\[\]-]+)*$')
 
@@ -36,9 +38,9 @@ def commits(rev_range, cwd):
         subject = message.splitlines()[0] if message.strip() else ''
         trailer = re.search(r'^TDD:\s*(red|green)\s*$', message, re.M | re.I)
         expected = re.search(r'^Expected failing:\s*(.+)$', message, re.M)
-        task = TASK.match(subject)
+        task = TASK.search(subject)
         result.append({'sha': sha, 'subject': subject, 'files': files, 'kind': trailer.group(1).lower() if trailer else None,
-                       'expected': expected.group(1).strip() if expected else '', 'task': task.group(1) if task else None})
+                       'expected': expected.group(1).strip() if expected else '', 'task': (task.group(1) or task.group(2)) if task else None})
     return result
 
 
@@ -48,7 +50,7 @@ def pair_up(items):
     for item in items:
         if item['kind'] == 'red':
             if not item['task']:
-                problems.append(f"{item['sha'][:8]}: red commit subject must start with a task ID")
+                problems.append(f"{item['sha'][:8]}: red commit subject must name a task ID ('KB-7: ...' or '... (KB-7)')")
             if not item['expected']:
                 problems.append(f"{item['sha'][:8]}: red commit has no 'Expected failing:' line")
             if item['task'] in open_red:
