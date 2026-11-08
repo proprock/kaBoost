@@ -28,6 +28,21 @@ class GuardTests(unittest.TestCase):
         ):
             self.assertTrue(guard.bypass(command), command)
 
+    def test_variants_that_also_skip_hooks_are_found(self):
+        for command in (
+            'git commit --no-veri -m x',
+            'git push --no-verif',
+            'GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.hooksPath GIT_CONFIG_VALUE_0=/dev/null git commit -m x',
+            'git --config-env=core.hooksPath=EMPTY commit -m x',
+            'git config core.hooksPath /dev/null',
+            'env -u HOME git commit -n -m x',
+            'sudo git commit --no-verify',
+            'bash -ec "git commit --no-verify"',
+        ):
+            self.assertTrue(guard.bypass(command), command)
+        for command in ('git config --get core.hooksPath', 'git commit --no-ver -m x', 'git commit --verbose'):
+            self.assertFalse(guard.bypass(command), command)
+
     def test_ordinary_commands_pass(self):
         for command in (
             'git commit -m "skip --no-verify here"',
