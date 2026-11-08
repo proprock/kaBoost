@@ -2,6 +2,12 @@
 
 These are evaluation specifications, not passing test results. Packaging checks cannot establish agent quality. Run against a real existing project in isolated worktrees; never use the evaluator's acceptance tests as hidden instructions to the agent.
 
+The runners here make paid model calls and are run by hand. Their offline parts (`test_*.py`, no network, no model) run in CI with `python -m unittest discover -s tests/behavior -p "test_*.py"`.
+
+## Native plugin eval
+
+`evals/large-json-cli` is one case for Claude Code's own `claude plugin eval` (KB-207): a Large task on a JSON CLI fixture, graded on whether `plan-before-edit` fires (`skill-fired.md`), whether it fires before the first edit (`skill-before-edit.md`, scored only in the arm with the plugin) and whether the agent edited (`edited.md`). `plugins/kaboost` is generated, so `python3 tests/behavior/run_plugin_eval.py /tmp/NEW-OUTPUT` copies the plugin and the cases into a temporary plugin root, fills the fixture placeholders in the copy and runs the eval there. Without `--max-cost-usd` it only prints the cost estimate; the ceiling is checked before each run, so runs are sequential. It is kept as the client-native counterpart of `run_routing_experiment.py`; no result from it is recorded yet (KB-233).
+
 ## Instruction-loading diagnostics
 
 For a separate loading diagnosis, run `python3 tests/behavior/prepare_routing_diagnostic.py /tmp/NEW-DIAGNOSTIC-DIRECTORY`. It creates a project-local core import and a disposable Claude plugin copy with a unique marker per core, skill, and adaptive workflow file. The marker map is outside the project and plugin; do not include it in the agent prompt. These instrumented files request marker output only if read. The generated inventory is intentionally stale: never install or publish this diagnostic plugin as a release.
