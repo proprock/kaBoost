@@ -70,6 +70,15 @@ class PackageTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'stable SemVer'):
                     validate(self.root)
 
+    def test_external_actions_are_pinned_by_commit_sha(self):
+        files = sorted((ROOT/'.github/workflows').glob('*.yml')) + sorted((ROOT/'init/features').glob('*.yml'))
+        for path in files:
+            for line in path.read_text(encoding='utf-8').splitlines():
+                match = re.match(r'\s*(?:-\s*)?uses:\s*(\S+)', line)
+                if match and not match[1].startswith('./'):
+                    with self.subTest(file=path.name, action=match[1]):
+                        self.assertRegex(match[1], r'^[\w.-]+/[\w./-]+@[0-9a-f]{40}$')
+
     def test_release_documents_must_name_the_current_release(self):
         version = json.loads((self.root/'toolkit.json').read_text())['version']
         for name in ('README.md', 'docs/compatibility.md', 'docs/release-gate-assessment.md', 'docs/migration.md'):
