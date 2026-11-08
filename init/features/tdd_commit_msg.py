@@ -7,6 +7,8 @@ commit holds only tests, and whether the tests fail and pass, is left to scripts
 `--amend` the history still holds the commit being replaced, so a reworded green is checked leniently. Any error of
 its own (git missing, unreadable file) lets the commit through. Standard library only.
 """
+import os
+from pathlib import Path
 import re
 import subprocess
 import sys
@@ -23,9 +25,27 @@ def task_of(message):
     return (match.group(1) or match.group(2)) if match else None
 
 
+def git_executable():
+    """git from PATH, skipping the current directory and anything under it. Windows looks in the current directory
+    (here the repository) before PATH, so a bare 'git' could run a git.exe that a checked-out branch added."""
+    here = Path.cwd().resolve()
+    names = ('git.exe',) if os.name == 'nt' else ('git',)
+    for entry in os.environ.get('PATH', '').split(os.pathsep):
+        if not entry.strip():
+            continue
+        folder = Path(entry).resolve()
+        if folder == here or folder.is_relative_to(here):
+            continue
+        for name in names:
+            candidate = folder / name
+            if candidate.is_file() and os.access(candidate, os.X_OK):
+                return str(candidate)
+    raise OSError('git not found on PATH outside the repository')
+
+
 def red_tasks():
     """Task IDs of red commits among the last HISTORY commits (none in a repository without commits)."""
-    done = subprocess.run(['git', 'log', f'-{HISTORY}', '--format=%B%x00'], capture_output=True, text=True,
+    done = subprocess.run([git_executable(), 'log', f'-{HISTORY}', '--format=%B%x00'], capture_output=True, text=True,
                           encoding='utf-8', errors='replace')
     if done.returncode != 0:
         return set()

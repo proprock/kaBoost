@@ -2,11 +2,13 @@
 import contextlib
 import io
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'init'))
@@ -70,6 +72,26 @@ class CommitHookTests(unittest.TestCase):
         self.assertEqual(self.commit('docs: notes\n', 'notes.md').returncode, 0)
         scissors = 'docs: more\n# ------------------------ >8 ------------------------\nTDD: red\n'
         self.assertEqual(self.commit(scissors, 'notes.md', '--cleanup=scissors').returncode, 0)
+
+
+class GitLookupTests(unittest.TestCase):
+    def test_git_in_the_repository_is_never_run(self):
+        sys.path.insert(0, str(ROOT / 'init' / 'features'))
+        import tdd_commit_msg  # noqa: E402
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        repo = Path(temp.name).resolve()
+        (repo / 'bin').mkdir()
+        for folder in (repo, repo / 'bin'):
+            fake = folder / ('git.exe' if os.name == 'nt' else 'git')
+            fake.write_text('#!/bin/sh\nexit 0\n')
+            fake.chmod(0o755)
+        path = os.pathsep.join([str(repo), str(repo / 'bin'), os.environ.get('PATH', '')])
+        self.addCleanup(os.chdir, os.getcwd())
+        os.chdir(repo)
+        with mock.patch.dict(os.environ, {'PATH': path}):
+            found = tdd_commit_msg.git_executable()
+        self.assertFalse(Path(found).resolve().is_relative_to(repo), found)
 
 
 if __name__ == '__main__':
