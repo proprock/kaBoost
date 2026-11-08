@@ -358,6 +358,14 @@ class InitTests(unittest.TestCase):
                 self.assertIn('.github/apt-packages.txt', text)
                 self.assertLess(text.index('apt-get install'), text.index('uv sync' if 'python' in body else 'cargo clippy'))
 
+    def test_todo_done_rules_keep_tasks_greppable_with_collision_free_ids(self):
+        self.call('apply', '--ids', 'todo-done', '--yes')
+        todo = (self.repo / 'TODO.md').read_text(encoding='utf-8')
+        self.assertIn("grep -n '^- \\[ \\]' TODO.md", todo)
+        self.assertIn('not by line', todo)
+        self.assertIn('four random hex digits', todo)
+        self.assertIn('one line', (self.repo / 'DONE.md').read_text(encoding='utf-8'))
+
     def test_core_and_workflow_leave_tdd_commits_to_the_feature(self):
         for path in ('core/engineering-rules.md', 'workflows/adaptive.md'):
             self.assertNotIn('TDD: red', (ROOT / path).read_text(encoding='utf-8'), path)
