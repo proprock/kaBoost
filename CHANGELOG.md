@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `/kaboost:init-global` and `$kaboost-init-global` write to the file the client actually reads: `$CLAUDE_CONFIG_DIR/CLAUDE.md` and `$CODEX_HOME/AGENTS.md` when those variables are set, `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` otherwise; the preview shows the resolved path. An explicit `--home` ignores the variables (KB-244).
+
 - New `/kaboost:init` feature `no-verify-guard`, the first agent hook ([ADR 014](docs/decisions/014-opt-in-agent-hooks.md)): it creates `scripts/kaboost_no_verify_guard.py` and project hooks in `.claude/settings.json` and `.codex/hooks.json` that block `git commit --no-verify` or `-n`, `git push --no-verify` and `core.hooksPath` overrides before the agent runs them, through the `PreToolUse` "deny" decision that both clients honour. It is written only when those settings files do not exist yet, otherwise it shows the entry to add by hand, and disabling deletes the files again. Codex runs it only after you trust the hook (KB-226).
 
 - `kaboost_audit_tdd.py` also reads the task ID at the end of a conventional commit subject (`test(calc): add is exact (AH-7)`), and the `tdd-commits` rule allows that form, so projects that end subjects with the task ID can pair commits without changing their convention. Repositories that enabled `tdd-commits` see it as outdated and can update it with `/kaboost:init` (KB-243).

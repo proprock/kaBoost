@@ -4,7 +4,7 @@ argument-hint: [status|disable]
 allowed-tools: Bash(python3 "${CLAUDE_PLUGIN_ROOT}/init/kaboost_init.py" *), Bash(python "${CLAUDE_PLUGIN_ROOT}/init/kaboost_init.py" *), Bash(py -3 "${CLAUDE_PLUGIN_ROOT}/init/kaboost_init.py" *)
 disable-model-invocation: true
 ---
-Add personal practices from the kaBoost catalog to the user's global Claude Code instruction file `~/.claude/CLAUDE.md`. This file is outside any project and applies to every project, so be explicit about that. This command edits only Claude's file; Codex has its own skill. Always pass `--targets claude`. Only the bundled script edits files; never edit them yourself. Argument: $ARGUMENTS
+Add personal practices from the kaBoost catalog to the user's global Claude Code instruction file `~/.claude/CLAUDE.md` (`$CLAUDE_CONFIG_DIR/CLAUDE.md` when that is set). This file is outside any project and applies to every project, so be explicit about that. This command edits only Claude's file; Codex has its own skill. Always pass `--targets claude`. Only the bundled script edits files; never edit them yourself. Argument: $ARGUMENTS
 
 Run each script command with the Bash tool exactly as written, one per call, never chained or in PowerShell. `<python>` is the first of `python3`, `python`, `py -3` with which step 1 succeeds (on Windows the first two can be the Store stub); if none works, say Python 3 is required and stop.
 

@@ -143,6 +143,38 @@ class InitTests(unittest.TestCase):
         self.assertFalse((self.home / '.claude/CLAUDE.md').exists())
         self.assertFalse((self.home / '.codex/AGENTS.md').exists())
 
+    def call_with_client_homes(self, *args, env):
+        # No --home: the engine reads the clients' own variables, as /kaboost:init-global does.
+        out = io.StringIO()
+        with (mock.patch.dict(os.environ, env), mock.patch.object(init.Path, 'home', return_value=self.home),
+              contextlib.redirect_stdout(out)):
+            self.assertEqual(init.main([args[0], '--scope', 'global', '--root', str(self.repo), *args[1:]]), 0)
+        return json.loads(out.getvalue())
+
+    def test_global_scope_follows_claude_config_dir_and_codex_home(self):
+        claude_dir, codex_dir = self.home.parent / 'claude-config', self.home.parent / 'codex-home'
+        claude_dir.mkdir()
+        codex_dir.mkdir()
+        env = {'CLAUDE_CONFIG_DIR': str(claude_dir), 'CODEX_HOME': str(codex_dir)}
+        preview = self.call_with_client_homes('apply', '--ids', 'delegation', env=env)
+        self.assertEqual(sorted(c['file'] for c in preview['changes']),
+                         sorted([str(claude_dir / 'CLAUDE.md'), str(codex_dir / 'AGENTS.md')]))
+        self.call_with_client_homes('apply', '--ids', 'delegation', '--yes', env=env)
+        self.assertIn('kaboost:begin', (claude_dir / 'CLAUDE.md').read_text())
+        self.assertIn('kaboost:begin', (codex_dir / 'AGENTS.md').read_text())
+        self.assertFalse((self.home / '.claude/CLAUDE.md').exists())
+        status = self.call_with_client_homes('status', env=env)
+        delegation = next(f for f in status['features'] if f['id'] == 'delegation')
+        self.assertEqual(delegation['state'], 'enabled')
+
+    def test_explicit_home_overrides_the_client_variables(self):
+        other = self.home.parent / 'claude-config'
+        other.mkdir()
+        with mock.patch.dict(os.environ, {'CLAUDE_CONFIG_DIR': str(other)}):
+            self.call('apply', '--ids', 'delegation', '--yes', scope='global')
+        self.assertTrue((self.home / '.claude/CLAUDE.md').is_file())
+        self.assertFalse((other / 'CLAUDE.md').exists())
+
     def test_global_core_rules_keep_personal_text_and_restore_it(self):
         claude = self.home / '.claude/CLAUDE.md'
         codex_dir = self.home / '.codex'
@@ -557,7 +589,7 @@ class InitTests(unittest.TestCase):
                     self.assertEqual(edit['mode'], 'own')
                     self.assertTrue(init.parts(edit)[0].startswith('---\n'))
                 self.assertTrue(init.body_of(edit).strip())
-                self.assertRegex(edit['target'], r'^\{(repo|home)\}/')
+                self.assertRegex(edit['target'], r'^\{(repo|claude_home|codex_home)\}/')
 
 
 if __name__ == '__main__':
