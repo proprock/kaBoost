@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- `kaboost_audit_tdd.py` also reads the task ID at the end of a conventional commit subject (`test(calc): add is exact (AH-7)`), and the `tdd-commits` rule allows that form, so projects that end subjects with the task ID can pair commits without changing their convention. Repositories that enabled `tdd-commits` see it as outdated and can update it with `/kaboost:init` (KB-243).
+
 ## 0.2.0 — 2026-11-08
 
 Minor release, tag `v0.2.0`: one core rule moves into an opt-in feature, `/kaboost:init` gains a Rust pack and clearer advice, and its CI templates are updated. Skills and the other commands are unchanged. Update with `claude plugin marketplace update proprock` and `claude plugin update kaboost@proprock`, then run `/kaboost:init` (and `/kaboost:init-global`) to refresh the blocks they show as outdated; see [migration](docs/migration.md).

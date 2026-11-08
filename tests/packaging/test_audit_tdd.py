@@ -99,6 +99,25 @@ class AuditTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("no 'Expected failing:'", err)
 
+    def test_conventional_subjects_pair_by_the_task_id_at_the_end(self):
+        self.commit({'README.md': 'x'}, 'chore: start')
+        self.commit({'tests/test_calc.py': 't'}, 'test(calc): add is exact (AH-7)\n\nTDD: red\nExpected failing: tests/test_calc.py')
+        self.commit({'calc.py': 'c'}, 'fix(calc): implement add (AH-7)\n\nTDD: green')
+        code, out, err = self.audit()
+        self.assertEqual((code, err), (0, ''), out)
+        self.assertIn('AH-7: red', out)
+
+    def test_an_id_inside_the_subject_text_is_not_a_task_id(self):
+        self.commit({'README.md': 'x'}, 'chore: start')
+        self.commit({'tests/test_a.py': 't'}, 'test: keep utf-8 names\n\nTDD: red\nExpected failing: tests/test_a.py')
+        code, _, err = self.audit()
+        self.assertEqual(code, 1)
+        self.assertIn('red commit subject must name a task ID', err)
+
+    def test_rule_allows_the_task_id_where_the_project_puts_it(self):
+        rule = (ROOT / 'init' / 'features' / 'tdd-commits.md').read_text(encoding='utf-8')
+        self.assertIn('`test: ... (<task ID>)`', rule)
+
 
 if __name__ == '__main__':
     unittest.main()
