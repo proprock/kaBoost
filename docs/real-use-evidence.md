@@ -13,13 +13,13 @@ The question is whether the opt-in `tdd-commits` feature (`v0.2.0`) produces val
 
 Each repository listed in the boundary table below is measured like aHerald (M1 and M2, its own baseline) from its own boundary commit. Another repository joins only if `tdd-commits` is enabled in it with a recorded boundary commit and it has at least two weeks of history before that commit.
 
-The boundary is the merge commit on `master` that brings in the `tdd-commits` block. Record its SHA and date in the table below when it lands; everything after it on the first-parent line of `master` is treatment.
+The boundary is the merge commit on `master` that brings in the `tdd-commits` block. Record its SHA and date in the table below when it lands; everything after it on the first-parent line of `master` is treatment. watchdog and the private repository develop on a local chain of feature branches rather than on `master`; there the boundary is the local commit that adds the block, and treatment is `<boundary>..<tip of the chain>`.
 
 | Repository | Boundary commit | Date |
 | --- | --- | --- |
-| aHerald | pending | |
-| [watchdog](https://github.com/proprock/watchdog) (Conventional Commits; task IDs must move to the end of the subject, `(WD-182)`, for pairs to be found) | pending | |
-| private repository (Conventional Commits without task IDs; it must add them for pairs; only aggregate numbers are published) | pending | |
+| aHerald | pending: merge of [aHerald#170](https://github.com/proprock/aHerald/pull/170) (AH-292) | |
+| [watchdog](https://github.com/proprock/watchdog) (Conventional Commits; task IDs must move to the end of the subject, `(WD-182)`, for pairs to be found) | `0d5e984` (WD-182, local branch `feature/WD-182-tdd-commits` on `feature/WD-151`) | 2026-11-08 |
+| private repository (Conventional Commits; task IDs `(ASI-N)` start with this commit; only aggregate numbers are published) | local commit (ASI-1) | 2026-11-08 |
 
 ## Metrics
 
