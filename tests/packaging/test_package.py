@@ -60,15 +60,30 @@ class PackageTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             build(self.root)
 
-    def test_noncanonical_stable_versions_are_rejected(self):
+    def test_noncanonical_versions_are_rejected(self):
         path = self.root/'toolkit.json'
         data = json.loads(path.read_text())
-        for version in ('01.2.3', '1.02.3', '1.2.03', '١.2.3', '1.2.3-rc.1', '1.2.3+build'):
+        for version in ('01.2.3', '1.02.3', '1.2.03', '١.2.3', '1.2.3+build', '1.2.3-beta.1', '1.2.3-rc.01',
+                        '1.2.3-rc', '1.2.3-rc.1.2', '1.2.3-RC.1'):
             with self.subTest(version=version):
                 data['version'] = version
                 path.write_text(json.dumps(data), encoding='utf-8')
-                with self.assertRaisesRegex(ValueError, 'stable SemVer'):
+                with self.assertRaisesRegex(ValueError, 'X.Y.Z or X.Y.Z-rc.N'):
                     validate(self.root)
+
+    def test_release_candidate_versions_build_and_validate(self):
+        # Clients reinstall only when the version string changes, so each candidate carries its own -rc.N (KB-231).
+        version = '0.9.0-rc.2'
+        for name in ('toolkit.json', 'adapters/claude-code/plugin.json', 'adapters/codex/plugin.json',
+                     '.claude-plugin/marketplace.json'):
+            path = self.root/name
+            path.write_text(re.sub(r'"version": "[^"]+"', f'"version": "{version}"', path.read_text(encoding='utf-8')),
+                            encoding='utf-8')
+        for name in ('README.md', 'docs/compatibility.md', 'docs/release-gate-assessment.md', 'docs/migration.md'):
+            path = self.root/name
+            path.write_text(path.read_text(encoding='utf-8') + f'\nCandidate `v{version}`.\n', encoding='utf-8')
+        build(self.root)
+        validate(self.root)
 
     def test_external_actions_are_pinned_by_commit_sha(self):
         files = sorted((ROOT/'.github/workflows').glob('*.yml')) + sorted((ROOT/'init/features').glob('*.yml'))
