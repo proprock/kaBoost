@@ -42,7 +42,6 @@ Complete with the `v0.1.0` release (KB-023); see [DONE.md](DONE.md).
 - [ ] KB-248: Warn in global `status` when `$CODEX_HOME/AGENTS.override.md` exists: Codex then reads it instead of `AGENTS.md`, so blocks written by `init-global` have no effect. Found while doing KB-244 (2026-11-08) in the Codex source (`codex-rs/codex-home/src/instructions/mod.rs`).
 
 - [ ] KB-238: Extend evaluation beyond single-session correctness (left open by KB-230): downstream measures (regressions after merge, handoff quality, reviewability), weaker or cheaper models, and multi-session tasks with handoff (KB-208). Deferred until the miss log or KB-025 shows where a process feature could pay off. The first calibration run after KB-234 checks that the judge's "minimal" score no longer differs between BASE and toolkit arms on the same task before its scores are used.
-- [ ] KB-233: Record or retire the `claude plugin eval` assets (`evals/large-json-cli`, `tests/behavior/run_plugin_eval.py`); no task covers them, and `tests/behavior/test_plugin_eval_setup.py` is not run by CI.
 
 ### Language modules
 
