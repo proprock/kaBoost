@@ -13,6 +13,14 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      # Native libraries the build or tests link against: list Debian package names, one per line, in
+      # .github/apt-packages.txt (lines starting with # are comments). Edit that list, not this workflow, which /kaboost:init manages.
+      - name: Install the system packages listed in .github/apt-packages.txt
+        run: |
+          if [ -f .github/apt-packages.txt ]; then
+            sudo apt-get update
+            grep -v '^[[:space:]]*\(#\|$\)' .github/apt-packages.txt | xargs -r sudo apt-get install -y --no-install-recommends
+          fi
       - run: uv sync --all-extras --group dev
       - run: uv run ruff format --check
       - run: uv run ruff check
