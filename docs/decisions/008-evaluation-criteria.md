@@ -1,6 +1,6 @@
 # 008: Evaluation criteria and decision rule
 
-Status: accepted
+Status: accepted; decision 5 superseded by [ADR 013](013-cost-per-pass-and-miss-log.md) (cost per pass, replication on two tasks)
 
 ## Context
 
