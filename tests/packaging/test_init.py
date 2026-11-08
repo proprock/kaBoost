@@ -351,6 +351,13 @@ class InitTests(unittest.TestCase):
         self.assertEqual((self.repo / 'AGENTS.md').read_bytes(), b'# Mine\n')
         self.assertFalse((self.repo / '.github/workflows/kaboost-ci-rust.yml').exists())
 
+    def test_ci_workflows_install_the_system_packages_a_project_lists(self):
+        for body in ('ci-rust.yml', 'ci-python.yml'):
+            text = (init.HERE / 'features' / body).read_text(encoding='utf-8')
+            with self.subTest(body=body):
+                self.assertIn('.github/apt-packages.txt', text)
+                self.assertLess(text.index('apt-get install'), text.index('uv sync' if 'python' in body else 'cargo clippy'))
+
     def test_core_and_workflow_leave_tdd_commits_to_the_feature(self):
         for path in ('core/engineering-rules.md', 'workflows/adaptive.md'):
             self.assertNotIn('TDD: red', (ROOT / path).read_text(encoding='utf-8'), path)

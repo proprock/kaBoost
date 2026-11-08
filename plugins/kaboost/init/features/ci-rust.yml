@@ -12,6 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Native libraries the build or tests link against: list Debian package names, one per line, in
+      # .github/apt-packages.txt (lines starting with # are comments). Edit that list, not this workflow, which /kaboost:init manages.
+      - name: Install the system packages listed in .github/apt-packages.txt
+        run: |
+          if [ -f .github/apt-packages.txt ]; then
+            sudo apt-get update
+            grep -v '^[[:space:]]*\(#\|$\)' .github/apt-packages.txt | xargs -r sudo apt-get install -y --no-install-recommends
+          fi
       # The runner's rustup follows rust-toolchain.toml when the project has one.
       - run: rustup show active-toolchain || rustup toolchain install
       - run: rustup component add rustfmt clippy
