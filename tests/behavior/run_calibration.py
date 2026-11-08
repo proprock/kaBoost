@@ -40,7 +40,9 @@ def rust_shim(checkout):
     main.write_text(inner + SHIM, encoding='utf-8')
 
 
-def prepare(task, checkout, env):
+def prepare(task, checkout, env, core=None):
+    """Create the task's starting repository; with `core`, the toolkit rules are part of its base commit,
+    so the judged diff and files_changed show only the agent's changes (KB-234)."""
     source = REPOS / task['repo']
     parent = pilot.checked(['git', 'rev-parse', task['fix'] + '^'], cwd=source).strip()
     pilot.checked(['git', 'clone', '--quiet', '--no-hardlinks', '--local', str(source), str(checkout)], env=env)
@@ -48,6 +50,13 @@ def prepare(task, checkout, env):
     shutil.rmtree(checkout / '.git')
     if task['prep'] == 'rust_shim':
         rust_shim(checkout)
+    if core is not None:
+        rules = checkout / '.claude' / 'engineering-rules.md'
+        rules.parent.mkdir(exist_ok=True)
+        shutil.copyfile(core, rules)
+        claude_md = checkout / 'CLAUDE.md'
+        existing = claude_md.read_text(encoding='utf-8') if claude_md.exists() else ''
+        claude_md.write_text(existing + '\n@.claude/engineering-rules.md\n', encoding='utf-8')
     for cmd in (['git', 'init', '--quiet'], ['git', 'add', '-A'], ['git', '-c', 'user.name=base', '-c', 'user.email=base@invalid', 'commit', '--quiet', '-m', 'base']):
         pilot.checked(cmd, cwd=checkout, env=env)
     return parent
@@ -86,17 +95,11 @@ def run(output, template, task, arm, n, plugin, core):
     if template is not None and task['prep'] == 'rust_shim':
         shutil.copytree(template, target)
     env = dict(os.environ, GIT_CONFIG_GLOBAL='/dev/null', CARGO_TARGET_DIR=str(target))
-    prepare(task, checkout, env)
+    prepare(task, checkout, env, None if arm == 'BASE' else core)
     args = []
     if arm != 'BASE':
         copy = record / 'plugin'
         shutil.copytree(plugin, copy)
-        rules = checkout / '.claude' / 'engineering-rules.md'
-        rules.parent.mkdir(exist_ok=True)
-        shutil.copyfile(core, rules)
-        claude_md = checkout / 'CLAUDE.md'
-        existing = claude_md.read_text(encoding='utf-8') if claude_md.exists() else ''
-        claude_md.write_text(existing + '\n@.claude/engineering-rules.md\n', encoding='utf-8')
         args = ['--plugin-dir', str(copy)]
     prompt = ('/kaboost:plan ' if arm == 'CMD' else '') + task['prompt']
     cmd = ['claude', '-p', prompt, '--model', pilot.MODEL, '--effort', 'medium', '--setting-sources', 'project,local',
