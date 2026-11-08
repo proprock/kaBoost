@@ -10,7 +10,7 @@ On 2026-10-30 the stable release (KB-023) was made to wait for evidence from rea
 
 Publish `v0.1.0` when the documented gates are met for the content being released, without the KB-025 evidence. The content is that of `v0.1.0-rc.3`; only documentation and the evaluation harness change. The Small-task overhead gate is measured again on that content before tagging (KB-027), because the earlier measurement predates the KB-222 and KB-218 core additions; if it fails, the release waits. Result: met on one task ([KB-027](../../tests/behavior/kb027-small-overhead-2026-11-07.md)).
 
-The release makes no effectiveness claim. KB-025 continues as the evidence program for 0.2 and gates nothing until it has measurable criteria, a baseline window and a time box.
+The release makes no effectiveness claim. KB-025 continues as the evidence program for 0.2 and gates nothing until it has measurable criteria, a baseline window and a time box. (2026-11-08: `v0.2.0` shipped on the same gates; KB-025 continues for a later release.)
 
 ## Alternatives and tradeoffs
 

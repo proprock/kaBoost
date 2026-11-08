@@ -77,7 +77,7 @@ class CodexPackageTests(unittest.TestCase):
     def test_version_mismatch_is_rejected(self):
         path = self.root / 'toolkit.json'
         manifest = json.loads(path.read_text())
-        manifest['version'] = '0.2.0'
+        manifest['version'] = '99.0.0'  # any version the adapter manifests do not carry
         path.write_text(json.dumps(manifest), encoding='utf-8')
         with self.assertRaisesRegex(ValueError, 'name/version mismatch'):
             build(self.root)

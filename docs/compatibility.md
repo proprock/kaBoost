@@ -4,7 +4,7 @@ Documentation reviewed 2026-10-30. “Documented” is not “runtime tested.”
 
 | Client | Instruction surface | Delivery and update | Toolkit status |
 | --- | --- | --- | --- |
-| Claude Code | ~/.claude/CLAUDE.md, project CLAUDE.md/rules; imports compose context | .claude-plugin/plugin.json, custom Git/local marketplace; native update/uninstall | Release `v0.1.1`: content of `v0.1.0-rc.3` with init fixes (skills and commands); exact evidence below |
+| Claude Code | ~/.claude/CLAUDE.md, project CLAUDE.md/rules; imports compose context | .claude-plugin/plugin.json, custom Git/local marketplace; native update/uninstall | Release `v0.2.0`: skills and commands of `v0.1.0`, core without the TDD red/green commit rule, extended init features; exact evidence below |
 | Codex CLI | $CODEX_HOME/AGENTS.md, project hierarchy; closer rules specialize | Agent Skills, .codex-plugin/plugin.json; local marketplace | Released adapter, local marketplace only (skills only, no commands); exact local evidence below |
 | Gemini CLI | ~/.gemini/GEMINI.md and hierarchical project context | gemini-extension.json; Git/local install, --ref, update/uninstall; gallery | Researched; no adapter |
 | Cursor | User Rules settings, project rules/AGENTS.md | Cursor plugins and Agent Plugins; GitHub marketplace import; native management | Researched; no adapter |
@@ -32,9 +32,9 @@ Codex's file hierarchy is documented; Claude and Gemini compose multiple instruc
 
 [Validation record](validation.md), [Codex adapter guide](../adapters/codex/README.md), and [comparison results](../tests/behavior/codex-comparison-results-2026-10-29.md) record scope and limitations. Portable files use LF and ordinary copies without Unix symlinks or shell scripts. OS portability still requires native runtime tests.
 
-## Support statement for v0.1.1
+## Support statement for v0.2.0
 
-Supported means tested at the points above, nothing broader. `v0.1.0` equals `v0.1.0-rc.3`, so the candidate evidence applies to it. `v0.1.1` changes only the init engine, the two init commands and the Codex init skills (KB-235, KB-227); core rules, skills and the other commands are those of `v0.1.0`. Installation from the published `v0.1.1` tag and the update from `v0.1.0` passed on Windows 11 with Claude Code 2.1.316.
+Supported means tested at the points above, nothing broader. `v0.1.0` equals `v0.1.0-rc.3`, so the candidate evidence applies to it. `v0.1.1` changes only the init engine, the two init commands and the Codex init skills (KB-235, KB-227). `v0.2.0` removes the TDD red/green commit rule from the core (now the `tdd-commits` init feature, KB-228) and changes the init engine and its features (KB-210, KB-236, KB-237, KB-239, KB-240 to KB-242, KB-314, KB-317); skills and the other commands are those of `v0.1.0`. Installation from the published `v0.2.0` tag and the update from `v0.1.1` are checked after publication (KB-318).
 
 - **Claude Code:** install, update, rollback and removal verified for the local marketplace on Linux, macOS and Windows (2.1.312), for the pinned remote candidate on macOS (2.1.308) for the pinned `v0.1.0` and `v0.1.1` on Windows (2.1.316: install, update from `v0.1.0`, rollback to it) and on Linux (2.1.319 in a Debian bookworm container: install, rollback, update, removal; KB-113). `/kaboost:init status` ran without approval prompts in `claude -p` on Windows with only `py -3` available (2.1.316, KB-227).
 - **Codex CLI:** local marketplace lifecycle on Linux (0.165.0). macOS, Windows and remote installs are untested. Skills only; the `/kaboost:*` commands do not exist for Codex.
@@ -45,7 +45,7 @@ Exact commands are in the [README](../README.md); migration is in [migration.md]
 
 ## Client version and revalidation policy
 
-`v0.1.1` has **no established supported version range or minimum**. The table records tested points only: Claude Code 2.1.301, 2.1.308 (remote candidate install, update and rollback on macOS), and 2.1.312, and Codex CLI 0.165.0 (local lifecycle only; no remote tag or macOS/Windows check). A passed lifecycle does not imply authenticated loading, instruction behavior, remote distribution, or release readiness. Other versions and client surfaces are unverified until evidence is recorded; patch releases are not automatically assumed compatible. A release must identify its exact tested toolkit commit, client versions, OS, and check scope before claiming support.
+`v0.2.0` has **no established supported version range or minimum**. The table records tested points only: Claude Code 2.1.301, 2.1.308 (remote candidate install, update and rollback on macOS), and 2.1.312, and Codex CLI 0.165.0 (local lifecycle only; no remote tag or macOS/Windows check). A passed lifecycle does not imply authenticated loading, instruction behavior, remote distribution, or release readiness. Other versions and client surfaces are unverified until evidence is recorded; patch releases are not automatically assumed compatible. A release must identify its exact tested toolkit commit, client versions, OS, and check scope before claiming support.
 
 Review the client vendor's current primary documentation and release notes before adding a client, changing a tested client version, or preparing a release. Compare native manifest and catalog fields, installation/update/removal commands, skill discovery and instruction loading against the adapter and documented limitations. Record sources, date, version, affected surfaces, and any changed assumptions; a documentation review alone is not runtime evidence.
 

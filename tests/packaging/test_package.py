@@ -55,7 +55,7 @@ class PackageTests(unittest.TestCase):
     def test_manifest_version_drift_is_rejected(self):
         path = self.root/'toolkit.json'
         data = json.loads(path.read_text())
-        data['version'] = '0.2.0'
+        data['version'] = '99.0.0'  # any version the adapter manifests do not carry
         path.write_text(json.dumps(data), encoding='utf-8')
         with self.assertRaises(ValueError):
             build(self.root)
