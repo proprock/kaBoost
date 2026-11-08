@@ -1,6 +1,6 @@
 # 014: Opt-in agent hooks through init
 
-Status: proposed (2026-11-08, KB-226); needs the maintainer's acceptance before implementation
+Status: accepted (2026-11-08, KB-226)
 
 ## Context
 

@@ -16,4 +16,4 @@ All decisions are accepted for the 0.1 implementation, following architecture ap
 - [011 — TDD red/green commits](011-tdd-red-green-commits.md)
 - [012 — Stable release on the documented gates](012-stable-release-gates.md)
 - [013 — Cost per pass as the decision rule; a miss log for new skills](013-cost-per-pass-and-miss-log.md)
-- [014 — Opt-in agent hooks through init](014-opt-in-agent-hooks.md) (proposed)
+- [014 — Opt-in agent hooks through init](014-opt-in-agent-hooks.md)

@@ -18,6 +18,6 @@ Add user-invoked Claude Code commands next to the skills: `/kaboost:plan`, `/kab
 
 ## Consequences
 
-- Supersedes the scope boundary that listed commands as needing a separate decision. Hooks, agents, MCP integrations, and Jira connectors remain out of scope.
+- Supersedes the scope boundary that listed commands as needing a separate decision. Hooks, agents, MCP integrations, and Jira connectors remain out of scope. The hooks part is superseded by [ADR 014](014-opt-in-agent-hooks.md).
 - Commands are not generated for Codex; its package keeps skills only.
 - Whether the `/kaboost:plan` format improves gate compliance is unmeasured (KB-215).
