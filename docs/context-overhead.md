@@ -18,4 +18,4 @@ Not measured: whether the client adds disabled-implicit Codex skills to its list
 
 Process overhead (time, tokens and cost per session against a no-toolkit baseline) cannot be derived from the text. It needs model sessions and is measured under the [evaluation criteria](decisions/008-evaluation-criteria.md): the Small-task gate of at most 20% median overhead, and cost per passing session. The release-gate assessment lists the Small-task token gate as unassessed; this document does not change that.
 
-Policy for a failed gate: a rule or skill that raises Small-task overhead above 20% without a measured pass-rate gain (ADR 008, decision 5) is simplified or made opt-in.
+Policy for a failed gate: a rule or skill that raises Small-task overhead above 20% without a measured benefit ([ADR 013](decisions/013-cost-per-pass-and-miss-log.md): lower cost per pass at no lower pass rate, on two tasks) is simplified or made opt-in.
