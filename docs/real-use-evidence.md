@@ -21,6 +21,8 @@ The boundary is the merge commit on `master` that brings in the `tdd-commits` bl
 | [watchdog](https://github.com/proprock/watchdog) (Conventional Commits; task IDs must move to the end of the subject, `(WD-182)`, for pairs to be found) | `0d5e984` (WD-182, local branch `feature/WD-182-tdd-commits` on `feature/WD-151`) | 2026-11-08 |
 | private repository (Conventional Commits; task IDs `(ASI-N)` start with this commit; only aggregate numbers are published) | local commit (ASI-1) | 2026-11-08 |
 
+Treatment also includes the `tdd-commit-hook` feature (KB-246): a local `commit-msg` hook in the maintainer's clone of each of the three repositories rejects a red commit without a task ID or `Expected failing:` and a green commit without an earlier red. It was installed on 2026-11-08, the same day as the boundaries, before any commit after them, so all treatment commits made in those clones were checked. Commits made in other clones (CI, other machines) were not; M1 still counts every pair. The hook is not versioned, so its presence is recorded here rather than in the repositories.
+
 ## Metrics
 
 **M1, pair validity.** The share of red/green pairs that `kaboost_audit_tdd.py --run` accepts: the named tests fail on the red commit and pass on the green one, and the red commit changes only tests. Structural problems (a red commit without `Expected failing:`, a red without a green) count as invalid pairs. Commands:
