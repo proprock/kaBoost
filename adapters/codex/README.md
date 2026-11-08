@@ -10,6 +10,19 @@ See the [migration and conflict procedure](../../docs/migration.md) when changin
 Run `python scripts/validate_codex.py` to check the local catalog's identity,
 source and installation policy as well as generated package consistency.
 
+## Install from the proprock marketplace
+
+`proprock/marketplace` holds a Codex catalog (`.agents/plugins/marketplace.json`) next to the Claude one. Its `kaboost` entry fetches `adapters/codex/package/kaboost` from this repository with a `git-subdir` source pinned to the release tag and commit (`v0.2.0`, `9c29997`):
+
+```sh
+codex plugin marketplace add proprock/marketplace
+codex plugin add kaboost@proprock
+```
+
+Start a new session after installation. When the catalog moves the pin to a new release, `codex plugin marketplace upgrade proprock` refreshes it and `codex plugin add kaboost@proprock` installs the new version. To roll back, pin the previous tag in a catalog of your own (a copy of the Codex catalog with the old `ref` and `sha`) and re-run the add command. Remove with `codex plugin remove kaboost@proprock` and `codex plugin marketplace remove proprock`.
+
+`python scripts/smoke_codex_remote.py` checks this without model calls, in a disposable profile: a temporary catalog shaped like `proprock/marketplace` installs `v0.1.1`, updates to `v0.2.0`, rolls back and removes the plugin, and every installed file must equal the file at the pinned commit; `--catalog proprock/marketplace` installs from the published catalog instead. It passed on Windows 11 with Codex CLI 0.160.0 and 0.167.0 (KB-112). With both catalogs in the temporary catalog, Codex used `.agents/plugins/marketplace.json` and installed the Codex package, not the Claude one.
+
 ## Local CLI lifecycle
 
 From the repository root, after reviewing the source and building the package:
@@ -56,9 +69,9 @@ following or evidence for every precedence conflict, client, or environment.
 `python scripts/smoke_codex.py` exercises a disposable local marketplace on
 the installed CLI, without model calls. On Ubuntu with Codex CLI 0.165.0 it
 passed local install, repeated install, re-add after a version change, rollback
-and removal; the test version is a fixture, not a published release. This does
-not verify remote distribution, other operating systems, or the desktop and IDE
-clients.
+and removal; the test version is a fixture, not a published release. It also
+passed on Windows 11 with Codex CLI 0.160.0 and 0.167.0 (KB-112). This does not
+verify macOS or the desktop and IDE clients.
 The CI workflow also configures this lifecycle check on Ubuntu with the pinned
 CLI version; a workflow definition alone does not establish a hosted pass.
 
