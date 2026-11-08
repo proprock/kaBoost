@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `$kaboost-init-global` warns when `$CODEX_HOME/AGENTS.override.md` exists: Codex then reads it instead of `AGENTS.md`, so the blocks written there have no effect (KB-248).
+
 - Release archives are byte-identical on Windows, macOS and Linux: entries are stored uncompressed with a fixed Unix system byte, so neither the zlib build nor the platform changes the bytes (KB-316).
 
 - Release candidates carry their own version, `X.Y.Z-rc.N`, in the package manifests and the changelog heading, so `claude plugin update` moves between candidates instead of needing an uninstall and reinstall. `scripts/validate.py` accepts that form and still rejects other prerelease or build suffixes (KB-231).
