@@ -393,6 +393,61 @@ class InitTests(unittest.TestCase):
         self.assertIn('TODO.md', warnings[0])
         self.assertIn('one line', warnings[0])
 
+    GUARD_FILES = ('scripts/kaboost_no_verify_guard.py', '.claude/settings.json', '.codex/hooks.json')
+
+    def test_no_verify_guard_installs_agent_hooks_and_removes_them_without_a_trace(self):
+        (self.repo / 'README.md').write_bytes(b'# demo\n')
+        result = self.call('apply', '--ids', 'no-verify-guard', '--yes')
+        self.assertTrue(result['written'], result)
+        for name in self.GUARD_FILES:
+            self.assertTrue((self.repo / name).is_file(), name)
+        claude = json.loads((self.repo / '.claude/settings.json').read_text(encoding='utf-8'))
+        handler = claude['hooks']['PreToolUse'][0]['hooks'][0]
+        self.assertIn('scripts/kaboost_no_verify_guard.py', handler['command'])
+        codex = json.loads((self.repo / '.codex/hooks.json').read_text(encoding='utf-8'))
+        self.assertIn('kaboost_no_verify_guard.py', codex['hooks']['PreToolUse'][0]['hooks'][0]['command_windows'])
+        self.assertEqual(self.features()['no-verify-guard']['state'], 'enabled')
+        self.assertEqual(self.call('apply', '--ids', 'no-verify-guard', '--yes')['changes'], [])
+        self.call('disable', '--ids', 'no-verify-guard', '--yes')
+        self.assertEqual(sorted(p.name for p in self.repo.rglob('*') if p.is_file()), ['README.md'])
+
+    def test_no_verify_guard_leaves_existing_settings_to_the_user(self):
+        settings = self.repo / '.claude/settings.json'
+        settings.parent.mkdir()
+        settings.write_bytes(b'{"permissions": {}}\n')
+        feature = self.features()['no-verify-guard']
+        self.assertEqual(feature['state'], 'conflict')
+        note = next(e['note'] for e in feature['edits'] if e['target'].endswith('settings.json'))
+        self.assertIn('by hand', note)
+        self.assertIn('kaboost_no_verify_guard.py', note)
+        report = self.call('apply', '--ids', 'no-verify-guard', '--yes')['report'][0]
+        self.assertEqual(report['result'], 'skipped')
+        self.assertEqual(settings.read_bytes(), b'{"permissions": {}}\n')
+
+    def test_no_verify_guard_settings_edited_after_writing_are_drift(self):
+        self.call('apply', '--ids', 'no-verify-guard', '--yes')
+        settings = self.repo / '.claude/settings.json'
+        edited = settings.read_text(encoding='utf-8').replace('{\n', '{\n  "model": "x",\n', 1)
+        settings.write_text(edited, encoding='utf-8')
+        self.assertEqual(self.features()['no-verify-guard']['state'], 'drift')
+        report = self.call('disable', '--ids', 'no-verify-guard', '--yes')['report'][0]
+        self.assertEqual(report['result'], 'skipped')
+        self.assertEqual(settings.read_text(encoding='utf-8'), edited)
+
+    def test_exact_files_written_by_an_older_version_are_outdated(self):
+        self.call('apply', '--ids', 'no-verify-guard', '--yes')
+        settings = self.repo / '.claude/settings.json'
+        old = settings.read_text(encoding='utf-8') + '\n'
+        settings.write_text(old, encoding='utf-8')
+        catalog = init.load_catalog()
+        feature = next(f for f in catalog['features'] if f['id'] == 'no-verify-guard')
+        edit = next(e for e in feature['edits'] if e['target'].endswith('settings.json'))
+        edit['previous'] = [init.digest(old)]
+        with mock.patch.object(init, 'load_catalog', return_value=catalog):
+            self.assertEqual(self.features()['no-verify-guard']['state'], 'outdated')
+            self.call('apply', '--ids', 'no-verify-guard', '--yes')
+            self.assertEqual(self.features()['no-verify-guard']['state'], 'enabled')
+
     def test_core_and_workflow_leave_tdd_commits_to_the_feature(self):
         for path in ('core/engineering-rules.md', 'workflows/adaptive.md'):
             self.assertNotIn('TDD: red', (ROOT / path).read_text(encoding='utf-8'), path)
