@@ -366,6 +366,33 @@ class InitTests(unittest.TestCase):
         self.assertIn('four random hex digits', todo)
         self.assertIn('one line', (self.repo / 'DONE.md').read_text(encoding='utf-8'))
 
+    def test_todo_rules_say_a_task_line_carries_its_context(self):
+        self.call('apply', '--ids', 'todo-done', '--yes')
+        self.assertIn('no length limit', (self.repo / 'TODO.md').read_text(encoding='utf-8'))
+
+    def test_todo_done_conflict_and_drift_say_how_to_fix_them(self):
+        (self.repo / 'TODO.md').write_text('mine\n')
+        self.assertIn('one line per task', self.features()['todo-done']['edits'][0]['note'])
+        self.assertIn('one line per task', self.call('apply', '--ids', 'todo-done', '--yes')['report'][0]['reason'])
+        (self.repo / 'TODO.md').unlink()
+        self.call('apply', '--ids', 'todo-done', '--yes')
+        todo = self.repo / 'TODO.md'
+        todo.write_text(todo.read_text(encoding='utf-8').replace('## Tasks\n', '## Tasks\n\n- [ ] T-1: mine\n'), encoding='utf-8')
+        feature = self.features()['todo-done']
+        self.assertEqual(feature['state'], 'drift')
+        self.assertIn('by hand', feature['edits'][0]['note'])
+
+    def test_multi_line_tasks_are_reported_with_the_fix(self):
+        self.call('apply', '--ids', 'todo-done', '--yes')
+        self.assertEqual(self.call('status')['warnings'], [])
+        todo = self.repo / 'TODO.md'
+        todo.write_text(todo.read_text(encoding='utf-8').replace(
+            '## Tasks\n', '## Tasks\n\n- [ ] T-1: Title\n  more context on a second line\n- [ ] T-2: fine\n'), encoding='utf-8')
+        warnings = self.call('status')['warnings']
+        self.assertEqual(len(warnings), 1, warnings)
+        self.assertIn('TODO.md', warnings[0])
+        self.assertIn('one line', warnings[0])
+
     def test_core_and_workflow_leave_tdd_commits_to_the_feature(self):
         for path in ('core/engineering-rules.md', 'workflows/adaptive.md'):
             self.assertNotIn('TDD: red', (ROOT / path).read_text(encoding='utf-8'), path)
