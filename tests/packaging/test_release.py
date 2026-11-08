@@ -46,6 +46,19 @@ class ReleaseTests(unittest.TestCase):
                 self.assertTrue(any(path.endswith('SHA256SUMS.json') for path in bundle.namelist()))
                 self.assertTrue(any(path.endswith('marketplace.json') for path in bundle.namelist()))
 
+    def test_archive_bytes_do_not_depend_on_the_platform_or_zlib(self):
+        # A Windows build had the same files as Linux but other bytes: create_system defaulted to fat, and zlib-ng
+        # deflated differently. Unix as the system and stored entries leave no platform input (KB-316).
+        out = self.base / 'out'
+        prepare(self.root, 'HEAD', out)
+        for name in json.loads((out / 'release.json').read_text())['artifacts_sha256']:
+            with zipfile.ZipFile(out / name) as bundle:
+                for info in bundle.infolist():
+                    with self.subTest(archive=name, entry=info.filename):
+                        self.assertEqual(info.create_system, 3)
+                        self.assertEqual(info.compress_type, zipfile.ZIP_STORED)
+                        self.assertEqual(info.date_time, (1980, 1, 1, 0, 0, 0))
+
     def test_rejects_inconsistent_committed_changelog(self):
         (self.root / 'CHANGELOG.md').write_text('# Changelog\n', encoding='utf-8')
         self.commit()
