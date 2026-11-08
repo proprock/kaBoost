@@ -22,7 +22,7 @@ Complete with the `v0.1.0` release (KB-023); see [DONE.md](DONE.md).
 
 ### Remote distribution and platform evidence
 
-- [ ] KB-112: Distribute the Codex adapter remotely (the Codex marketplace is local only) and verify install, update, rollback and removal from a published ref; run the Codex lifecycle on macOS and Windows. Record results in compatibility.
+- [ ] KB-112: Distribute the Codex adapter remotely and verify install, update, rollback and removal from a published ref; run the Codex lifecycle on macOS and Windows. Record results in compatibility. Done on 2026-11-08: Codex catalog in `proprock/marketplace` (commit `fc34450`, `git-subdir` pinned to `v0.2.0`), `scripts/smoke_codex_remote.py`, and on Windows 11 with Codex 0.160.0 and 0.167.0 both `smoke_codex.py` and `smoke_codex_remote.py` passed (see compatibility). Remaining: run `python scripts/smoke_codex.py` and `python scripts/smoke_codex_remote.py` (plus `--catalog proprock/marketplace`) on macOS and record the result.
 
 **Done when:** two clients consume the same canonical engineering content through independently verified native mechanisms, with reproducible lifecycle procedures.
 

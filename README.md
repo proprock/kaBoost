@@ -4,7 +4,7 @@
 [![Release](https://img.shields.io/github/v/release/proprock/kaBoost)](https://github.com/proprock/kaBoost/releases/latest)
 [![License](https://img.shields.io/github/license/proprock/kaBoost)](LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude_Code-plugin-D97757)](https://github.com/proprock/marketplace)
-[![Codex CLI](https://img.shields.io/badge/Codex_CLI-local_marketplace-412991)](adapters/codex/README.md)
+[![Codex CLI](https://img.shields.io/badge/Codex_CLI-proprock_marketplace-412991)](adapters/codex/README.md)
 
 A small, versioned engineering toolkit: understand before changing code, choose a simple complete solution, and verify the result. Four on-demand skills support planning before edits, project context, systematic debugging, and verification. Core rules are language-agnostic; project tooling stays local.
 
@@ -48,7 +48,14 @@ Each skill also has a short command, for explicit choice instead of relying on d
 
 Commands are Claude Code only; the Codex package ships skills. They are user-invoked and add nothing to the skill listing.
 
-The `kaboost` entry in `proprock/marketplace` is pinned to the reviewed tag and commit of the release (`v0.2.0`). Moving to another release means changing that pin; see [migration](docs/migration.md).
+For Codex CLI, the same marketplace carries a Codex catalog; start a new Codex session after installing ([Codex adapter](adapters/codex/README.md)):
+
+```text
+codex plugin marketplace add proprock/marketplace
+codex plugin add kaboost@proprock
+```
+
+The `kaboost` entries in `proprock/marketplace` (Claude Code and Codex) are pinned to the reviewed tag and commit of the release (`v0.2.0`). Moving to another release means changing that pin; see [migration](docs/migration.md).
 
 ## Activate core rules separately
 
