@@ -59,10 +59,13 @@ def prepare(root, ref, destination):
         checksums = {}
         for client, files in packages.items():
             name = f'kaboost-{version}-{client}.zip'
-            with zipfile.ZipFile(destination / name, 'w', compression=zipfile.ZIP_DEFLATED) as bundle:
+            # Stored entries and a fixed Unix system byte: the deflate stream depends on the zlib build (zlib-ng
+            # differs) and create_system on the platform, so either would make archives differ by machine.
+            with zipfile.ZipFile(destination / name, 'w', compression=zipfile.ZIP_STORED) as bundle:
                 for path, data in sorted(files.items()):
                     info = zipfile.ZipInfo(path, date_time=(1980, 1, 1, 0, 0, 0))
-                    info.compress_type = zipfile.ZIP_DEFLATED
+                    info.compress_type = zipfile.ZIP_STORED
+                    info.create_system = 3
                     info.external_attr = 0o100644 << 16
                     bundle.writestr(info, data)
             checksums[name] = hashlib.sha256((destination / name).read_bytes()).hexdigest()
