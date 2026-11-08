@@ -54,6 +54,8 @@ The first feature of both commands is attaching the core rules (project level fo
 | 45 | Skills for PR summary, coverage improvement and final release review | 1 | |
 | 46 | Pull request template | 1 | |
 | 11 | TDD red/green commits with an audit script (KB-218) | — | Opt-in since KB-228; TDD itself stays in the core |
+| 51 | Rust toolchain: the project's toolchain, fmt, clippy with warnings as errors, tests; `// SAFETY:` comments; no `unwrap` on external input | 1 | Rust pack (KB-210) |
+| 52 | Rust CI on pull requests: fmt, clippy, tests, `--locked` when `Cargo.lock` is committed, `TDD: red` push skip | 1 | Rust pack (KB-210) |
 
 ## Not taken
 

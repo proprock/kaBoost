@@ -330,6 +330,27 @@ class InitTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn('scripts/kaboost_audit_tdd.py', result.stdout)
 
+    def test_rust_pack_is_offered_for_cargo_projects_and_coexists_with_python(self):
+        self.assertNotIn('rust-toolchain', self.features())
+        self.assertNotIn('ci-rust', self.features())
+        (self.repo / 'Cargo.toml').write_text('[package]\nname = "x"\n')
+        (self.repo / 'pyproject.toml').write_text('[project]\n')
+        (self.repo / 'AGENTS.md').write_bytes(b'# Mine\n')
+        features = self.features()
+        self.assertEqual(features['rust-toolchain']['group'], 'Rust')
+        self.assertNotEqual(features['ci-rust']['title'], features['ci-python']['title'])
+        ids = 'rust-toolchain,ci-rust,ci-python'
+        self.call('apply', '--ids', ids, '--yes')
+        self.assertIn('cargo clippy', (self.repo / 'AGENTS.md').read_text(encoding='utf-8'))
+        workflow = (self.repo / '.github/workflows/kaboost-ci-rust.yml').read_text(encoding='utf-8')
+        self.assertIn("!contains(github.event.head_commit.message, 'TDD: red')", workflow)
+        self.assertIn('cargo test', workflow)
+        self.assertTrue((self.repo / '.github/workflows/kaboost-ci.yml').is_file())
+        self.assertTrue(all(self.features()[f]['state'] == 'enabled' for f in ids.split(',')))
+        self.call('disable', '--ids', ids, '--yes')
+        self.assertEqual((self.repo / 'AGENTS.md').read_bytes(), b'# Mine\n')
+        self.assertFalse((self.repo / '.github/workflows/kaboost-ci-rust.yml').exists())
+
     def test_core_and_workflow_leave_tdd_commits_to_the_feature(self):
         for path in ('core/engineering-rules.md', 'workflows/adaptive.md'):
             self.assertNotIn('TDD: red', (ROOT / path).read_text(encoding='utf-8'), path)
