@@ -475,11 +475,11 @@ class InitTests(unittest.TestCase):
         self.assertTrue(hook.read_text(encoding='utf-8').startswith('#!/bin/sh\n# kaboost:begin tdd-commit-hook:hook '))
         if os.name == 'posix':
             self.assertTrue(hook.stat().st_mode & stat.S_IXUSR)
-        self.assertTrue((self.repo / 'scripts/kaboost_tdd_commit_msg.py').is_file())
+        self.assertTrue((hooks / 'kaboost_tdd_commit_msg.py').is_file())
+        self.assertFalse((self.repo / 'scripts').exists())
         self.assertEqual(self.features()['tdd-commit-hook']['state'], 'enabled')
         self.call('disable', '--ids', 'tdd-commit-hook', '--yes')
         self.assertEqual(sorted(p.name for p in hooks.iterdir()), before)
-        self.assertFalse((self.repo / 'scripts/kaboost_tdd_commit_msg.py').exists())
 
     def test_tdd_commit_hook_leaves_an_existing_commit_msg_hook_alone(self):
         subprocess.run(['git', 'init', '-q', str(self.repo)], check=True)
@@ -489,6 +489,15 @@ class InitTests(unittest.TestCase):
         report = self.call('apply', '--ids', 'tdd-commit-hook', '--yes')['report'][0]
         self.assertEqual(report['result'], 'skipped')
         self.assertEqual(hook.read_bytes(), b'#!/bin/sh\nnpx commitlint --edit "$1"\n')
+
+    def test_tdd_commit_hook_refuses_a_shared_hooks_path(self):
+        subprocess.run(['git', 'init', '-q', str(self.repo)], check=True)
+        shared = self.repo.parent / 'shared-hooks'
+        shared.mkdir()
+        subprocess.run(['git', '-C', str(self.repo), 'config', 'core.hooksPath', str(shared)], check=True)
+        self.assertEqual(self.features()['tdd-commit-hook']['state'], 'conflict')
+        self.assertEqual(self.call('apply', '--ids', 'tdd-commit-hook', '--yes')['report'][0]['result'], 'skipped')
+        self.assertEqual(list(shared.iterdir()), [])
 
     def test_tdd_commit_hook_outside_a_git_repository_creates_nothing(self):
         self.assertEqual(self.features()['tdd-commit-hook']['state'], 'conflict')

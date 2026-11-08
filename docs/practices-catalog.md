@@ -57,6 +57,7 @@ The first feature of both commands is attaching the core rules (project level fo
 | 51 | Rust toolchain: the project's toolchain, fmt, clippy with warnings as errors, tests; `// SAFETY:` comments; no `unwrap` on external input | 1 | Rust pack (KB-210) |
 | 52 | Rust CI on pull requests: fmt, clippy, tests, `--locked` when `Cargo.lock` is committed, `TDD: red` push skip | 1 | Rust pack (KB-210) |
 | 53 | Agent hook that blocks `git commit --no-verify`/`-n`, `git push --no-verify` and `core.hooksPath` overrides, for Claude Code and Codex | 1 | First agent hook ([ADR 014](decisions/014-opt-in-agent-hooks.md), KB-226) |
+| 54 | git `commit-msg` hook that checks TDD red/green messages: task ID and `Expected failing:` on red, an earlier red of the task on green | 1 | Init feature `tdd-commit-hook` ([ADR 014](decisions/014-opt-in-agent-hooks.md) point 3, KB-246) |
 
 ## Not taken
 
