@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Release candidates carry their own version, `X.Y.Z-rc.N`, in the package manifests and the changelog heading, so `claude plugin update` moves between candidates instead of needing an uninstall and reinstall. `scripts/validate.py` accepts that form and still rejects other prerelease or build suffixes (KB-231).
+
 - New `/kaboost:init` feature `tdd-commit-hook`, to go with `tdd-commits`: a git `commit-msg` hook and its script, both kept in the repository's hooks directory so a checked-out branch cannot change what runs, reject a `TDD: red` commit without a task ID or an `Expected failing:` line, and a `TDD: green` commit whose task has no earlier red commit, when you commit rather than at audit time. Other commits are not checked, and the hook lets every commit through when Python is missing. It is not written when a `commit-msg` hook already exists or `core.hooksPath` points outside the repository (KB-246).
 
 - `/kaboost:init-global` and `$kaboost-init-global` write to the file the client actually reads: `$CLAUDE_CONFIG_DIR/CLAUDE.md` and `$CODEX_HOME/AGENTS.md` when those variables are set, `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` otherwise; the preview shows the resolved path. An explicit `--home` ignores the variables (KB-244).

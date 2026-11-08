@@ -7,8 +7,10 @@ from build import ROOT, build, source_file
 
 def validate(root=ROOT):
     manifest = json.loads(source_file(root, 'toolkit.json'))
-    if not re.fullmatch(r'(?:0|[1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*)){2}', manifest['version']):
-        raise ValueError('Version must be a stable SemVer triple')
+    # A release candidate carries its own -rc.N: clients reinstall only when the version string changes.
+    number = r'(?:0|[1-9][0-9]*)'
+    if not re.fullmatch(rf'{number}(?:\.{number}){{2}}(?:-rc\.[1-9][0-9]*)?', manifest['version'], re.ASCII):
+        raise ValueError('Version must be X.Y.Z or X.Y.Z-rc.N (SemVer, numbers without leading zeros)')
     names = manifest['skills']
     if len(names) != len(set(names)):
         raise ValueError('Duplicate skill names')
