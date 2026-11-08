@@ -59,16 +59,21 @@ class GuardTests(unittest.TestCase):
             self.assertFalse(guard.bypass(command), command)
 
     def run_hook(self, payload):
-        err = io.StringIO()
-        with mock.patch.object(sys, 'stdin', io.StringIO(payload)), contextlib.redirect_stderr(err):
+        out, err = io.StringIO(), io.StringIO()
+        with (mock.patch.object(sys, 'stdin', io.StringIO(payload)), contextlib.redirect_stdout(out),
+              contextlib.redirect_stderr(err)):
             code = guard.main()
-        return code, err.getvalue()
+        return code, out.getvalue() + err.getvalue()
 
-    def test_hook_blocks_with_exit_2_and_a_reason(self):
-        code, err = self.run_hook(json.dumps({'tool_name': 'Bash', 'tool_input': {'command': 'git commit -n -m x'}}))
-        self.assertEqual(code, 2)
-        self.assertIn('--no-verify', err)
-        self.assertIn('fix', err)
+    def test_hook_denies_through_the_json_decision_both_clients_read(self):
+        # Codex 0.160 reports exit code 2 from a project hook as a failed hook and runs the command anyway; both
+        # clients block on exit 0 with a PreToolUse permission decision of "deny".
+        code, out = self.run_hook(json.dumps({'tool_name': 'Bash', 'tool_input': {'command': 'git commit -n -m x'}}))
+        self.assertEqual(code, 0)
+        decision = json.loads(out)['hookSpecificOutput']
+        self.assertEqual((decision['hookEventName'], decision['permissionDecision']), ('PreToolUse', 'deny'))
+        self.assertIn('--no-verify', decision['permissionDecisionReason'])
+        self.assertIn('fix', decision['permissionDecisionReason'])
 
     def test_hook_never_blocks_on_input_it_does_not_understand(self):
         for payload in ('not json', '{}', json.dumps({'tool_input': {'command': ['git', 'commit', '-n']}})):
