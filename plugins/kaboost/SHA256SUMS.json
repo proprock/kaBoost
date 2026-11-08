@@ -27,7 +27,7 @@
   "init/features/make-checks.mk": "b0952f334345f40882dd22aaf017e3b1bfda3ad734c7a3e86af7b7e29d5faeec",
   "init/features/no-verify-claude.json": "68962970a06c43b2330a7113557e4604c84c8d050cc141db3515406053327507",
   "init/features/no-verify-codex.json": "ff74a25da8fb2a14a20307d5b107303eec90b939417ad0338d2ba32102f97879",
-  "init/features/no_verify_guard.py": "70e5ca463ec81772dcee95e383db733c2e2670693b2a956bfd6772f2b906a8db",
+  "init/features/no_verify_guard.py": "2cea85f0311bd8b44fe2d3871b03aab9bb38db0b4334abf095c4afa1b84fe974",
   "init/features/pr-template.md": "cacade2f1f1290eed5200cbd0be14393953743d8a11e414dbce906398dbe3745",
   "init/features/precommit-config.yaml": "2df7bac96ac80d544f8791599683d037cab90439d2499ca5cbf25e0de033c02b",
   "init/features/precommit-rules.md": "b44775abf87826e77fd0842dff1034509065c8b078645110a6fec7b5c1d587ba",

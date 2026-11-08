@@ -1,10 +1,11 @@
 """Agent hook: block git commands that skip the repository's hooks.
 
-Claude Code and Codex run this before a shell tool call and pass the call as JSON on stdin. It exits with code 2 and
-a reason on stderr when the command is `git commit` with `--no-verify` (or an unambiguous abbreviation) or `-n`,
-`git push --no-verify`, or a git command that overrides `core.hooksPath` (`-c`, `--config-env`, `GIT_CONFIG_*`
-variables, `git config`); otherwise it exits 0. Input it cannot read never blocks. It is a guardrail against a habit,
-not a sandbox: a command built at run time (eval, scripts, aliases) is not inspected. Standard library only.
+Claude Code and Codex run this before a shell tool call and pass the call as JSON on stdin. It prints a
+PreToolUse "deny" decision with the reason (and exits 0, as always) when the command is `git commit` with
+`--no-verify` (or an unambiguous abbreviation) or `-n`, `git push --no-verify`, or a git command that overrides
+`core.hooksPath` (`-c`, `--config-env`, `GIT_CONFIG_*` variables, `git config`); otherwise it prints nothing. Input it
+cannot read never blocks. It is a guardrail against a habit, not a sandbox: a command built at run time (eval,
+scripts, aliases) is not inspected. Standard library only.
 """
 import json
 import os
@@ -145,8 +146,10 @@ def main():
     except (ValueError, AttributeError):
         return 0
     if isinstance(command, str) and bypass(command):
-        print(REASON, file=sys.stderr)
-        return 2
+        # Exit 0 with a "deny" decision: both clients block on it, while Codex treats exit 2 from a project hook as
+        # a failed hook and runs the command anyway.
+        print(json.dumps({'hookSpecificOutput': {'hookEventName': 'PreToolUse', 'permissionDecision': 'deny',
+                                                 'permissionDecisionReason': REASON}}))
     return 0
 
 
