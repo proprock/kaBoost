@@ -13,4 +13,4 @@ Assessed 2026-10-30 against the gates in the [roadmap](roadmap.md) for the relea
 
 ## Conclusion
 
-The release content meets the stated non-inferiority gates where they were measured, including the Small-task overhead gate, with the gaps above labeled. It does not demonstrate better outcomes and makes no such claim. Under [ADR 012](decisions/012-stable-release-gates.md) the stable releases do not wait for the real-use evidence of KB-025, which continues and gates nothing until it has measurable criteria, a baseline window and a time box.
+The release content meets the stated non-inferiority gates where they were measured, including the Small-task overhead gate, with the gaps above labeled. It does not demonstrate better outcomes and makes no such claim. Under [ADR 012](decisions/012-stable-release-gates.md) the stable releases do not wait for the real-use evidence of KB-025, which continues and gates nothing; its criteria, baseline window and time box are fixed in [real-use evidence](real-use-evidence.md).
