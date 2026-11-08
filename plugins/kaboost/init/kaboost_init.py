@@ -256,6 +256,8 @@ def feature_state(feature, root, home, tools=None):
         state, note = edit_state(edit, key, root, home)
         if via_agents and edit.get('tool') == 'claude' and state == 'absent':
             state, note = 'enabled', 'Claude Code reads the core rules through AGENTS.md, which CLAUDE.md imports'
+        elif state == 'absent' and key == 'agents-import:import' and import_present(key, read(resolve(edit, root, home))[0]):
+            state, note = 'enabled', PRESENT_IMPORT
         target = f"git hook ({edit['command']})" if edit.get('kind') == 'git-hook' else str(resolve(edit, root, home))
         states.append({'edit': edit['name'], 'target': target, 'state': state, 'note': note})
     kinds = {s['state'] for s in states}
@@ -274,6 +276,14 @@ def feature_state(feature, root, home, tools=None):
     else:
         overall = 'partial'
     return overall, states
+
+
+PRESENT_IMPORT = 'CLAUDE.md already imports AGENTS.md outside kaBoost blocks; nothing to add'
+
+
+def import_present(key, text):
+    """The agents-import line is already in CLAUDE.md, written by the user rather than by kaBoost."""
+    return key == 'agents-import:import' and find_block(text, key) is None and IMPORTS_AGENTS.search(text) is not None
 
 
 def core_paths(root, pending):
@@ -333,6 +343,8 @@ def plan_apply(feature, root, home, tools, force, pending=None, actions=None):
         block = find_block(text, key)
         front, body = parts(edit)
         style = style_of(path)
+        if block is None and import_present(key, text):
+            continue
         if block is None:
             if edit['mode'] == 'own' and path not in changes and existed and text != '':
                 raise Refusal(f'{path.name} exists and is not managed by kaBoost')

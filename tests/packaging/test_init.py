@@ -334,6 +334,14 @@ class InitTests(unittest.TestCase):
         for path in ('core/engineering-rules.md', 'workflows/adaptive.md'):
             self.assertNotIn('TDD: red', (ROOT / path).read_text(encoding='utf-8'), path)
 
+    def test_agents_import_already_present_is_not_added_again(self):
+        (self.repo / 'CLAUDE.md').write_text('@AGENTS.md\n')
+        feature = self.features()['agents-import']
+        self.assertEqual(feature['state'], 'enabled')
+        self.assertIn('already imports', feature['edits'][0]['note'])
+        self.assertEqual(self.call('apply', '--ids', 'agents-import', '--yes')['changes'], [])
+        self.assertEqual((self.repo / 'CLAUDE.md').read_text(), '@AGENTS.md\n')
+
     def test_relevance_of_new_features(self):
         self.assertNotIn('ci-python', self.features())
         self.assertNotIn('tool-selection-eval', self.features())
