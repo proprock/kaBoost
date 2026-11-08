@@ -8,7 +8,7 @@
   "init/features/audit_tdd.py": "bbbe3a1d6ad5e6b0af31ff96582a7d37795254553caa1a765f251dcb50b53857",
   "init/features/changelog.md": "2224749698f8a5e12dbe319e2c7d6545ee75038a13e051ead4ee980fa03472f0",
   "init/features/check-version.py": "a5aefb7c7ad6d165b6822f833009be002b473b36296885d890754bc77e733af5",
-  "init/features/ci-python.yml": "66d820366337fb1981dc76db26c539ffd2631f1586380d0806354e2742268f92",
+  "init/features/ci-python.yml": "5c0fcf66a33690690d5bdf6471521706a8b26282f827577328796f0bbe3de790",
   "init/features/ci-rust.yml": "604a546c939a12bddfa98595714d6e4efda199ce31de42517b1031e9e9b5a1be",
   "init/features/code-discovery.md": "dbff2c22b812f56fc47ec1521a6fc2699a7007e3f7188353fdd53c2fb2a88767",
   "init/features/compaction.md": "3f035d2f10f24802c887348136cf497d7f65344241f9d9ca1799a35e8cfc31e9",
