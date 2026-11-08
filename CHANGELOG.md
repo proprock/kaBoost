@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- New `/kaboost:init` feature `tdd-commit-hook`, to go with `tdd-commits`: a git `commit-msg` hook and its script, both kept in the repository's hooks directory so a checked-out branch cannot change what runs, reject a `TDD: red` commit without a task ID or an `Expected failing:` line, and a `TDD: green` commit whose task has no earlier red commit, when you commit rather than at audit time. Other commits are not checked, and the hook lets every commit through when Python is missing. It is not written when a `commit-msg` hook already exists or `core.hooksPath` points outside the repository (KB-246).
+
 - `/kaboost:init-global` and `$kaboost-init-global` write to the file the client actually reads: `$CLAUDE_CONFIG_DIR/CLAUDE.md` and `$CODEX_HOME/AGENTS.md` when those variables are set, `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` otherwise; the preview shows the resolved path. An explicit `--home` ignores the variables (KB-244).
 
 - New `/kaboost:init` feature `no-verify-guard`, the first agent hook ([ADR 014](docs/decisions/014-opt-in-agent-hooks.md)): it creates `scripts/kaboost_no_verify_guard.py` and project hooks in `.claude/settings.json` and `.codex/hooks.json` that block `git commit --no-verify` or `-n`, `git push --no-verify` and `core.hooksPath` overrides before the agent runs them, through the `PreToolUse` "deny" decision that both clients honour. It is written only when those settings files do not exist yet, otherwise it shows the entry to add by hand, and disabling deletes the files again. Codex runs it only after you trust the hook (KB-226).

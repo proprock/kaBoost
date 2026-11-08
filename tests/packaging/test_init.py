@@ -466,6 +466,46 @@ class InitTests(unittest.TestCase):
         self.assertEqual(report['result'], 'skipped')
         self.assertEqual(settings.read_text(encoding='utf-8'), edited)
 
+    def test_tdd_commit_hook_installs_an_executable_hook_and_removes_it_without_a_trace(self):
+        subprocess.run(['git', 'init', '-q', str(self.repo)], check=True)
+        hooks = self.repo / '.git/hooks'
+        before = sorted(p.name for p in hooks.iterdir())
+        self.call('apply', '--ids', 'tdd-commit-hook', '--yes')
+        hook = hooks / 'commit-msg'
+        self.assertTrue(hook.read_text(encoding='utf-8').startswith('#!/bin/sh\n# kaboost:begin tdd-commit-hook:hook '))
+        if os.name == 'posix':
+            self.assertTrue(hook.stat().st_mode & stat.S_IXUSR)
+        self.assertTrue((hooks / 'kaboost_tdd_commit_msg.py').is_file())
+        self.assertFalse((self.repo / 'scripts').exists())
+        self.assertEqual(self.features()['tdd-commit-hook']['state'], 'enabled')
+        self.call('disable', '--ids', 'tdd-commit-hook', '--yes')
+        self.assertEqual(sorted(p.name for p in hooks.iterdir()), before)
+
+    def test_tdd_commit_hook_leaves_an_existing_commit_msg_hook_alone(self):
+        subprocess.run(['git', 'init', '-q', str(self.repo)], check=True)
+        hook = self.repo / '.git/hooks/commit-msg'
+        hook.write_bytes(b'#!/bin/sh\nnpx commitlint --edit "$1"\n')
+        self.assertEqual(self.features()['tdd-commit-hook']['state'], 'conflict')
+        report = self.call('apply', '--ids', 'tdd-commit-hook', '--yes')['report'][0]
+        self.assertEqual(report['result'], 'skipped')
+        self.assertEqual(hook.read_bytes(), b'#!/bin/sh\nnpx commitlint --edit "$1"\n')
+
+    def test_tdd_commit_hook_refuses_a_shared_hooks_path(self):
+        subprocess.run(['git', 'init', '-q', str(self.repo)], check=True)
+        shared = self.repo.parent / 'shared-hooks'
+        shared.mkdir()
+        subprocess.run(['git', '-C', str(self.repo), 'config', 'core.hooksPath', str(shared)], check=True)
+        self.assertEqual(self.features()['tdd-commit-hook']['state'], 'conflict')
+        self.assertEqual(self.call('apply', '--ids', 'tdd-commit-hook', '--yes')['report'][0]['result'], 'skipped')
+        self.assertEqual(list(shared.iterdir()), [])
+
+    def test_tdd_commit_hook_outside_a_git_repository_creates_nothing(self):
+        self.assertEqual(self.features()['tdd-commit-hook']['state'], 'conflict')
+        report = self.call('apply', '--ids', 'tdd-commit-hook', '--yes')['report'][0]
+        self.assertEqual(report['result'], 'skipped')
+        self.assertFalse((self.repo / '.git').exists())
+        self.assertFalse((self.repo / 'scripts').exists())
+
     def test_exact_files_written_by_an_older_version_are_outdated(self):
         self.call('apply', '--ids', 'no-verify-guard', '--yes')
         settings = self.repo / '.claude/settings.json'
@@ -589,7 +629,7 @@ class InitTests(unittest.TestCase):
                     self.assertEqual(edit['mode'], 'own')
                     self.assertTrue(init.parts(edit)[0].startswith('---\n'))
                 self.assertTrue(init.body_of(edit).strip())
-                self.assertRegex(edit['target'], r'^\{(repo|claude_home|codex_home)\}/')
+                self.assertRegex(edit['target'], r'^\{(repo|claude_home|codex_home|git_hooks)\}/')
 
 
 if __name__ == '__main__':

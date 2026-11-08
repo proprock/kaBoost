@@ -163,6 +163,35 @@
       ]
     },
     {
+      "id": "tdd-commit-hook",
+      "number": 54,
+      "scope": "repo",
+      "group": "Process",
+      "title": "TDD red/green check at commit time",
+      "summary": "Goes with tdd-commits. Writes a git commit-msg hook and its script kaboost_tdd_commit_msg.py into the repository's hooks directory (not the working tree, so a checked-out branch cannot change what runs). The hook rejects a TDD: red commit without a task ID or an Expected failing: line, and a TDD: green commit whose task has no earlier red commit. Other commits pass, and so does every commit when Python is missing. Refuses if a commit-msg hook already exists, core.hooksPath points outside the repository, or the folder is not a git repository.",
+      "edits": [
+        {
+          "name": "script",
+          "target": "{git_hooks}/kaboost_tdd_commit_msg.py",
+          "mode": "own",
+          "body": "tdd_commit_msg.py",
+          "version": 1
+        },
+        {
+          "name": "hook",
+          "target": "{git_hooks}/commit-msg",
+          "mode": "own",
+          "body": "tdd-commit-msg.sh",
+          "shebang": true,
+          "executable": true,
+          "version": 1,
+          "hints": {
+            "conflict": "A commit-msg hook already exists. To add the check, copy kaboost_tdd_commit_msg.py from the kaBoost init features (tdd_commit_msg.py) next to it and call it with Python and \"$1\"."
+          }
+        }
+      ]
+    },
+    {
       "id": "no-verify-guard",
       "number": 53,
       "scope": "repo",

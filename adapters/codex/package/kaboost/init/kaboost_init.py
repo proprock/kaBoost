@@ -12,6 +12,10 @@ A feature may also install a git hook (`kind: git-hook`): the engine runs the na
 `uninstall` after the files are written, installing the tool with `uv tool install` first when it is missing, and
 restores the files if a command fails. All of it happens only with --yes.
 
+A target may also lie in the git hooks directory (`{git_hooks}/commit-msg`): such a file is written like any owned
+file, keeps its `#!` line above the marker (`shebang`), gets the executable bit (`executable`), and is refused
+outside a git repository.
+
 Files without comment syntax (JSON hook settings) use `mode: exact`: the engine creates them only when absent, owns
 them while they equal the current body (or a body listed in `previous`, then outdated), and deletes them on disable.
 
@@ -74,10 +78,23 @@ def is_front(text):
 
 
 def parts(edit):
-    """(frontmatter, managed body). Frontmatter stays above the begin marker so skill files keep a valid header;
-    it belongs to the block's version, so changing it needs a version bump."""
+    """(header, managed body). A header stays above the begin marker so the file keeps a valid start: YAML
+    frontmatter for skill files, the `#!` line for scripts git runs. It belongs to the block's version, so changing
+    it needs a version bump."""
     body = body_of(edit)
-    return split_front(body) if edit.get('frontmatter') else ('', body)
+    if edit.get('frontmatter'):
+        return split_front(body)
+    if edit.get('shebang'):
+        first, rest = body.split('\n', 1)
+        return first + '\n', rest
+    return '', body
+
+
+def is_header(edit, text):
+    """Whether text is exactly the header that an edit keeps above its begin marker."""
+    if edit.get('frontmatter'):
+        return is_front(text)
+    return bool(edit.get('shebang')) and text.startswith('#!') and text.count('\n') == 1 and text.endswith('\n')
 
 
 def digest(body):
@@ -145,17 +162,37 @@ def client_homes(home, explicit):
 
 
 def resolve(edit, root, home):
+    """The edit's file. `{git_hooks}` is the hooks directory git uses (worktrees and core.hooksPath included); outside
+    a git repository it falls back to `.git/hooks`, which `no_hooks_dir` keeps from being created."""
     target = edit['target'].replace('{repo}', str(root))
+    if '{git_hooks}' in target:
+        hooks = hook_file(root, 'hooks')
+        target = target.replace('{git_hooks}', str(hooks or root / '.git' / 'hooks'))
     for tool, path in home.items():
         target = target.replace(f'{{{tool}_home}}', str(path))
     return Path(target)
 
 
-def hook_file(root):
-    """The pre-commit hook path git uses for this repository (worktrees and core.hooksPath included), or None."""
+def no_hooks_dir(edit, root):
+    """Why an edit inside the git hooks directory cannot be written here, or ''."""
+    if '{git_hooks}' not in edit.get('target', ''):
+        return ''
+    hooks, common = hook_file(root, 'hooks'), hook_file(root, None)
+    if hooks is None or common is None:
+        return 'not a git repository, so no git hook can be installed'
+    hooks = hooks.resolve()
+    if not (hooks.is_relative_to(root) or hooks.is_relative_to(common.resolve())):
+        # A shared core.hooksPath would run every repository's own copy of the script on commit.
+        return f'core.hooksPath points outside this repository ({hooks}); add the hook there by hand if you want it'
+    return ''
+
+
+def hook_file(root, name='hooks/pre-commit'):
+    """The path git uses for a hook (default: pre-commit) in this repository, worktrees and core.hooksPath included;
+    with name None, the git directory that worktrees share. None outside a git repository."""
+    query = ['--git-common-dir'] if name is None else ['--git-path', name]
     try:
-        done = subprocess.run(['git', '-C', str(root), 'rev-parse', '--git-path', 'hooks/pre-commit'],
-                              capture_output=True, text=True)
+        done = subprocess.run(['git', '-C', str(root), 'rev-parse', *query], capture_output=True, text=True)
     except OSError:
         return None
     if done.returncode != 0 or not done.stdout.strip():
@@ -290,6 +327,8 @@ def exact_state(edit, path, text=None):
 def edit_state(edit, key, root, home):
     if edit.get('kind') == 'git-hook':
         return hook_state(edit, root)
+    if no_hooks_dir(edit, root):
+        return 'conflict', no_hooks_dir(edit, root)
     path = resolve(edit, root, home)
     if edit['mode'] == 'exact':
         return exact_state(edit, path)
@@ -422,6 +461,8 @@ def plan_apply(feature, root, home, tools, force, pending=None, actions=None):
             actions.extend({'feature': feature['id'], 'argv': argv} for argv in plan_hook(edit, root, True))
             continue
         key = f"{feature['id']}:{edit['name']}"
+        if no_hooks_dir(edit, root):
+            raise Refusal(no_hooks_dir(edit, root))
         path = resolve(edit, root, home)
         if edit['mode'] == 'exact':
             state, note = exact_state(edit, path, changes.get(path))
@@ -451,7 +492,7 @@ def plan_apply(feature, root, home, tools, force, pending=None, actions=None):
             continue
         new = render(key, edit['version'], body, style, block['pre'], block['created'])
         head = text[:block['start']]
-        if front and is_front(head):
+        if front and is_header(edit, head):
             head = front
         changes[path] = head + new + text[block['stop']:]
     return changes
@@ -480,7 +521,7 @@ def plan_disable(feature, root, home, tools, pending=None, actions=None):
             raise Refusal(f'{key}: the block was edited; review it and remove it by hand')
         start = block['start']
         before = text[:start]
-        if edit.get('frontmatter') and is_front(before):
+        if is_header(edit, before):
             before = ''
         if block['pre'] and before.endswith('\n' * block['pre']):
             before = before[:-block['pre']]
@@ -546,6 +587,7 @@ def run(catalog, args, root, home):
                 item['note'] = SKIPPED_CLAUDE_CORE
     warnings = core_warnings(root, pending) if args.scope == 'repo' else []
     exact_paths = {resolve(e, root, home) for fid in feature_ids for e in by_id[fid]['edits'] if e.get('mode') == 'exact'}
+    executable = {resolve(e, root, home) for fid in feature_ids for e in by_id[fid]['edits'] if e.get('executable')}
     results, undo = [], []
     if args.yes and args.command == 'disable' and actions:
         results = execute(actions, root)
@@ -571,6 +613,9 @@ def run(catalog, args, root, home):
                 backup.write_bytes(path.read_bytes())
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(to_bytes(new_text, newline if existed else '\n', bom))
+            if path in executable:
+                # git ignores a hook without the executable bit on POSIX, and the commit then goes through unchecked.
+                path.chmod(path.stat().st_mode | 0o111)
     if args.yes and args.command == 'apply' and actions:
         results = execute(actions, root)
     failed = any(r['returncode'] != 0 for r in results)
