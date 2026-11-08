@@ -83,14 +83,24 @@
           "target": "{repo}/TODO.md",
           "mode": "own",
           "body": "todo.md",
-          "version": 1
+          "version": 1,
+          "one_line_entries": true,
+          "hints": {
+            "conflict": "Keep your TODO.md; to adopt the tracking rules, copy them from the kaBoost template into it by hand and keep one line per task",
+            "drift": "TODO.md holds your tasks, so kaBoost does not rewrite it and nothing is lost; apply updated tracking rules by hand"
+          }
         },
         {
           "name": "done",
           "target": "{repo}/DONE.md",
           "mode": "own",
           "body": "done.md",
-          "version": 1
+          "version": 1,
+          "one_line_entries": true,
+          "hints": {
+            "conflict": "Keep your DONE.md; one line per task with its id, completion date and evidence is the format kaBoost expects",
+            "drift": "DONE.md holds your entries, so kaBoost does not rewrite it and nothing is lost; apply updated rules by hand"
+          }
         }
       ]
     },

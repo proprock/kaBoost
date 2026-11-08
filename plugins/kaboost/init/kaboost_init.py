@@ -204,6 +204,51 @@ def execute(actions, root):
     return results
 
 
+def hinted(edit, kind, message):
+    """Append the catalog's advice for this kind of problem (`hints.conflict`, `hints.drift`), if it has one."""
+    hint = (edit.get('hints') or {}).get(kind)
+    return f'{message}. {hint}' if hint else message
+
+
+def continuation_lines(text):
+    """Line numbers that continue an entry (`- [ ] ...` or `- [x] ...`) instead of starting a new one; a blank line,
+    a heading or a marker ends an entry."""
+    bad, in_entry = [], False
+    for number, line in enumerate(text.split('\n'), 1):
+        if line.startswith('- ['):
+            in_entry = True
+        elif not line.strip() or line.startswith(('#', '<!--')):
+            in_entry = False
+        elif in_entry:
+            bad.append(number)
+    return bad
+
+
+def line_warnings(catalog, root, home, scope):
+    """Files managed by an edit with `one_line_entries` whose entries span several lines, one warning per file."""
+    warnings = []
+    for feature in catalog['features']:
+        if feature['scope'] != scope:
+            continue
+        for edit in feature['edits']:
+            if not edit.get('one_line_entries'):
+                continue
+            path = resolve(edit, root, home)
+            text = read(path)[0]
+            try:
+                block = find_block(text, f"{feature['id']}:{edit['name']}")
+            except Refusal:
+                continue
+            if block is None:
+                continue
+            bad = continuation_lines(text)
+            if bad:
+                warnings.append(f'{path.name}: {len(bad)} line(s) are not one-line entries (first at line {bad[0]}). '
+                                'Edit the file so each entry is one line that starts with "- [ ] <id>:" (or "- [x]" in '
+                                'DONE.md); the line has no length limit, so join the context and the approach onto it')
+    return warnings
+
+
 def edit_state(edit, key, root, home):
     if edit.get('kind') == 'git-hook':
         return hook_state(edit, root)
@@ -215,11 +260,11 @@ def edit_state(edit, key, root, home):
         return 'conflict', str(error)
     if block is None:
         if edit['mode'] == 'own' and existed and text != '':
-            return 'conflict', f'{path.name} exists and is not managed by kaBoost'
+            return 'conflict', hinted(edit, 'conflict', f'{path.name} exists and is not managed by kaBoost')
         return 'absent', ''
     body = parts(edit)[1]
     if digest(block['inner']) != block['sha']:
-        return 'drift', f'{key}: the block was edited after it was written'
+        return 'drift', hinted(edit, 'drift', f'{key}: the block was edited after it was written')
     if block['version'] != edit['version'] or block['sha'] != digest(body):
         return 'outdated', ''
     return 'enabled', ''
@@ -347,13 +392,14 @@ def plan_apply(feature, root, home, tools, force, pending=None, actions=None):
             continue
         if block is None:
             if edit['mode'] == 'own' and path not in changes and existed and text != '':
-                raise Refusal(f'{path.name} exists and is not managed by kaBoost')
+                raise Refusal(hinted(edit, 'conflict', f'{path.name} exists and is not managed by kaBoost'))
             pre = '' if text == '' else (('\n' if not text.endswith('\n') else '') + '\n')
             created = 0 if existed or path in changes else 1
             changes[path] = text + pre + front + render(key, edit['version'], body, style, len(pre), created)
             continue
         if digest(block['inner']) != block['sha'] and not force:
-            raise Refusal(f'{key}: the block was edited after it was written; review it, then use --force to overwrite')
+            raise Refusal(hinted(edit, 'drift', f'{key}: the block was edited after it was written; review it, '
+                                 'then use --force to overwrite'))
         if block['version'] == edit['version'] and block['sha'] == digest(body) and digest(block['inner']) == block['sha']:
             continue
         new = render(key, edit['version'], body, style, block['pre'], block['created'])
@@ -508,7 +554,7 @@ def main(argv=None):
     root, home = args.root.resolve(), args.home.resolve()
     if args.command == 'status':
         features = status(catalog, args.scope, root, home, args.all, parse_targets(args.targets, catalog))
-        warnings = core_warnings(root) if args.scope == 'repo' else []
+        warnings = (core_warnings(root) if args.scope == 'repo' else []) + line_warnings(catalog, root, home, args.scope)
         print(json.dumps({'scope': args.scope, 'features': features, 'warnings': warnings}, indent=2))
         return 0
     if not args.ids:
