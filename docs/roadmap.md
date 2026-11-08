@@ -18,7 +18,7 @@ Release gate: no critical requirement/security/boundary violation; quality no wo
 
 Tag v0.1.0 only after checking the release inventory, changelog, source SHA, license, secret scan, native loading, and pending evidence. Publication/push is a separate authorized action. Remote install cannot be claimed before publication. Do not fabricate pilot results.
 
-`v0.1.0` ships on these gates without an effectiveness claim ([ADR 012](decisions/012-stable-release-gates.md)); evidence from real use (KB-025) continues for 0.2.
+`v0.1.0` ships on these gates without an effectiveness claim ([ADR 012](decisions/012-stable-release-gates.md)); so does `v0.2.0`. Evidence from real use (KB-025) continues and gates nothing until it has measurable criteria, a baseline window and a time box.
 
 ## Next
 

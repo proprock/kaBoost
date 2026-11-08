@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "kaboost",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "core": "core/engineering-rules.md",
   "skills": [
     "plan-before-edit",

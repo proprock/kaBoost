@@ -1,6 +1,6 @@
 # Local overrides and migration
 
-The current release is `v0.1.1`. Use this procedure for reviewed versions. Keep
+The current release is `v0.2.0`. Use this procedure for reviewed versions. Keep
 user and project instructions and any customized core copy under their owner's
 control, outside plugin caches and generated package directories. A cache edit
 can be replaced by an update and is not a durable override.
@@ -39,6 +39,23 @@ On 2026-10-29, both enhanced harnesses passed on Ubuntu with Claude Code
 2.1.312 and Codex CLI 0.165.0, using local fixture metadata versions 0.1.0 and
 0.1.1 and disposable profiles. These are fixture updates, not published releases;
 no model was invoked during these checks.
+
+## Moving from v0.1.1 to v0.2.0
+
+The package version changes, so a normal update works after the catalog pin moves:
+
+```text
+claude plugin marketplace update proprock
+claude plugin update kaboost@proprock
+```
+
+Restart the session, then run `/kaboost:init status` in each project (and `/kaboost:init-global status`). Unlike the 0.1.1 update, some blocks it wrote change:
+
+- **Core rules:** the TDD red/green commit rule left the core (KB-228). Copies written by `core-rules` and `core-rules-global` show as outdated and keep the old rule until you apply them again. A project that wants the rule enables the `tdd-commits` feature, which also ships `scripts/kaboost_audit_tdd.py`.
+- **CI templates:** an unedited `ci-python` workflow shows as outdated (actions v7, `setup-uv` v10, the `.github/apt-packages.txt` step). The v7 actions need GitHub Actions runner 2.327.1 or later; update self-hosted runners before applying it.
+- **TODO and DONE:** an unedited `todo-done` pair shows as outdated (one line per task, grep commands, hex ids). A `TODO.md` that already holds your tasks shows as drift with advice; nothing is overwritten, and you copy the new rules by hand if you want them.
+
+A block you edited by hand stays as it is until you review it; `--force` overwrites it.
 
 ## Moving from v0.1.0 to v0.1.1
 
