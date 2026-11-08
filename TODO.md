@@ -79,7 +79,6 @@ Decision 2026-10-30: language modules belong at project level, so KB-209 through
 - [ ] KB-311: Document provenance and review requirements for optional third-party extensions; never auto-install them.
 - [ ] KB-312: Reconcile README, roadmap, compatibility matrix, TODO, and DONE before every release.
 - [ ] KB-313: Add a scheduled (weekly) workflow that installs the latest Claude Code and Codex CLI and runs the disposable-profile lifecycle smoke tests, so client changes surface before a release; tested versions are fixed points (Claude Code 2.1.301–2.1.312, Codex CLI 0.165.0).
-- [ ] KB-314: Pin GitHub Actions by commit SHA and review the `curl | bash` client installers in CI.
 - [ ] KB-316: Make release archives byte-identical across platforms. A Windows build of the `v0.1.0` tag (Python 3.14.3, zlib `1.3.1.zlib-ng`) has the same files and inventory as the CI (Ubuntu) archives but different bytes: `scripts/prepare_release.py` leaves `ZipInfo.create_system` at its platform default (`fat` on Windows, `unx` on Linux), and zlib-ng produces a different deflate stream. Set `create_system = 3`, then either store entries uncompressed or document that archives are reproducible only for the same zlib; add the comparison to the Windows column of compatibility.
 
 **Done when:** every claimed adapter has tested delivery and behavior evidence, and maintenance procedures are documented. Unused integrations remain explicitly deferred; they do not block releases for the selected supported clients.
