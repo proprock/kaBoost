@@ -6,6 +6,7 @@
 - `kaboost_audit_tdd.py --run` no longer passes test ids from commit messages to the shell unchecked: an `Expected failing:` line with characters outside plain test ids is reported and not run (KB-236).
 - `/kaboost:init` reports `agents-import` as enabled when `CLAUDE.md` already imports `AGENTS.md` on its own, instead of offering to add a second import (KB-237).
 - The `ci-python` workflow that `/kaboost:init` writes pins its actions by commit SHA; repositories that enabled it see it as outdated and can update it with `/kaboost:init` (KB-314).
+- The `ci-python` and `ci-rust` workflows that `/kaboost:init` writes use `actions/checkout` v7, which runs on Node.js 24 and needs GitHub Actions runner 2.327.1 or later (update self-hosted runners first). Repositories that enabled them see them as outdated and can update them with `/kaboost:init` (KB-239).
 - `/kaboost:init` offers a Rust pack in repositories with `Cargo.toml`: `rust-toolchain` adds toolchain, check-order, `unsafe` and `unwrap` rules to `AGENTS.md`, and `ci-rust` writes `.github/workflows/kaboost-ci-rust.yml` (fmt, clippy, tests on the project's toolchain, skipped for pushed `TDD: red` commits). It does not conflict with the Python CI feature (KB-210).
 
 ## 0.1.1 — 2026-11-08

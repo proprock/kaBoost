@@ -79,6 +79,20 @@ class PackageTests(unittest.TestCase):
                     with self.subTest(file=path.name, action=match[1]):
                         self.assertRegex(match[1], r'^[\w.-]+/[\w./-]+@[0-9a-f]{40}$')
 
+    def test_init_feature_workflows_follow_the_repository_pins(self):
+        # Dependabot updates only .github/workflows; init features copy those pins, so a bump fails here until both move.
+        def pins(paths):
+            found = {}
+            for path in paths:
+                for match in re.finditer(r'uses:\s*([\w.-]+/[\w./-]+)@(\S+)', path.read_text(encoding='utf-8')):
+                    found.setdefault(match[1], {}).setdefault(match[2], path.name)
+            return found
+        repository = pins(sorted((ROOT/'.github/workflows').glob('*.yml')))
+        for action, shas in pins(sorted((ROOT/'init/features').glob('*.yml'))).items():
+            if action in repository:
+                with self.subTest(action=action):
+                    self.assertEqual(set(shas), set(repository[action]), f'{action}: features {shas}, workflows {repository[action]}')
+
     def test_release_documents_must_name_the_current_release(self):
         version = json.loads((self.root/'toolkit.json').read_text())['version']
         for name in ('README.md', 'docs/compatibility.md', 'docs/release-gate-assessment.md', 'docs/migration.md'):
