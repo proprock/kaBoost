@@ -163,6 +163,51 @@
       ]
     },
     {
+      "id": "no-verify-guard",
+      "number": 53,
+      "scope": "repo",
+      "group": "Process",
+      "title": "Agent hook against skipping git hooks",
+      "summary": "Creates scripts/kaboost_no_verify_guard.py and agent hooks that run it before every shell command: .claude/settings.json for Claude Code, .codex/hooks.json for Codex (Codex asks you to trust the hook first). It blocks git commit --no-verify or -n, git push --no-verify and core.hooksPath overrides. Refuses if a settings file already exists; then add the entry by hand.",
+      "edits": [
+        {
+          "name": "script",
+          "target": "{repo}/scripts/kaboost_no_verify_guard.py",
+          "mode": "own",
+          "body": "no_verify_guard.py",
+          "version": 1
+        },
+        {
+          "name": "claude-hook",
+          "tool": "claude",
+          "target": "{repo}/.claude/settings.json",
+          "mode": "exact",
+          "owner": "kaboost_no_verify_guard.py",
+          "body": "no-verify-claude.json",
+          "version": 1,
+          "previous": [],
+          "hints": {
+            "conflict": "kaBoost writes this file only when it does not exist. To use the guard, add to \"hooks\" -> \"PreToolUse\" by hand: {\"matcher\": \"Bash|PowerShell\", \"hooks\": [{\"type\": \"command\", \"command\": \"python3 \\\"$CLAUDE_PROJECT_DIR/scripts/kaboost_no_verify_guard.py\\\"\"}]} (use py -3 on Windows)",
+            "drift": "The file was edited after kaBoost wrote it, so kaBoost leaves it alone; keep or remove the kaboost_no_verify_guard.py entry by hand"
+          }
+        },
+        {
+          "name": "codex-hook",
+          "tool": "codex",
+          "target": "{repo}/.codex/hooks.json",
+          "mode": "exact",
+          "owner": "kaboost_no_verify_guard.py",
+          "body": "no-verify-codex.json",
+          "version": 1,
+          "previous": [],
+          "hints": {
+            "conflict": "kaBoost writes this file only when it does not exist. To use the guard, add to \"hooks\" -> \"PreToolUse\" by hand: {\"matcher\": \"^Bash$\", \"hooks\": [{\"type\": \"command\", \"command\": \"python3 scripts/kaboost_no_verify_guard.py\", \"command_windows\": \"py -3 scripts\\\\kaboost_no_verify_guard.py\"}]}",
+            "drift": "The file was edited after kaBoost wrote it, so kaBoost leaves it alone; keep or remove the kaboost_no_verify_guard.py entry by hand"
+          }
+        }
+      ]
+    },
+    {
       "id": "python-toolchain",
       "number": 2,
       "scope": "repo",

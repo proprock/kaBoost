@@ -12,6 +12,9 @@ A feature may also install a git hook (`kind: git-hook`): the engine runs the na
 `uninstall` after the files are written, installing the tool with `uv tool install` first when it is missing, and
 restores the files if a command fails. All of it happens only with --yes.
 
+Files without comment syntax (JSON hook settings) use `mode: exact`: the engine creates them only when absent, owns
+them while they equal the current body (or a body listed in `previous`, then outdated), and deletes them on disable.
+
 `sha` is the hash of the body at write time, so edits made inside a block are detected as drift and never
 overwritten without --force. `pre` and `created` let disabling restore the original bytes exactly.
 """
@@ -249,10 +252,30 @@ def line_warnings(catalog, root, home, scope):
     return warnings
 
 
+def exact_state(edit, path, text=None):
+    """A file without comment syntax (JSON) that kaBoost owns only while it equals a body it wrote: the current one
+    (enabled) or one listed in `previous` (outdated). A file naming the `owner` script otherwise is drift; any other
+    existing file is the user's (conflict)."""
+    if text is None:
+        text, _, _, existed = read(path)
+        if not existed:
+            return 'absent', ''
+    current = digest(text)
+    if current == digest(body_of(edit)):
+        return 'enabled', ''
+    if current in edit.get('previous', []):
+        return 'outdated', ''
+    if edit['owner'] in text:
+        return 'drift', hinted(edit, 'drift', f'{path.name} was edited after it was written')
+    return 'conflict', hinted(edit, 'conflict', f'{path.name} exists and is not managed by kaBoost')
+
+
 def edit_state(edit, key, root, home):
     if edit.get('kind') == 'git-hook':
         return hook_state(edit, root)
     path = resolve(edit, root, home)
+    if edit['mode'] == 'exact':
+        return exact_state(edit, path)
     text, _, _, existed = read(path)
     try:
         block = find_block(text, key)
@@ -383,6 +406,13 @@ def plan_apply(feature, root, home, tools, force, pending=None, actions=None):
             continue
         key = f"{feature['id']}:{edit['name']}"
         path = resolve(edit, root, home)
+        if edit['mode'] == 'exact':
+            state, note = exact_state(edit, path, changes.get(path))
+            if state == 'conflict' or (state == 'drift' and not force):
+                raise Refusal(note)
+            if state != 'enabled':
+                changes[path] = body_of(edit)
+            continue
         text, _, _, existed = read(path)
         text = changes.get(path, text)
         block = find_block(text, key)
@@ -418,6 +448,13 @@ def plan_disable(feature, root, home, tools, pending=None, actions=None):
             continue
         key = f"{feature['id']}:{edit['name']}"
         path = resolve(edit, root, home)
+        if edit['mode'] == 'exact':
+            state, _ = exact_state(edit, path, changes.get(path))
+            if state == 'drift':
+                raise Refusal(f'{path.name} was edited after it was written; review it and remove it by hand')
+            if state in ('enabled', 'outdated'):
+                changes[path] = ''
+            continue
         text = changes[path] if path in changes else read(path)[0]
         block = find_block(text, key)
         if block is None:
@@ -491,6 +528,7 @@ def run(catalog, args, root, home):
             if item['feature'] == 'core-rules':
                 item['note'] = SKIPPED_CLAUDE_CORE
     warnings = core_warnings(root, pending) if args.scope == 'repo' else []
+    exact_paths = {resolve(e, root, home) for fid in feature_ids for e in by_id[fid]['edits'] if e.get('mode') == 'exact'}
     results, undo = [], []
     if args.yes and args.command == 'disable' and actions:
         results = execute(actions, root)
@@ -503,7 +541,7 @@ def run(catalog, args, root, home):
             continue
         diff = ''.join(difflib.unified_diff(old_text.splitlines(True), new_text.splitlines(True),
                                            f'a/{path.name}' if existed else '/dev/null', f'b/{path.name}'))
-        deleting = new_text == '' and existed and _created(old_text)
+        deleting = new_text == '' and existed and (_created(old_text) or path in exact_paths)
         changes.append({'file': str(path), 'action': 'delete' if deleting else ('modify' if existed else 'create'),
                         'diff': diff})
         if args.yes:
