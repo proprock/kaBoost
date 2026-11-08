@@ -17,7 +17,7 @@ The boundary is the merge commit on `master` that brings in the `tdd-commits` bl
 
 | Repository | Boundary commit | Date |
 | --- | --- | --- |
-| aHerald | pending: merge of [aHerald#170](https://github.com/proprock/aHerald/pull/170) (AH-292) | |
+| aHerald | `829e5c8` (merge of [aHerald#170](https://github.com/proprock/aHerald/pull/170), AH-292) | 2026-11-08 |
 | [watchdog](https://github.com/proprock/watchdog) (Conventional Commits; task IDs must move to the end of the subject, `(WD-182)`, for pairs to be found) | `0d5e984` (WD-182, local branch `feature/WD-182-tdd-commits` on `feature/WD-151`) | 2026-11-08 |
 | private repository (Conventional Commits; task IDs `(ASI-N)` start with this commit; only aggregate numbers are published) | local commit (ASI-1) | 2026-11-08 |
 
