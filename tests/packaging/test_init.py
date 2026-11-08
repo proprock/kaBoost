@@ -175,6 +175,20 @@ class InitTests(unittest.TestCase):
         self.assertTrue((self.home / '.claude/CLAUDE.md').is_file())
         self.assertFalse((other / 'CLAUDE.md').exists())
 
+    def write_codex_override(self):
+        (self.home / '.codex').mkdir()
+        (self.home / '.codex/AGENTS.override.md').write_text('# Temporary\n')
+
+    def test_global_status_warns_that_codex_reads_its_override_file(self):
+        self.write_codex_override()
+        warnings = self.call('status', scope='global')['warnings']
+        self.assertTrue(any('AGENTS.override.md' in w for w in warnings), warnings)
+
+    def test_global_apply_preview_warns_that_codex_reads_its_override_file(self):
+        self.write_codex_override()
+        warnings = self.call('apply', '--ids', 'delegation', scope='global')['warnings']
+        self.assertTrue(any('AGENTS.override.md' in w for w in warnings), warnings)
+
     def test_global_core_rules_keep_personal_text_and_restore_it(self):
         claude = self.home / '.claude/CLAUDE.md'
         codex_dir = self.home / '.codex'

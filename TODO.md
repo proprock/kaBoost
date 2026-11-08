@@ -39,8 +39,6 @@ Complete with the `v0.1.0` release (KB-023); see [DONE.md](DONE.md).
 
 - [ ] KB-025 (moved from P0; blocks no release, see [ADR 012](docs/decisions/012-stable-release-gates.md)): Collect evidence from real use of the release. Criteria, baseline window, time box and reading rule fixed on 2026-11-08 in [real-use evidence](docs/real-use-evidence.md): M1 pair validity by `kaboost_audit_tdd.py --run`, M2 rework rate in aHerald against its history before the boundary, M3 interventions in the miss log; stop at 20 pairs or six weeks, fewer than 10 is inconclusive. Collecting since 2026-11-08: `tdd-commits` is enabled in aHerald (boundary `829e5c8`), watchdog and the private repository (local boundaries in the evidence document); the time box ends on 2026-12-20 or at 20 pairs. Remaining: at the end, write the M2 script on its own branch, mine both repositories and record the result in the [gate assessment](docs/release-gate-assessment.md).
 
-- [ ] KB-248: Warn in global `status` when `$CODEX_HOME/AGENTS.override.md` exists: Codex then reads it instead of `AGENTS.md`, so blocks written by `init-global` have no effect. Found while doing KB-244 (2026-11-08) in the Codex source (`codex-rs/codex-home/src/instructions/mod.rs`).
-
 - [ ] KB-238: Extend evaluation beyond single-session correctness (left open by KB-230): downstream measures (regressions after merge, handoff quality, reviewability), weaker or cheaper models, and multi-session tasks with handoff (KB-208). Deferred until the miss log or KB-025 shows where a process feature could pay off. The first calibration run after KB-234 checks that the judge's "minimal" score no longer differs between BASE and toolkit arms on the same task before its scores are used.
 
 ### Language modules

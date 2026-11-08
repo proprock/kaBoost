@@ -281,6 +281,17 @@ def continuation_lines(text):
     return bad
 
 
+def override_warnings(home, tools=None):
+    """Codex reads `AGENTS.override.md` instead of `AGENTS.md` in its home when the override exists (KB-248).
+    Only when Codex is a target: `tools` None means auto-detect, which includes Codex once its home exists."""
+    override = home['codex'] / 'AGENTS.override.md'
+    if (tools is not None and 'codex' not in tools) or not override.is_file():
+        return []
+    return [f'{override} exists: Codex reads it instead of {override.with_name("AGENTS.md")}, so the blocks written '
+            'there have no effect in Codex. Move what you need from the override into AGENTS.md and delete it, '
+            'or keep it on purpose']
+
+
 def line_warnings(catalog, root, home, scope):
     """Files managed by an edit with `one_line_entries` whose entries span several lines, one warning per file."""
     warnings = []
@@ -585,7 +596,7 @@ def run(catalog, args, root, home):
         for item in report:
             if item['feature'] == 'core-rules':
                 item['note'] = SKIPPED_CLAUDE_CORE
-    warnings = core_warnings(root, pending) if args.scope == 'repo' else []
+    warnings = core_warnings(root, pending) if args.scope == 'repo' else override_warnings(home, tools)
     exact_paths = {resolve(e, root, home) for fid in feature_ids for e in by_id[fid]['edits'] if e.get('mode') == 'exact'}
     executable = {resolve(e, root, home) for fid in feature_ids for e in by_id[fid]['edits'] if e.get('executable')}
     results, undo = [], []
@@ -655,8 +666,10 @@ def main(argv=None):
     root = args.root.resolve()
     home = client_homes((args.home or Path.home()).resolve(), explicit=args.home is not None)
     if args.command == 'status':
-        features = status(catalog, args.scope, root, home, args.all, parse_targets(args.targets, catalog))
-        warnings = (core_warnings(root) if args.scope == 'repo' else []) + line_warnings(catalog, root, home, args.scope)
+        tools = parse_targets(args.targets, catalog)
+        features = status(catalog, args.scope, root, home, args.all, tools)
+        warnings = ((core_warnings(root) if args.scope == 'repo' else override_warnings(home, tools))
+                    + line_warnings(catalog, root, home, args.scope))
         print(json.dumps({'scope': args.scope, 'features': features, 'warnings': warnings}, indent=2))
         return 0
     if not args.ids:
