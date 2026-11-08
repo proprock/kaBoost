@@ -545,7 +545,7 @@
       "edits": [
         {
           "name": "claude",
-          "target": "{home}/.claude/CLAUDE.md",
+          "target": "{claude_home}/CLAUDE.md",
           "mode": "append",
           "body": "{core}",
           "version": 1,
@@ -553,7 +553,7 @@
         },
         {
           "name": "codex",
-          "target": "{home}/.codex/AGENTS.md",
+          "target": "{codex_home}/AGENTS.md",
           "mode": "append",
           "body": "{core}",
           "version": 1,
@@ -571,7 +571,7 @@
       "edits": [
         {
           "name": "claude",
-          "target": "{home}/.claude/CLAUDE.md",
+          "target": "{claude_home}/CLAUDE.md",
           "mode": "append",
           "body": "code-discovery.md",
           "version": 1,
@@ -579,7 +579,7 @@
         },
         {
           "name": "codex",
-          "target": "{home}/.codex/AGENTS.md",
+          "target": "{codex_home}/AGENTS.md",
           "mode": "append",
           "body": "code-discovery.md",
           "version": 1,
@@ -597,7 +597,7 @@
       "edits": [
         {
           "name": "claude",
-          "target": "{home}/.claude/CLAUDE.md",
+          "target": "{claude_home}/CLAUDE.md",
           "mode": "append",
           "body": "context7.md",
           "version": 1,
@@ -605,7 +605,7 @@
         },
         {
           "name": "codex",
-          "target": "{home}/.codex/AGENTS.md",
+          "target": "{codex_home}/AGENTS.md",
           "mode": "append",
           "body": "context7.md",
           "version": 1,
@@ -623,7 +623,7 @@
       "edits": [
         {
           "name": "claude",
-          "target": "{home}/.claude/CLAUDE.md",
+          "target": "{claude_home}/CLAUDE.md",
           "mode": "append",
           "body": "reasoning-effort.md",
           "version": 1,
@@ -631,7 +631,7 @@
         },
         {
           "name": "codex",
-          "target": "{home}/.codex/AGENTS.md",
+          "target": "{codex_home}/AGENTS.md",
           "mode": "append",
           "body": "reasoning-effort.md",
           "version": 1,
@@ -649,7 +649,7 @@
       "edits": [
         {
           "name": "claude",
-          "target": "{home}/.claude/CLAUDE.md",
+          "target": "{claude_home}/CLAUDE.md",
           "mode": "append",
           "body": "compaction.md",
           "version": 1,
@@ -657,7 +657,7 @@
         },
         {
           "name": "codex",
-          "target": "{home}/.codex/AGENTS.md",
+          "target": "{codex_home}/AGENTS.md",
           "mode": "append",
           "body": "compaction.md",
           "version": 1,
@@ -675,7 +675,7 @@
       "edits": [
         {
           "name": "claude",
-          "target": "{home}/.claude/CLAUDE.md",
+          "target": "{claude_home}/CLAUDE.md",
           "mode": "append",
           "body": "delegation.md",
           "version": 1,
@@ -683,7 +683,7 @@
         },
         {
           "name": "codex",
-          "target": "{home}/.codex/AGENTS.md",
+          "target": "{codex_home}/AGENTS.md",
           "mode": "append",
           "body": "delegation.md",
           "version": 1,

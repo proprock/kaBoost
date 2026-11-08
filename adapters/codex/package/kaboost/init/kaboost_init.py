@@ -130,8 +130,25 @@ def find_block(text, key):
             'sha': begin.group('sha'), 'pre': int(begin.group('pre')), 'created': int(begin.group('created'))}
 
 
+CLIENT_HOME_VARIABLES = {'claude': 'CLAUDE_CONFIG_DIR', 'codex': 'CODEX_HOME'}
+
+
+def client_homes(home, explicit):
+    """Each client's configuration directory: `{home}/.claude` and `{home}/.codex`, or, without an explicit --home,
+    the directory the client itself reads from `CLAUDE_CONFIG_DIR` or `CODEX_HOME` when set."""
+    homes = {tool: home / f'.{tool}' for tool in CLIENT_HOME_VARIABLES}
+    if not explicit:
+        for tool, variable in CLIENT_HOME_VARIABLES.items():
+            if os.environ.get(variable):
+                homes[tool] = Path(os.environ[variable]).expanduser().resolve()
+    return homes
+
+
 def resolve(edit, root, home):
-    return Path(edit['target'].replace('{repo}', str(root)).replace('{home}', str(home)))
+    target = edit['target'].replace('{repo}', str(root))
+    for tool, path in home.items():
+        target = target.replace(f'{{{tool}_home}}', str(path))
+    return Path(target)
 
 
 def hook_file(root):
@@ -310,7 +327,7 @@ def active_edits(feature, root, home, tools):
         tool = edit.get('tool')
         if tool and tools is not None and tool not in tools:
             continue
-        if tool and tools is None and feature['scope'] == 'global' and not (home / f'.{tool}').is_dir():
+        if tool and tools is None and feature['scope'] == 'global' and not home[tool].is_dir():
             continue
         chosen.append(edit)
     return chosen
@@ -581,7 +598,8 @@ def main(argv=None):
     parser.add_argument('command', choices=('status', 'apply', 'disable'))
     parser.add_argument('--scope', choices=('repo', 'global'), default='repo')
     parser.add_argument('--root', type=Path, default=Path.cwd())
-    parser.add_argument('--home', type=Path, default=Path.home())
+    parser.add_argument('--home', type=Path, help='home folder for global scope; default: the user home, with '
+                        'CLAUDE_CONFIG_DIR and CODEX_HOME honoured')
     parser.add_argument('--ids', default='', help='comma-separated feature ids (apply, disable)')
     parser.add_argument('--targets', default='', help='list of tools (comma-separated, e.g. claude,codex) or all; default: tools whose directory exists')
     parser.add_argument('--all', action='store_true', help='status: include features not relevant to this repository')
@@ -589,7 +607,8 @@ def main(argv=None):
     parser.add_argument('--force', action='store_true', help='apply: overwrite a block that was edited by hand')
     args = parser.parse_args(argv)
     catalog = load_catalog()
-    root, home = args.root.resolve(), args.home.resolve()
+    root = args.root.resolve()
+    home = client_homes((args.home or Path.home()).resolve(), explicit=args.home is not None)
     if args.command == 'status':
         features = status(catalog, args.scope, root, home, args.all, parse_targets(args.targets, catalog))
         warnings = (core_warnings(root) if args.scope == 'repo' else []) + line_warnings(catalog, root, home, args.scope)

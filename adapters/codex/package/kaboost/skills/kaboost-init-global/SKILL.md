@@ -2,7 +2,7 @@
 name: kaboost-init-global
 description: Add kaBoost personal practices to the global Codex instruction file. Invoke explicitly with $kaboost-init-global; never use implicitly.
 ---
-Add personal practices from the kaBoost catalog to the user's global Codex instruction file `~/.codex/AGENTS.md`. This file is outside any project and applies to every project, so be explicit about that. Use this skill only when the user invokes `$kaboost-init-global`. This skill edits only Codex's file; the Claude Code command handles `~/.claude/CLAUDE.md`. Only the bundled script edits files; never edit them yourself. Always pass `--targets codex`.
+Add personal practices from the kaBoost catalog to the user's global Codex instruction file `~/.codex/AGENTS.md` (`$CODEX_HOME/AGENTS.md` when that is set). This file is outside any project and applies to every project, so be explicit about that. Use this skill only when the user invokes `$kaboost-init-global`. This skill edits only Codex's file; the Claude Code command handles `~/.claude/CLAUDE.md`. Only the bundled script edits files; never edit them yourself. Always pass `--targets codex`.
 
 The script is `init/kaboost_init.py` in this plugin, two directories above this file (`../../init/kaboost_init.py`). Resolve it to an absolute path from this file's location and call it as `<python> <script>`, where `<python>` is the first of `python3`, `python`, `py -3` with which step 1 succeeds (on Windows `python3` and `python` can be the Microsoft Store stub, which fails). If none works, say that Python 3 is required and stop.
 

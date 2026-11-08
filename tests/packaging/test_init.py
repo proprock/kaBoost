@@ -589,7 +589,7 @@ class InitTests(unittest.TestCase):
                     self.assertEqual(edit['mode'], 'own')
                     self.assertTrue(init.parts(edit)[0].startswith('---\n'))
                 self.assertTrue(init.body_of(edit).strip())
-                self.assertRegex(edit['target'], r'^\{(repo|home)\}/')
+                self.assertRegex(edit['target'], r'^\{(repo|claude_home|codex_home)\}/')
 
 
 if __name__ == '__main__':
