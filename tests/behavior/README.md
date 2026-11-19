@@ -8,6 +8,10 @@ The runners here make paid model calls and are run by hand. Their offline parts 
 
 `evals/large-json-cli` is one case for Claude Code's own `claude plugin eval` (KB-207): a Large task on a JSON CLI fixture, graded on whether `plan-before-edit` fires (`skill-fired.md`), whether it fires before the first edit (`skill-before-edit.md`, scored only in the arm with the plugin) and whether the agent edited (`edited.md`). `plugins/kaboost` is generated, so `python3 tests/behavior/run_plugin_eval.py /tmp/NEW-OUTPUT` copies the plugin and the cases into a temporary plugin root, fills the fixture placeholders in the copy and runs the eval there. Without `--max-cost-usd` it only prints the cost estimate; the ceiling is checked before each run, so runs are sequential. It is kept as the client-native counterpart of `run_routing_experiment.py`; no result from it is recorded yet (KB-233).
 
+## Miss-log candidates
+
+`python scripts/kaboost_miss_candidates.py REV_RANGE --cwd <repository> [--branch master]` reads git history and prints one [miss-log](misses.md) row per candidate, in the log's column order, plus a count per kind: `squash` (a squash merge in a repository with the `tdd-commits` block, which may have lost a red/green pair), `unpaired` (a `feat` or `fix` commit that changes code and whose task has no `TDD: red` commit in the range) and `rework` (the M2 rework commits of `scripts/kaboost_rework_rate.py`). It writes nothing and makes no model call; the maintainer confirms each row before it enters the log (KB-250).
+
 ## Calibration on a cheaper model
 
 `run_calibration.py` takes `--model` (default `claude-sonnet-5-5`, `MODEL` in `run_pilot.py`) for both the agent sessions and the judge, and records the model in every row of `summary.csv`. `--dry-run` prints the model, the number of sessions and the cost ceiling, and makes no call (KB-251).
