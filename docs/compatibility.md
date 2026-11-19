@@ -18,7 +18,7 @@ Codex's file hierarchy is documented; Claude and Gemini compose multiple instruc
 
 ## Runtime evidence
 
-The table is a summary: the newest tested client version and the result per cell. The dated lists below it hold the detail, newest first, as `date — OS — client version — toolkit ref — what was checked — result (task ID)`. Add a new result as a list entry and update the cell; do not grow the cell.
+The table is a summary: the newest tested client version and the result per cell. The dated lists below it hold the detail, newest first, as `date — OS — client version — toolkit ref — what was checked — result (task ID)`. Dates before 2026-11-20 are the completion dates recorded in [DONE.md](../DONE.md) or the validation record, or the tag date where a check needed the tag. Add a new result as a list entry and update the cell; do not grow the cell.
 
 | Check | Linux | macOS | Windows |
 | --- | --- | --- | --- |
@@ -37,10 +37,12 @@ The table is a summary: the newest tested client version and the result per cell
 
 - 2026-11-08 — Windows 11 — 2.1.319 — `v0.2.0` (commit `9c29997`) — clean-profile install from `proprock/marketplace` (pinned `v0.2.0` since commit `01bbf01`); `plugin update` from `v0.1.1` to `v0.2.0` after the pin moved, then removal; files identical to each tag — passed (KB-318).
 - 2026-11-08 — Linux (Debian bookworm container) — 2.1.319 — `v0.1.1` (commit `0f96da6`) and `v0.1.0` — clean-profile install of `v0.1.1`, files identical to the tag; rollback to the published `v0.1.0` by reinstalling from a catalog pinned to it, `plugin update` back to `v0.1.1`, removal; files identical to each tag — passed (KB-113).
-- 2026-11-08 — Windows 11 — 2.1.316 — `v0.1.1` (commit `0f96da6`) — clean-profile install, seven commands, files identical to the tag; `plugin update` from the published `v0.1.0` to `v0.1.1` after the catalog pin moved; rollback to `v0.1.0` by reinstalling from a catalog pinned to it; files identical to each tag — passed (KB-023).
+- 2026-11-08 — Windows 11 — 2.1.316 — `v0.1.1` (commit `0f96da6`) — clean-profile install, seven commands, files identical to the tag; `plugin update` from the published `v0.1.0` to `v0.1.1` after the catalog pin moved; rollback to `v0.1.0` by reinstalling from a catalog pinned to it; files identical to each tag — passed (install and update KB-023, rollback KB-113).
 - 2026-11-07 — Windows 11 — 2.1.316 — `v0.1.0` (commit `c3867d0`) — clean-profile install, seven commands, files identical to the tag — passed (KB-023).
-- 2026-10-30 — macOS — 2.1.308 — `v0.1.0-rc.2` and `v0.1.0-rc.3` (commit `e068b9d`) — clean-profile install of rc.2 (five commands) and rc.3 (seven commands, files identical to the tag); update between two pinned Git tags of a fixture repository (versions 0.1.0 and 0.1.1) with `plugin update`, and uninstall and reinstall also restored 0.1.0 — passed (KB-021).
-- 2026-10-29 — Linux, macOS 26.6.2, Windows Server 2025 — 2.1.312 — local build — isolated local marketplace lifecycle; see the [validation record](validation.md) — passed (KB-011).
+- 2026-10-30 — macOS — 2.1.308 — `v0.1.0-rc.3` (commit `e068b9d`) — clean-profile install, seven commands, files identical to the tag — passed (KB-020).
+- 2026-10-30 — macOS — 2.1.308 — `v0.1.0-rc.2` — clean-profile install, five commands; update between two pinned Git tags of a fixture repository (versions 0.1.0 and 0.1.1) with `plugin update`, and uninstall and reinstall also restored 0.1.0 — passed (KB-021).
+- 2026-10-29 — macOS 26.6.2, Windows Server 2025 — 2.1.312 — local build — isolated local marketplace lifecycle; see the [validation record](validation.md) — passed (KB-011).
+- 2026-10-29 — Linux — 2.1.312 — commit `5657425` — isolated local marketplace lifecycle, "Additional Linux checks" in the validation record — passed.
 - 2026-10-29 — Linux — 2.1.312 — local build — authenticated skill discovery and explicit invocation, with profile caveats; see the validation record — passed (KB-008).
 - 2026-10-29 — Linux — 2.1.301 — local working tree — strict metadata validation and isolated local marketplace lifecycle; see the validation record — passed (KB-005).
 - 2026-10-29 — Linux — Claude Code and Codex — pilot tasks — behavior pilot trials recorded; the pilot alone did not meet the release gate, later runs did (see the [gate assessment](release-gate-assessment.md)) (KB-016).

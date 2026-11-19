@@ -6,7 +6,7 @@ Gates are those in the [roadmap](roadmap.md). Unmeasured items are labeled unass
 
 ### `v0.1.0-rc.2` and `v0.1.0`
 
-Assessed 2026-10-30 for the release candidate `v0.1.0-rc.2`; reassessed 2026-11-07 for the content of `v0.1.0`, which equals `v0.1.0-rc.3` (KB-027). The measurements in the table were taken on this content.
+Assessed 2026-10-30 for the release candidate `v0.1.0-rc.2`; reassessed 2026-11-07 for the content of `v0.1.0`, which equals `v0.1.0-rc.3` (KB-027).
 
 ### `v0.1.1`
 
