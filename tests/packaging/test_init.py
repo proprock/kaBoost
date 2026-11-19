@@ -23,6 +23,13 @@ class InitTests(unittest.TestCase):
         self.repo, self.home = base / 'repo', base / 'home'
         (self.home / '.claude').mkdir(parents=True)
         self.repo.mkdir()
+        # The kaBoost plugin counts as installed for Claude Code unless a test says otherwise (KB-249).
+        self.claude_plugins({'kaboost@proprock': []})
+
+    def claude_plugins(self, plugins):
+        registry = self.home / '.claude/plugins/installed_plugins.json'
+        registry.parent.mkdir(parents=True, exist_ok=True)
+        registry.write_text(json.dumps({'version': 2, 'plugins': plugins}), encoding='utf-8')
 
     def call(self, *args, scope='repo'):
         out = io.StringIO()
@@ -188,6 +195,68 @@ class InitTests(unittest.TestCase):
         self.write_codex_override()
         warnings = self.call('apply', '--ids', 'delegation', scope='global')['warnings']
         self.assertTrue(any('AGENTS.override.md' in w for w in warnings), warnings)
+
+    def plugin_warnings(self, *args, scope='global'):
+        return [w for w in self.call(*args, scope=scope)['warnings'] if 'plan-before-edit' in w]
+
+    def codex_config(self, text):
+        (self.home / '.codex').mkdir(exist_ok=True)
+        (self.home / '.codex/config.toml').write_text(text, encoding='utf-8')
+
+    def test_claude_core_without_the_plugin_warns(self):
+        self.claude_plugins({'other@market': []})
+        self.call('apply', '--ids', 'core-rules-global', '--yes', scope='global')
+        warnings = self.plugin_warnings('status')
+        self.assertEqual(len(warnings), 1, warnings)
+        self.assertIn('claude plugin install kaboost@proprock', warnings[0])
+
+    def test_claude_core_without_a_plugin_registry_warns(self):
+        (self.home / '.claude/plugins/installed_plugins.json').unlink()
+        self.call('apply', '--ids', 'core-rules-global', '--yes', scope='global')
+        self.assertEqual(len(self.plugin_warnings('status')), 1)
+
+    def test_claude_core_with_the_plugin_gives_no_warning(self):
+        self.call('apply', '--ids', 'core-rules-global', '--yes', scope='global')
+        self.assertEqual(self.plugin_warnings('status'), [])
+
+    def test_codex_core_without_the_plugin_warns(self):
+        self.codex_config('model = "x"\n\n[plugins."superpowers@openai-curated"]\nenabled = true\n')
+        self.call('apply', '--ids', 'core-rules-global', '--yes', scope='global')
+        warnings = self.plugin_warnings('status')
+        self.assertEqual(len(warnings), 1, warnings)
+        self.assertIn('codex plugin add kaboost@proprock', warnings[0])
+
+    def test_codex_core_with_the_plugin_gives_no_warning(self):
+        self.codex_config('[plugins."kaboost@proprock"]\nenabled = true\n')
+        self.call('apply', '--ids', 'core-rules-global', '--yes', scope='global')
+        self.assertEqual(self.plugin_warnings('status'), [])
+
+    def test_no_plugin_warning_without_the_core(self):
+        self.claude_plugins({})
+        self.codex_config('')
+        self.call('apply', '--ids', 'delegation', '--yes', scope='global')
+        self.assertEqual(self.plugin_warnings('status'), [])
+
+    def test_no_plugin_warning_for_a_client_that_is_not_a_target(self):
+        self.claude_plugins({})
+        self.call('apply', '--ids', 'core-rules-global', '--yes', scope='global')
+        self.assertEqual(self.plugin_warnings('status', '--targets', 'codex'), [])
+
+    def test_repo_core_without_the_plugin_warns(self):
+        self.claude_plugins({})
+        self.call('apply', '--ids', 'core-rules', '--yes', '--targets', 'claude')
+        self.assertEqual(len(self.plugin_warnings('status', scope='repo')), 1)
+
+    def test_repo_status_counts_the_global_core(self):
+        self.claude_plugins({})
+        self.call('apply', '--ids', 'core-rules-global', '--yes', scope='global')
+        self.assertEqual(len(self.plugin_warnings('status', scope='repo')), 1)
+
+    def test_apply_preview_warns_and_disable_preview_does_not(self):
+        self.claude_plugins({})
+        self.assertEqual(len(self.plugin_warnings('apply', '--ids', 'core-rules-global')), 1)
+        self.call('apply', '--ids', 'core-rules-global', '--yes', scope='global')
+        self.assertEqual(self.plugin_warnings('disable', '--ids', 'core-rules-global'), [])
 
     def test_global_core_rules_keep_personal_text_and_restore_it(self):
         claude = self.home / '.claude/CLAUDE.md'
