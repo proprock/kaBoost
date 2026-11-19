@@ -84,7 +84,11 @@ class ReworkRateTests(unittest.TestCase):
         self.commit({'src/b.py': '1'}, 'feat: add b', day=2)
         self.git('checkout', '-q', 'master')
         stamp = START + 3 * DAY
-        self.git('merge', '-q', '--no-ff', '-m', 'fix: merge topic touching a', 'topic', date=stamp)
+        # The merge itself changes src/a.py, so counting merges (for example with -m) would make it rework.
+        self.git('merge', '-q', '--no-ff', '--no-commit', 'topic')
+        (self.repo / 'src/a.py').write_text('2')
+        self.git('add', '-A')
+        self.git('commit', '-q', '-m', 'fix: merge topic touching a', f'--date={stamp} +0000', date=stamp)
         result = rework.measure(f'{base}..master', self.repo)
         self.assertEqual(sorted(self.subjects(result['code'])), ['feat: add a', 'feat: add b'])
         self.assertEqual(result['rework'], [])
