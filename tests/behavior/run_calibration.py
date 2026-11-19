@@ -1,6 +1,7 @@
 """Run no-toolkit and toolkit arms on real fail-to-pass tasks (KB-216, ADR 008).
 
 Usage: python3 tests/behavior/run_calibration.py OUTPUT_DIR --tasks FILE [FILE...] [--arms BASE,V0,CMD] [--n N] [--workers N]
+       [--model MODEL] [--dry-run]
 Each task names a local repository and a fix commit. The agent starts from the fix's parent, in a fresh
 repository without history (so the fix cannot be read). After the session the fix commit's test files are
 copied in and the oracle command decides pass/fail; a model judge (blind to the arm, given the fix as reference) scores the diff as a secondary measure. Requires an authenticated Claude profile; each session is
@@ -70,11 +71,26 @@ RUBRIC = """You grade one proposed solution to a software task. You see the task
 Reply with only one JSON object: {"behavior": n, "contract": n, "tests": n, "minimal": n, "overall": n, "note": "one sentence"}. overall is your holistic 1-5 score."""
 
 
-def judge(task, reference, candidate, env):
+SESSION_BUDGET_USD, JUDGE_BUDGET_USD = 0.40, 0.15
+
+
+def judge_command(model):
+    return ['claude', '-p', '--model', model, '--effort', 'medium', '--tools', '', '--setting-sources', '',
+            '--strict-mcp-config', '--no-session-persistence', '--output-format', 'json',
+            '--max-budget-usd', str(JUDGE_BUDGET_USD)]
+
+
+def session_command(prompt, model, args):
+    return ['claude', '-p', prompt, '--model', model, '--effort', 'medium', '--setting-sources', 'project,local',
+            '--strict-mcp-config', '--no-session-persistence', '--permission-mode', 'dontAsk',
+            '--tools', 'Read,Edit,Write,Glob,Grep,Bash,Skill', '--allowedTools', ALLOWED,
+            '--output-format', 'stream-json', '--verbose', '--max-budget-usd', f'{SESSION_BUDGET_USD:.2f}', *args]
+
+
+def judge(task, reference, candidate, env, model):
     prompt = (f"{RUBRIC}\n\n## Task\n{task['prompt']}\n\n## Reference diff\n{reference[:30000]}\n\n## Candidate diff\n{candidate[:30000] or '(empty)'}\n")
     try:
-        result = subprocess.run(['claude', '-p', '--model', pilot.MODEL, '--effort', 'medium', '--tools', '', '--setting-sources', '',
-                                 '--strict-mcp-config', '--no-session-persistence', '--output-format', 'json', '--max-budget-usd', '0.15'],
+        result = subprocess.run(judge_command(model),
                                 input=prompt, cwd=env['TMPDIR'], env=env, text=True, capture_output=True, timeout=300)
         outer = json.loads(result.stdout)
         match = re.search(r'\{.*\}', outer.get('result', ''), re.S)
@@ -84,7 +100,7 @@ def judge(task, reference, candidate, env):
         return {}, 0
 
 
-def run(output, template, task, arm, n, plugin, core):
+def run(output, template, task, arm, n, plugin, core, model):
     name = f"{task['id']}-{arm}-{n}"
     record = output / name
     record.mkdir()
@@ -102,10 +118,7 @@ def run(output, template, task, arm, n, plugin, core):
         shutil.copytree(plugin, copy)
         args = ['--plugin-dir', str(copy)]
     prompt = ('/kaboost:plan ' if arm == 'CMD' else '') + task['prompt']
-    cmd = ['claude', '-p', prompt, '--model', pilot.MODEL, '--effort', 'medium', '--setting-sources', 'project,local',
-           '--strict-mcp-config', '--no-session-persistence', '--permission-mode', 'dontAsk',
-           '--tools', 'Read,Edit,Write,Glob,Grep,Bash,Skill', '--allowedTools', ALLOWED,
-           '--output-format', 'stream-json', '--verbose', '--max-budget-usd', '0.40', *args]
+    cmd = session_command(prompt, model, args)
     started = time.monotonic()
     try:
         result = pilot.command(cmd, cwd=checkout, env=env, timeout=900)
@@ -125,7 +138,7 @@ def run(output, template, task, arm, n, plugin, core):
     candidate = pilot.checked(['git', 'diff', '--cached', 'HEAD'], cwd=checkout, env=env)
     source = REPOS / task['repo']
     reference = subprocess.run(['git', 'show', '--format=', task['fix']], cwd=source, capture_output=True, text=True).stdout
-    scores, judge_cost = judge(task, reference, candidate, dict(env, TMPDIR=str(record)))
+    scores, judge_cost = judge(task, reference, candidate, dict(env, TMPDIR=str(record)), model)
     # Oracle: the fix commit's own test files replace the agent's copies, then the test command decides.
     for relative in task['oracle']['files']:
         data = subprocess.run(['git', 'show', f"{task['fix']}:{relative}"], cwd=source, capture_output=True).stdout
@@ -134,7 +147,7 @@ def run(output, template, task, arm, n, plugin, core):
     changed = pilot.command(['git', 'diff', '--stat', 'HEAD'], cwd=checkout, env=env).stdout.strip().splitlines()
     shutil.rmtree(target, ignore_errors=True)  # build output is several GB per session; the record keeps the diff and events
     analysis = routing.analyse(events, '')
-    row = {'task': task['id'], 'arm': arm, 'n': n, 'exit': code, 'seconds': round(seconds, 1),
+    row = {'task': task['id'], 'arm': arm, 'n': n, 'model': model, 'exit': code, 'seconds': round(seconds, 1),
            'cost_usd': final.get('total_cost_usd'), 'denials': len(final.get('permission_denials', [])),
            'oracle_pass': oracle.returncode == 0, 'files_changed': max(len(changed) - 1, 0),
            'skill_called': analysis['skill_called'], 'gate_full_before_edit': analysis['gate_full_before_edit'],
@@ -144,7 +157,7 @@ def run(output, template, task, arm, n, plugin, core):
     return row
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('output', type=Path)
     parser.add_argument('--tasks', type=Path, nargs='+', required=True)
@@ -152,15 +165,25 @@ def main():
     parser.add_argument('--n', type=int, default=5)
     parser.add_argument('--only', default='', help='comma-separated task ids')
     parser.add_argument('--workers', type=int, default=4)
-    args = parser.parse_args()
+    parser.add_argument('--model', default=pilot.MODEL, help=f'model for sessions and the judge (default {pilot.MODEL})')
+    parser.add_argument('--dry-run', action='store_true', help='print the plan and its cost ceiling; run nothing')
+    args = parser.parse_args(argv)
     output = args.output.resolve()
     if output.exists():
         raise SystemExit('Output directory must not exist')
-    if pilot.checked(['git', 'status', '--porcelain'], cwd=ROOT).strip():
-        raise SystemExit('Working tree must be clean')
     tasks = [t for f in args.tasks for t in json.loads(f.read_text(encoding='utf-8'))]
     if args.only:
         tasks = [t for t in tasks if t['id'] in args.only.split(',')]
+    sessions = len(tasks) * len(args.arms.split(',')) * args.n
+    if args.dry_run:
+        ceiling = sessions * (SESSION_BUDGET_USD + JUDGE_BUDGET_USD)
+        print(f'model {args.model}; {len(tasks)} tasks x arms {args.arms} x {args.n} = {sessions} sessions; '
+              f'cost ceiling USD {ceiling:.2f} (USD {SESSION_BUDGET_USD:.2f} per session, '
+              f'USD {JUDGE_BUDGET_USD:.2f} per judge call)')
+        return
+    if pilot.checked(['git', 'status', '--porcelain'], cwd=ROOT).strip():
+        raise SystemExit('Working tree must be clean')
+    print(f'model {args.model}; {sessions} sessions', flush=True)
     output.mkdir(parents=True)
     template = None
     first = next((t for t in tasks if t['prep'] == 'rust_shim'), None)
@@ -176,7 +199,7 @@ def main():
     random.Random(20261030).shuffle(jobs)
     plugin, core = ROOT / 'plugins' / 'kaboost', ROOT / 'core' / 'engineering-rules.md'
     with ThreadPoolExecutor(args.workers) as pool:
-        rows = list(pool.map(lambda j: run(output, template, *j, plugin, core), jobs))
+        rows = list(pool.map(lambda j: run(output, template, *j, plugin, core, args.model), jobs))
     with (output / 'summary.csv').open('w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=list(rows[0]))
         writer.writeheader()

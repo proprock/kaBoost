@@ -8,6 +8,18 @@ The runners here make paid model calls and are run by hand. Their offline parts 
 
 `evals/large-json-cli` is one case for Claude Code's own `claude plugin eval` (KB-207): a Large task on a JSON CLI fixture, graded on whether `plan-before-edit` fires (`skill-fired.md`), whether it fires before the first edit (`skill-before-edit.md`, scored only in the arm with the plugin) and whether the agent edited (`edited.md`). `plugins/kaboost` is generated, so `python3 tests/behavior/run_plugin_eval.py /tmp/NEW-OUTPUT` copies the plugin and the cases into a temporary plugin root, fills the fixture placeholders in the copy and runs the eval there. Without `--max-cost-usd` it only prints the cost estimate; the ceiling is checked before each run, so runs are sequential. It is kept as the client-native counterpart of `run_routing_experiment.py`; no result from it is recorded yet (KB-233).
 
+## Calibration on a cheaper model
+
+`run_calibration.py` takes `--model` (default `claude-sonnet-5-5`, `MODEL` in `run_pilot.py`) for both the agent sessions and the judge, and records the model in every row of `summary.csv`. `--dry-run` prints the model, the number of sessions and the cost ceiling, and makes no call (KB-251).
+
+Planned run, not yet approved: on `claude-sonnet-5-5` six of the seven [KB-216 tasks](kb216-calibration-2026-10-30.md) pass at the baseline ceiling, so no arm can show a benefit there. Calibrate the baseline only on `claude-haiku-5-5`, five sessions per task, with the runner's existing caps of USD 0.40 per session and USD 0.15 per judge call:
+
+```
+python tests/behavior/run_calibration.py <new output directory> --tasks tests/behavior/tasks/aherald.json [private task file] --arms BASE --n 5 --model claude-haiku-5-5
+```
+
+The dry run gives 30 sessions and a ceiling of USD 16.50 for the six public tasks; with the private task, 35 sessions and USD 19.25. Expect much less: the Sonnet baseline averaged USD 0.125 per session on `ah-queue-idle-gap`. Tasks whose Haiku pass rate falls into the 20–80% band are candidates for an A/B under [ADR 013](../../docs/decisions/013-cost-per-pass-and-miss-log.md); the maintainer approves the budget and picks them.
+
 ## Instruction-loading diagnostics
 
 For a separate loading diagnosis, run `python3 tests/behavior/prepare_routing_diagnostic.py /tmp/NEW-DIAGNOSTIC-DIRECTORY`. It creates a project-local core import and a disposable Claude plugin copy with a unique marker per core, skill, and adaptive workflow file. The marker map is outside the project and plugin; do not include it in the agent prompt. These instrumented files request marker output only if read. The generated inventory is intentionally stale: never install or publish this diagnostic plugin as a release.
