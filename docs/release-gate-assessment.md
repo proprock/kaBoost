@@ -1,6 +1,22 @@
 # Release gate assessment
 
-Assessed 2026-10-30 against the gates in the [roadmap](roadmap.md) for the release candidate `v0.1.0-rc.2`; reassessed 2026-11-07 for the content of `v0.1.0`, which equals `v0.1.0-rc.3` (KB-027). The patch release `v0.1.1` changes only the init engine and the init commands and skills, which run only when the user invokes them; the always-loaded context is unchanged (1253 tokens estimated, [context overhead](context-overhead.md)), so the measurements below carry over without a new behavior run. The minor release `v0.2.0` removes one core line, the TDD red/green commit rule, which moved into an opt-in init feature (KB-228), and changes only init features otherwise; the always-loaded context fell to 1225 tokens. The behavior measurements below were taken with the previous core and were not repeated: the overhead cannot grow from a removed line, but quality on the new core is carried over, not remeasured. Unmeasured items are labeled unassessed, not passed. The behavior work is a pilot plus later experiments, not statistical proof.
+Gates are those in the [roadmap](roadmap.md). Unmeasured items are labeled unassessed, not passed. The behavior work is a pilot plus later experiments, not statistical proof. The sections below say per release what changed and which measurements carry over; the table holds the measurements.
+
+## Releases
+
+### `v0.1.0-rc.2` and `v0.1.0`
+
+Assessed 2026-10-30 for the release candidate `v0.1.0-rc.2`; reassessed 2026-11-07 for the content of `v0.1.0`, which equals `v0.1.0-rc.3` (KB-027). The measurements in the table were taken on this content.
+
+### `v0.1.1`
+
+The patch release changes only the init engine and the init commands and skills, which run only when the user invokes them. The always-loaded context is unchanged (1253 tokens estimated, [context overhead](context-overhead.md)), so the measurements carry over without a new behavior run.
+
+### `v0.2.0`
+
+The minor release removes one core line, the TDD red/green commit rule, which moved into an opt-in init feature (KB-228), and changes only init features otherwise; the always-loaded context fell to 1225 tokens. The behavior measurements were taken with the previous core and were not repeated: the overhead cannot grow from a removed line, but quality on the new core is carried over, not remeasured.
+
+## Gates
 
 | Gate | Status | Evidence and limits |
 | --- | --- | --- |

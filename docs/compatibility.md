@@ -18,18 +18,48 @@ Codex's file hierarchy is documented; Claude and Gemini compose multiple instruc
 
 ## Runtime evidence
 
+The table is a summary: the newest tested client version and the result per cell. The dated lists below it hold the detail, newest first, as `date — OS — client version — toolkit ref — what was checked — result (task ID)`. Add a new result as a list entry and update the cell; do not grow the cell.
+
 | Check | Linux | macOS | Windows |
 | --- | --- | --- | --- |
-| Python package checks | Hosted CI passed, Python 3.10/3.13 | Hosted CI passed, Python 3.10/3.13 | Hosted CI passed, Python 3.10/3.13 |
-| Claude 2.1.301 strict metadata validation | See validation record | Pending | Pending |
-| Claude isolated local marketplace lifecycle | Claude 2.1.301 and 2.1.312 passed; see validation record | Claude 2.1.312 passed on macOS 26.6.2 | Claude 2.1.312 passed on Windows Server 2025 |
-| Codex CLI isolated local marketplace lifecycle | 0.165.0 passed; see adapter guide | Pending | 0.160.0 and 0.167.0 passed on Windows 11 (KB-112) |
-| Codex CLI remote install, update, rollback and removal between pinned Git tags (`scripts/smoke_codex_remote.py`) | Pending | Pending | 0.160.0 and 0.167.0 passed on Windows 11: `v0.1.1` → `v0.2.0` → `v0.1.1`, removal, files identical to each commit; install from the published `proprock/marketplace` (commit `fc34450`, pinned `v0.2.0`) passed on 0.160.0 (KB-112) |
-| Authenticated skill discovery / explicit invocation | Claude 2.1.312 and Codex CLI 0.165.0 passed with profile caveats; see records | Pending | Pending |
-| Behavior pilot | Claude and Codex trials recorded; the pilot alone did not meet the release gate, later runs did (see the [gate assessment](release-gate-assessment.md)) | Pending | Pending |
-| Remote tagged marketplace install (`proprock/marketplace`, pinned `v0.2.0` since commit `01bbf01`) | Claude 2.1.319 passed in a clean profile for `v0.1.1` (Debian bookworm container, commit `0f96da6`, files identical to the tag) | Claude 2.1.308 passed in a clean profile for rc.2 (five commands) and rc.3 (commit `e068b9d`, seven commands, files identical to the tag) | Claude 2.1.316 passed in a clean profile on Windows 11 for `v0.1.0` (commit `c3867d0`) and `v0.1.1` (commit `0f96da6`), seven commands, files identical to the tag; Claude 2.1.319 passed for `v0.2.0` (commit `9c29997`), files identical to the tag |
-| Update and rollback between two pinned Git tags (fixture repository, versions 0.1.0 and 0.1.1) | Claude 2.1.319 passed between the published `v0.1.1` and `v0.1.0`: rollback by reinstalling from a catalog pinned to `v0.1.0`, then `plugin update` back to `v0.1.1`, then removal (Debian bookworm container; files identical to each tag) | Claude 2.1.308 passed with `plugin update`; uninstall and reinstall also restored 0.1.0 | Claude 2.1.316 passed `plugin update` from the published `v0.1.0` to `v0.1.1` after the catalog pin moved, and rollback to `v0.1.0` by reinstalling from a catalog pinned to it (Windows 11, files identical to each tag); Claude 2.1.319 passed `plugin update` from `v0.1.1` to `v0.2.0` after the pin moved, then removal (files identical to each tag) |
-| Release artifacts reproducible and complete | CI (Ubuntu) archives are byte-identical to a local macOS build of the same tag; inventory, license and secret-pattern checks passed. CI archives of `v0.1.0` are byte-identical to those of `v0.1.0-rc.3` | Same comparison | Since KB-316 (stored entries, Unix system byte): a local Windows 11 build (Python 3.14.3, zlib `1.3.1.zlib-ng`) of commit `b47756a` is byte-identical to the CI (Ubuntu) archives of the same commit (run 42503329826). Before it, the `v0.1.0` build differed in bytes only |
+| Python package checks | Passed (CI, Python 3.10/3.13) | Passed (CI, Python 3.10/3.13) | Passed (CI, Python 3.10/3.13) |
+| Claude strict metadata validation | 2.1.301 passed | Pending | Pending |
+| Claude isolated local marketplace lifecycle | 2.1.312 passed | 2.1.312 passed | 2.1.312 passed |
+| Codex CLI isolated local marketplace lifecycle | 0.165.0 passed | Pending | 0.167.0 passed |
+| Codex CLI remote lifecycle between pinned Git tags (`scripts/smoke_codex_remote.py`) | Pending | Pending | 0.167.0 passed |
+| Authenticated skill discovery / explicit invocation | Claude 2.1.312, Codex 0.165.0 passed with caveats | Pending | Pending |
+| Behavior pilot | Recorded; see the [gate assessment](release-gate-assessment.md) | Pending | Pending |
+| Remote tagged marketplace install (`proprock/marketplace`) | Claude 2.1.319 passed (`v0.1.1`) | Claude 2.1.308 passed (rc.3) | Claude 2.1.319 passed (`v0.2.0`) |
+| Update and rollback between two pinned Git tags | Claude 2.1.319 passed | Claude 2.1.308 passed (fixture tags) | Claude 2.1.319 passed |
+| Release artifacts reproducible and complete | Passed | Passed | Passed since KB-316 |
+
+### Claude Code
+
+- 2026-11-08 — Windows 11 — 2.1.319 — `v0.2.0` (commit `9c29997`) — clean-profile install from `proprock/marketplace` (pinned `v0.2.0` since commit `01bbf01`); `plugin update` from `v0.1.1` to `v0.2.0` after the pin moved, then removal; files identical to each tag — passed (KB-318).
+- 2026-11-08 — Linux (Debian bookworm container) — 2.1.319 — `v0.1.1` (commit `0f96da6`) and `v0.1.0` — clean-profile install of `v0.1.1`, files identical to the tag; rollback to the published `v0.1.0` by reinstalling from a catalog pinned to it, `plugin update` back to `v0.1.1`, removal; files identical to each tag — passed (KB-113).
+- 2026-11-08 — Windows 11 — 2.1.316 — `v0.1.1` (commit `0f96da6`) — clean-profile install, seven commands, files identical to the tag; `plugin update` from the published `v0.1.0` to `v0.1.1` after the catalog pin moved; rollback to `v0.1.0` by reinstalling from a catalog pinned to it; files identical to each tag — passed (KB-023).
+- 2026-11-07 — Windows 11 — 2.1.316 — `v0.1.0` (commit `c3867d0`) — clean-profile install, seven commands, files identical to the tag — passed (KB-023).
+- 2026-10-30 — macOS — 2.1.308 — `v0.1.0-rc.2` and `v0.1.0-rc.3` (commit `e068b9d`) — clean-profile install of rc.2 (five commands) and rc.3 (seven commands, files identical to the tag); update between two pinned Git tags of a fixture repository (versions 0.1.0 and 0.1.1) with `plugin update`, and uninstall and reinstall also restored 0.1.0 — passed (KB-021).
+- 2026-10-29 — Linux, macOS 26.6.2, Windows Server 2025 — 2.1.312 — local build — isolated local marketplace lifecycle; see the [validation record](validation.md) — passed (KB-011).
+- 2026-10-29 — Linux — 2.1.312 — local build — authenticated skill discovery and explicit invocation, with profile caveats; see the validation record — passed (KB-008).
+- 2026-10-29 — Linux — 2.1.301 — local working tree — strict metadata validation and isolated local marketplace lifecycle; see the validation record — passed (KB-005).
+- 2026-10-29 — Linux — Claude Code and Codex — pilot tasks — behavior pilot trials recorded; the pilot alone did not meet the release gate, later runs did (see the [gate assessment](release-gate-assessment.md)) (KB-016).
+
+### Codex CLI
+
+- 2026-11-08 — Windows 11 — 0.160.0 and 0.167.0 — `v0.1.1` → `v0.2.0` → `v0.1.1` — remote install, update, rollback and removal between pinned Git tags (`scripts/smoke_codex_remote.py`), files identical to each commit — passed (KB-112).
+- 2026-11-08 — Windows 11 — 0.160.0 — published `proprock/marketplace` (commit `fc34450`, pinned `v0.2.0`) — install from the published catalog — passed (KB-112).
+- 2026-11-08 — Windows 11 — 0.160.0 and 0.167.0 — local build — isolated local marketplace lifecycle (`scripts/smoke_codex.py`) — passed (KB-112).
+- 2026-10-29 — Linux (Ubuntu) — 0.165.0 — local build — isolated local marketplace lifecycle; see the [adapter guide](../adapters/codex/README.md) — passed (KB-103).
+- 2026-10-29 — Linux (Ubuntu) — 0.165.0 — local build — authenticated skill discovery, with profile caveats; see the adapter guide — passed (KB-104).
+- macOS — no Codex result yet (KB-114, KB-112).
+
+### Packaging and release artifacts
+
+- 2026-11-08 — Windows 11 — Python 3.14.3, zlib `1.3.1.zlib-ng` — commit `b47756a` — since KB-316 (stored entries, Unix system byte) a local build is byte-identical to the CI (Ubuntu) archives of the same commit (run 42503329826); before it, the `v0.1.0` build differed in bytes only — passed (KB-316).
+- 2026-11-07 — Linux (CI) — `v0.1.0` — CI archives of `v0.1.0` are byte-identical to those of `v0.1.0-rc.3` — passed (KB-023).
+- 2026-10-30 — Linux (CI, Ubuntu) and macOS (local build) — `v0.1.0-rc.2` — CI archives byte-identical to a local macOS build of the same tag; inventory, license and secret-pattern checks — passed (KB-019).
+- 2026-10-29 — Linux, macOS, Windows (hosted CI) — Python 3.10 and 3.13 — package checks — passed (KB-007).
 
 [Validation record](validation.md), [Codex adapter guide](../adapters/codex/README.md), and [comparison results](../tests/behavior/codex-comparison-results-2026-10-29.md) record scope and limitations. Portable files use LF and ordinary copies without Unix symlinks or shell scripts. OS portability still requires native runtime tests.
 
