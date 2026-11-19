@@ -11,12 +11,12 @@ The scope boundary in [TODO.md](../../TODO.md#scope-boundaries) keeps agents and
 
 ## Client facts
 
-Checked on 2026-11-20 with Context7 against the vendors' documentation; installed clients: Claude Code 2.1.325, codex-cli 0.169.0. Verify both again against the installed clients before implementing, as ADR 014 did.
+Checked on 2026-11-20 through Context7 (two queries); installed clients: Claude Code 2.1.325, codex-cli 0.169.0. For Claude Code, Context7 served a mirror of the vendor documentation (`/pjbrito/claude-code-docs`, files `content/en/docs/claude-code/sub-agents.md`, `mcp.md` and `settings.md`), not the vendor site itself; for Codex, the vendor's `llms-full.txt` (`/llmstxt/learn_chatgpt_llms-full_txt`). Verify every point against the vendor pages and the installed clients before implementing, as ADR 014 did.
 
-- **Claude Code agents:** project subagents are Markdown files with YAML frontmatter (`name`, `description`, optional `tools`, `model`, `mcpServers`) under `.claude/agents/`; the body is the system prompt. A subagent may declare MCP servers inline, connected only while it runs. The documentation consulted describes no approval step for project agents beyond trusting the workspace. Source: [sub-agents](https://code.claude.com/docs/en/sub-agents).
-- **Claude Code MCP:** project servers live in `.mcp.json` at the repository root (`{"mcpServers": {...}}`), meant to be checked in. Claude Code asks for approval before it uses a server from `.mcp.json`; `enableAllProjectMcpServers` approves all, and `claude mcp reset-project-choices` resets the choice. Sources: [MCP scopes](https://code.claude.com/docs/en/mcp), [settings](https://code.claude.com/docs/en/settings).
-- **Codex agents:** custom agents are standalone TOML files under `.codex/agents/` (project) or `~/.codex/agents/` (personal) with required `name`, `description` and `developer_instructions`; they inherit the parent's permissions, provider and MCP servers and cannot override them. Source: [subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents).
-- **Codex MCP:** project servers go into `.codex/config.toml` (`[mcp_servers.<name>]`). Codex loads every project `.codex/` layer, including that file, hooks and rules, only when the user trusts the project; `codex exec` loads project MCP servers only for trusted projects, and they can run commands outside the sandbox. Sources: [advanced config](https://learn.chatgpt.com/docs/config-file/config-advanced), [MCP](https://learn.chatgpt.com/docs/llms-full.txt).
+- **Claude Code agents:** an agent file is Markdown with YAML frontmatter (`name`, `description`, and optionally `mcpServers`, which connects servers only while the subagent runs) and the prompt as its body. The text consulted did not cover where project agents are read from (`.claude/agents/` by common use) or whether they need approval; both are open until checked.
+- **Claude Code MCP:** project servers live in `.mcp.json` at the repository root (`{"mcpServers": {...}}`), meant to be checked in. Claude Code asks for approval before it uses a server from `.mcp.json`; the `enableAllProjectMcpServers` setting approves all, and `claude mcp reset-project-choices` resets the choices.
+- **Codex agents:** custom agents are standalone TOML files under `.codex/agents/` (project) or `~/.codex/agents/` (personal) with required `name`, `description` and `developer_instructions`, optionally `model` and `model_reasoning_effort`; they inherit the parent's permissions, provider and MCP servers and cannot override them. Source: [subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents).
+- **Codex MCP:** MCP servers can be scoped to a project in `.codex/config.toml` (trusted projects only). Codex loads every project `.codex/` layer, including that file, hooks and rules, only when the user trusts the project; `codex exec` loads project MCP servers only for trusted projects, and they can run commands outside the sandbox. Source: [advanced config](https://learn.chatgpt.com/docs/config-file/config-advanced).
 
 ## Proposed decision
 
@@ -30,8 +30,8 @@ Shaped like ADR 014:
 
 ## First candidates and their evidence
 
-- **Agent:** a read-only reviewer (`tools` limited to reading and searching; Codex: `sandbox_mode = "read-only"` where the client supports it) that reviews a diff against the task's acceptance criteria. Trigger: two entries in the [miss log](../../tests/behavior/misses.md) of defects that verification passed and a review would have caught, the same trigger as KB-205 under [ADR 013](013-cost-per-pass-and-miss-log.md).
-- **MCP entry:** a project entry for a documentation server, offered together with the `context7` rules. Trigger: a repository that enables the `context7` rules while no documentation server or CLI is available to the agent there, recorded as a miss.
+- **Agent:** a reviewer that reviews a diff against the task's acceptance criteria and is told not to edit. In Codex this is an instruction only, because a custom agent inherits the parent's permissions; whether Claude Code can restrict a project agent's tools is to be checked. Trigger: two entries in the [miss log](../../tests/behavior/misses.md) of defects that verification passed and a review would have caught, the same trigger as KB-205 under [ADR 013](013-cost-per-pass-and-miss-log.md).
+- **MCP entry:** a project entry for a documentation server. The `context7` feature is global and its rule says only "check current documentation (Context7: resolve the library, then query its docs)", without naming a CLI or a server, so the entry is a candidate only where neither reaches the agent. Trigger: a recorded miss where an agent under that rule answered from memory because no Context7 CLI or server was available in the project.
 
 Neither candidate is built before its trigger.
 
@@ -43,6 +43,6 @@ Neither candidate is built before its trigger.
 
 ## Consequences if accepted
 
-- Amends the scope-boundary sentence in TODO.md and the agents part of ADR 007 and ADR 009, as ADR 014 did for hooks; Jira connectors stay out of scope.
+- Amends the scope-boundary sentence in TODO.md and the sentence in ADR 007 that keeps agents and MCP integrations out of scope, as ADR 014 did for hooks; Jira connectors stay out of scope.
 - An MCP entry runs a process on the user's machine whenever the client starts with the project trusted and approved; the preview must show the full command, and the entry must pin the server's version.
 - Implementation tasks are created only when a trigger above is met; KB-253 closes with the decision.
