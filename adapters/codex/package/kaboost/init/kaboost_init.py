@@ -292,6 +292,63 @@ def override_warnings(home, tools=None):
             'or keep it on purpose']
 
 
+PLUGIN_INSTALL = {
+    'claude': ('Claude Code', '`claude plugin marketplace add https://github.com/proprock/marketplace.git`, then '
+                              '`claude plugin install kaboost@proprock`'),
+    'codex': ('Codex', '`codex plugin marketplace add proprock/marketplace`, then `codex plugin add kaboost@proprock`'),
+}
+CODEX_PLUGIN_TABLE = re.compile(r'^\s*\[plugins\."kaboost@', re.M)
+
+
+def plugin_installed(tool, home):
+    """The client lists a kaboost@<marketplace> plugin: Claude Code in `plugins/installed_plugins.json`, Codex as a
+    `[plugins."kaboost@..."]` table in `config.toml`. A missing or unreadable file means not installed."""
+    if tool == 'claude':
+        try:
+            plugins = json.loads((home['claude'] / 'plugins' / 'installed_plugins.json').read_text(encoding='utf-8'))
+        except (OSError, ValueError):
+            return False
+        plugins = plugins.get('plugins') if isinstance(plugins, dict) else None
+        return isinstance(plugins, dict) and any(key.startswith('kaboost@') for key in plugins)
+    try:
+        return CODEX_PLUGIN_TABLE.search(read(home['codex'] / 'config.toml')[0]) is not None
+    except (OSError, UnicodeDecodeError):
+        return False
+
+
+def core_enabled(catalog, root, home, scope, tool, pending):
+    """A core-rules block for this client is present after the pending changes; repository scope also counts the
+    global core and Claude Code reading the core through AGENTS.md."""
+    ids = ('core-rules', 'core-rules-global') if scope == 'repo' else ('core-rules-global',)
+    for feature in catalog['features']:
+        if feature['id'] not in ids:
+            continue
+        for edit in feature['edits']:
+            if edit.get('tool') != tool:
+                continue
+            path = resolve(edit, root, home)
+            try:
+                if find_block(pending.get(path, read(path)[0]), f"{feature['id']}:{edit['name']}") is not None:
+                    return True
+            except Refusal:
+                return True
+    return scope == 'repo' and tool == 'claude' and claude_reads_agents_core(root, pending)
+
+
+def plugin_warnings(catalog, root, home, scope, tools=None, pending=None):
+    """The core names the plan-before-edit skill, which only the kaBoost plugin ships (KB-249). One warning per
+    targeted client whose configuration directory exists, whose core is enabled and which lacks the plugin."""
+    warnings = []
+    for tool, (client, install) in PLUGIN_INSTALL.items():
+        if (tools is not None and tool not in tools) or not home[tool].is_dir():
+            continue
+        if core_enabled(catalog, root, home, scope, tool, pending or {}) and not plugin_installed(tool, home):
+            warnings.append(f'The core rules are enabled for {client}, but the kaBoost plugin is not installed there: '
+                            'the core tells the agent to invoke the plan-before-edit skill, which only the plugin '
+                            f'ships. Install it with {install}')
+    return warnings
+
+
 def line_warnings(catalog, root, home, scope):
     """Files managed by an edit with `one_line_entries` whose entries span several lines, one warning per file."""
     warnings = []
@@ -596,7 +653,8 @@ def run(catalog, args, root, home):
         for item in report:
             if item['feature'] == 'core-rules':
                 item['note'] = SKIPPED_CLAUDE_CORE
-    warnings = core_warnings(root, pending) if args.scope == 'repo' else override_warnings(home, tools)
+    warnings = ((core_warnings(root, pending) if args.scope == 'repo' else override_warnings(home, tools))
+                + plugin_warnings(catalog, root, home, args.scope, tools, pending))
     exact_paths = {resolve(e, root, home) for fid in feature_ids for e in by_id[fid]['edits'] if e.get('mode') == 'exact'}
     executable = {resolve(e, root, home) for fid in feature_ids for e in by_id[fid]['edits'] if e.get('executable')}
     results, undo = [], []
@@ -669,6 +727,7 @@ def main(argv=None):
         tools = parse_targets(args.targets, catalog)
         features = status(catalog, args.scope, root, home, args.all, tools)
         warnings = ((core_warnings(root) if args.scope == 'repo' else override_warnings(home, tools))
+                    + plugin_warnings(catalog, root, home, args.scope, tools)
                     + line_warnings(catalog, root, home, args.scope))
         print(json.dumps({'scope': args.scope, 'features': features, 'warnings': warnings}, indent=2))
         return 0

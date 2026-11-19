@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `/kaboost:init`, `/kaboost:init-global` and their Codex skills warn when the core rules are enabled for Claude Code or Codex but the kaBoost plugin is not installed in that client: the core tells the agent to invoke the `plan-before-edit` skill, which only the plugin ships. The warning names the install commands (KB-249).
+
 - Codex CLI installs kaBoost from the `proprock` marketplace: `codex plugin marketplace add proprock/marketplace` and `codex plugin add kaboost@proprock` fetch the Codex package of the pinned release from GitHub. `scripts/smoke_codex_remote.py` checks install, update, rollback and removal between two tags in a disposable profile (KB-112).
 
 - `$kaboost-init-global` warns when `$CODEX_HOME/AGENTS.override.md` exists: Codex then reads it instead of `AGENTS.md`, so the blocks written there have no effect (KB-248).
