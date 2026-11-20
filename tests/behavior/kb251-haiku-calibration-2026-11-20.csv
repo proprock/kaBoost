@@ -1,0 +1,17 @@
+task,arm,n,model,exit,oracle_pass,judge_overall,cost_usd,seconds,turns
+ah-activation-window-first,BASE,1,claude-haiku-5-5,0,True,5,0.014,52.7,14
+ah-activation-window-first,BASE,5,claude-haiku-5-5,0,True,4,0.0177,157.8,20
+ah-ipc-unknown-field,BASE,1,claude-haiku-5-5,0,True,4,0.0137,55.3,14
+ah-ipc-unknown-field,BASE,3,claude-haiku-5-5,0,True,5,0.0131,95.9,15
+ah-ipc-unknown-field,BASE,5,claude-haiku-5-5,0,True,5,0.0179,175.8,18
+ah-queue-idle-gap,BASE,1,claude-haiku-5-5,0,True,4,0.0207,118.2,14
+ah-queue-idle-gap,BASE,2,claude-haiku-5-5,0,True,4,0.0206,145.4,19
+ah-queue-wait-card,BASE,2,claude-haiku-5-5,0,True,3,0.014,109.2,16
+ah-queue-wait-card,BASE,3,claude-haiku-5-5,0,True,4,0.0196,71.6,18
+ah-queue-wait-card,BASE,5,claude-haiku-5-5,0,True,3,0.0167,136.9,16
+ah-tray-mode-label,BASE,1,claude-haiku-5-5,0,True,5,0.0178,80.0,21
+ah-tray-mode-label,BASE,3,claude-haiku-5-5,0,True,4,0.0169,107.2,21
+ah-tray-mode-label,BASE,4,claude-haiku-5-5,0,True,4,0.0165,53.5,19
+ah-usage-days-hours,BASE,2,claude-haiku-5-5,0,True,4,0.0127,93.4,15
+ah-usage-days-hours,BASE,3,claude-haiku-5-5,0,False,4,0.0152,91.0,21
+ah-usage-days-hours,BASE,5,claude-haiku-5-5,0,False,4,0.0145,129.1,23

@@ -16,7 +16,7 @@ The runners here make paid model calls and are run by hand. Their offline parts 
 
 `run_calibration.py` takes `--model` (default `claude-sonnet-5-5`, `MODEL` in `run_pilot.py`) for both the agent sessions and the judge, and records the model in every row of `summary.csv`. `--dry-run` prints the model, the number of sessions and the cost ceiling, and makes no call (KB-251).
 
-Planned run, not yet approved: on `claude-sonnet-5-5` six of the seven [KB-216 tasks](kb216-calibration-2026-10-30.md) pass at the baseline ceiling, so no arm can show a benefit there. Calibrate the baseline only on `claude-haiku-5-5`, five sessions per task, with the runner's existing caps of USD 0.40 per session and USD 0.15 per judge call:
+Run plan, approved on 2026-11-20; the first run stopped after 16 of 30 sessions on a full disk ([partial report](kb251-haiku-calibration-2026-11-20.md)). On Windows each session needs about 10 GB free; use `--workers 1`. On `claude-sonnet-5-5` six of the seven [KB-216 tasks](kb216-calibration-2026-10-30.md) pass at the baseline ceiling, so no arm can show a benefit there. Calibrate the baseline only on `claude-haiku-5-5`, five sessions per task, with the runner's existing caps of USD 0.40 per session and USD 0.15 per judge call:
 
 ```
 python tests/behavior/run_calibration.py <new output directory> --tasks tests/behavior/tasks/aherald.json [private task file] --arms BASE --n 5 --model claude-haiku-5-5
