@@ -40,9 +40,17 @@ jobs:
           python scripts/smoke_claude.py
 
   codex:
-    runs-on: ubuntu-latest
+    # KB-114: the same matrix as Claude Code, plus the remote lifecycle between the two newest tags and from the
+    # published catalog. The remote checks compare installed files with the tagged commits, so fetch the tags.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.13'
@@ -52,3 +60,29 @@ jobs:
       - run: npm install -g @openai/codex@latest
       - run: codex --version
       - run: python scripts/smoke_codex.py
+      # Defaults --old v0.1.1 --new v0.2.0: keep them on the two newest tags in scripts/smoke_codex_remote.py.
+      - run: python scripts/smoke_codex_remote.py
+      - run: python scripts/smoke_codex_remote.py --catalog proprock/marketplace
+
+  report:
+    # A failed scheduled run is otherwise visible only in the Actions tab. One open issue at a time.
+    needs: [claude, codex]
+    if: failure() && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Open an issue unless one is already open
+        shell: bash
+        run: |
+          open=$(gh issue list --state open --search 'in:title "Latest clients failed"' --json number --jq length)
+          if [ "$open" -gt 0 ]; then
+            echo "An open 'Latest clients failed' issue exists; not opening another."
+            exit 0
+          fi
+          gh issue create --title "Latest clients failed: $(date -u +%Y-%m-%d)" \
+            --body "The weekly run against the newest Claude Code and Codex CLI failed: $RUN_URL. Revalidate compatibility as docs/compatibility.md describes."
