@@ -36,6 +36,7 @@ M1 has no baseline. It shows whether the rule works as written, not whether it h
 
 - A code commit is a non-merge commit reachable from `master` in the window (`git log --no-merges <from>..<to>`) that changes at least one file outside `docs/`, `*.md` and `.github/`.
 - It is rework when its subject starts with `fix` (`fix:`, `fix(...)`, `fix!:`) or `Revert`, and it changes at least one code file that another code commit changed within the previous 7 days.
+- "Within the previous 7 days" uses author dates, and the earlier commit may lie before the window. The maintainer fixed this reading on 2026-11-20, before the mining fetch (KB-025): on the unfetched aHerald clone committer dates gave a different verdict, and one commit of the 23-commit treatment window moves the rate by 4.3 points.
 - Compute M2 for both windows with the same procedure. A script for this comes with the mining step, on its own branch. The definition above is fixed; the script implements it and does not change it.
 
 **M3, manual interventions.** Not measured from git, because git cannot tell whether a human corrected an agent. The maintainer records each case where an agent broke the red/green rule and had to be corrected (wrong red commit, solution in the red commit, squash that lost a pair) in the [miss log](../tests/behavior/misses.md) with the candidate `tdd-commits`. The count is reported and not compared with a baseline.
