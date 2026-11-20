@@ -54,7 +54,7 @@ The table is a summary: the newest tested client version and the result per cell
 - 2026-11-08 — Windows 11 — 0.160.0 and 0.167.0 — local build — isolated local marketplace lifecycle (`scripts/smoke_codex.py`) — passed (KB-112).
 - 2026-10-29 — Linux (Ubuntu) — 0.165.0 — local build — isolated local marketplace lifecycle; see the [adapter guide](../adapters/codex/README.md) — passed (KB-103).
 - 2026-10-29 — Linux (Ubuntu) — 0.165.0 — local build — authenticated skill discovery, with profile caveats; see the adapter guide — passed (KB-104).
-- macOS — no Codex result yet (KB-114, KB-112).
+- 2026-11-20 — hosted runners `ubuntu-latest`, `macos-latest`, `windows-latest` — 0.171.0 — commit `ed1ac30`; remote `v0.1.1` ↔ `v0.2.0`; published `proprock/marketplace` — `smoke_codex.py`, `smoke_codex_remote.py` and `smoke_codex_remote.py --catalog proprock/marketplace` in the manual [Latest clients run](https://github.com/proprock/kaBoost/actions/runs/44677279409) — passed on all three (KB-114). Early signal from hosted runners, not a tested point; whether it counts as the macOS evidence of KB-112 is the maintainer's decision.
 
 ### Packaging and release artifacts
 
