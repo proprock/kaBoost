@@ -23,7 +23,6 @@ Complete with the `v0.1.0` release (KB-023); see [DONE.md](DONE.md).
 
 ### Remote distribution and platform evidence
 
-- [ ] KB-112: Distribute the Codex adapter remotely and verify install, update, rollback and removal from a published ref; run the Codex lifecycle on macOS and Windows. Record results in compatibility. Done on 2026-11-08: Codex catalog in `proprock/marketplace` (commit `fc34450`, `git-subdir` pinned to `v0.2.0`), `scripts/smoke_codex_remote.py`, and on Windows 11 with Codex 0.160.0 and 0.167.0 both `smoke_codex.py` and `smoke_codex_remote.py` passed (see compatibility). Remaining: run `python scripts/smoke_codex.py` and `python scripts/smoke_codex_remote.py` (plus `--catalog proprock/marketplace`) on macOS and record the result. Audit 2026-11-15: a hosted `macos-latest` runner can produce this evidence; do KB-114 first, then record its macOS run here and move this task to DONE. 2026-11-20: the manual [Latest clients run](https://github.com/proprock/kaBoost/actions/runs/44677279409) on `ed1ac30` passed all three Codex scripts on `macos-latest` with codex-cli 0.171.0 (and on Linux and Windows). Needs maintainer: whether this hosted-runner pass counts as the macOS evidence; if yes, move to DONE.
 
 **Done when:** two clients consume the same canonical engineering content through independently verified native mechanisms, with reproducible lifecycle procedures.
 
