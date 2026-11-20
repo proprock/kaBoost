@@ -1,6 +1,6 @@
 # 015: Adopt an existing TODO.md, DONE.md or CHANGELOG.md
 
-Status: proposed (2026-11-20, KB-252). Nothing is implemented until the maintainer accepts or rejects this record.
+Status: accepted (2026-11-20, KB-252), option A. Implementation: KB-255.
 
 ## Context
 

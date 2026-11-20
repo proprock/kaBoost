@@ -17,5 +17,5 @@ All decisions are accepted for the 0.1 implementation, following architecture ap
 - [012 — Stable release on the documented gates](012-stable-release-gates.md)
 - [013 — Cost per pass as the decision rule; a miss log for new skills](013-cost-per-pass-and-miss-log.md)
 - [014 — Opt-in agent hooks through init](014-opt-in-agent-hooks.md)
-- [015 — Adopt an existing TODO.md, DONE.md or CHANGELOG.md](015-adopt-existing-files.md) (proposed)
-- [016 — Opt-in agent definitions and MCP server entries through init](016-opt-in-agents-and-mcp.md) (proposed)
+- [015 — Adopt an existing TODO.md, DONE.md or CHANGELOG.md](015-adopt-existing-files.md)
+- [016 — Opt-in agent definitions and MCP server entries through init](016-opt-in-agents-and-mcp.md)

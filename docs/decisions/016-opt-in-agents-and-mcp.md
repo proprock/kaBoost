@@ -1,6 +1,6 @@
 # 016: Opt-in agent definitions and MCP server entries through init
 
-Status: proposed (2026-11-20, KB-253). No code, catalog or scope-boundary text changes until the maintainer accepts this record.
+Status: accepted (2026-11-20, KB-253). No implementation task exists until a trigger below is met.
 
 ## Context
 
